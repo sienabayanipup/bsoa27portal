@@ -200,7 +200,7 @@
   .stage-inner.intro-active .art-stage{ opacity:0; }
 
   /* ---------- Pinned stage ---------- */
-  .stage{ height:720vh; position:relative; z-index:1; }
+  .stage{ height:480vh; position:relative; z-index:1; }
   .stage-inner{
     position:sticky; top:0; height:100vh; width:100%;
     display:grid; grid-template-columns:0.86fr 1.14fr; align-items:center;
@@ -341,8 +341,8 @@
   /* ---------- Final / CTA section — Act 2's closing beat ---------- */
   .finale{
     position:relative; z-index:1; overflow:hidden;
-    max-width:1220px; margin:0 auto; padding:96px 32px; text-align:center;
-    min-height:92vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    max-width:1220px; margin:0 auto; padding:64px 32px; text-align:center;
+    min-height:52vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
   }
   /* Background evolution: a cooler, quieter wash than the stage above
      it and the workspace below it — this is the "pause" beat between
@@ -610,13 +610,53 @@
     border-radius:999px; padding:4px 10px;
   }
 
-  /* Announcements — a small corkboard notice, placeholder content */
+  /* Announcements — full-width corkboard above the tool grid, open to anyone */
+  .ws-board{
+    position:relative; border-radius:18px; padding:22px 26px 20px; margin-bottom:24px;
+    background:linear-gradient(155deg, rgba(255,253,247,0.82), rgba(255,253,247,0.55));
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(231,224,208,0.9);
+    box-shadow:0 8px 24px rgba(36,31,26,0.07), 0 2px 8px rgba(36,31,26,0.04);
+    opacity:0; transform:translateY(30px) scale(.97); filter:blur(4px);
+    transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), filter .5s ease;
+  }
+  .ws-board.revealed{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+  .ws-board-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+  .ws-board-head .ws-widget-label{ margin:0; }
+  .ws-board-toggle{
+    font-family:'Inter', sans-serif; font-weight:700; font-size:12px; color:var(--gold-700);
+    background:rgba(138,109,31,0.1); border:1px solid rgba(138,109,31,0.25); border-radius:999px;
+    padding:6px 14px; cursor:pointer; transition:background .15s ease;
+  }
+  .ws-board-toggle:hover{ background:rgba(138,109,31,0.18); }
+  .ws-announce-list{ max-height:200px; overflow-y:auto; }
   .ws-announce-item{
     display:flex; align-items:flex-start; gap:10px; padding:9px 0;
     border-top:1px dashed var(--line); font-size:12.5px; line-height:1.5; color:var(--muted);
   }
   .ws-announce-item:first-of-type{ border-top:none; padding-top:0; }
   .ws-announce-dot{ flex:0 0 auto; width:6px; height:6px; border-radius:50%; background:var(--gold-700); margin-top:6px; }
+  .ws-announce-name{ font-weight:700; color:var(--ink); }
+
+  .ws-announce-form{
+    display:none; grid-template-columns:1fr 2fr auto; gap:10px; margin-top:16px; padding-top:16px;
+    border-top:1px solid var(--line); align-items:center;
+  }
+  .ws-announce-form.open{ display:grid; }
+  .ws-announce-form input{
+    padding:10px 12px; font-size:13.5px; font-family:'Inter', sans-serif;
+    border:1.5px solid var(--line); border-radius:7px; background:#fffefb; color:var(--ink);
+  }
+  .ws-announce-form input:focus{ outline:none; border-color:var(--gold-700); }
+  .ws-announce-form button{
+    padding:10px 16px; background:var(--maroon-700); color:#fff; font-size:13px; font-weight:700;
+    border:none; border-radius:7px; cursor:pointer; white-space:nowrap;
+  }
+  .ws-announce-form button:disabled{ opacity:.6; cursor:not-allowed; }
+  .ws-announce-status{ grid-column:1 / -1; margin:2px 0 0; font-size:12px; font-weight:600; min-height:16px; }
+  .ws-announce-status.error{ color:#b3402a; }
+  .ws-announce-status.success{ color:#2f6f42; }
+  @media (max-width:640px){ .ws-announce-form{ grid-template-columns:1fr; } }
 
   @media (max-width:1000px){
     .workspace-grid{ grid-template-columns:1fr; }
@@ -1056,6 +1096,27 @@
     </div>
   </div>
 
+  <div class="ws-board" id="wsAnnounceBoard" data-reveal-item style="--rd:0">
+    <div class="ws-board-head">
+      <div class="ws-widget-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg>
+        Announcements
+      </div>
+      <button type="button" class="ws-board-toggle" id="announceToggle">+ Post an update</button>
+    </div>
+
+    <div class="ws-announce-list" id="announceList">
+      <div class="ws-announce-item"><span class="ws-announce-dot"></span>Loading announcements&hellip;</div>
+    </div>
+
+    <form class="ws-announce-form" id="announceForm">
+      <input type="text" id="announceName" placeholder="Your name" required autocomplete="off">
+      <input type="text" id="announceMsg" placeholder="Write an announcement&hellip;" required autocomplete="off">
+      <button type="submit" id="announceSubmitBtn">Post</button>
+      <p class="ws-announce-status" id="announceStatus"></p>
+    </form>
+  </div>
+
   <div class="workspace-grid" id="workspaceGrid">
     <div class="ws-main">
       <a class="ws-card ws-attendance ws-featured" href="attendance.html" data-reveal-item style="--rd:0">
@@ -1132,24 +1193,6 @@
         <div class="ws-note-lines"><i></i><i></i><i></i></div>
       </div>
 
-      <div class="ws-widget ws-version" data-reveal-item style="--rd:5">
-        <div>
-          <div class="ws-widget-label">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
-            Portal Version
-          </div>
-          <div class="ws-version-num">v6.0.1</div>
-        </div>
-        <span class="ws-version-tag">Stable</span>
-      </div>
-
-      <div class="ws-widget ws-announcements" data-reveal-item style="--rd:6">
-        <div class="ws-widget-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg>
-          Announcements
-        </div>
-        <div class="ws-announce-item"><span class="ws-announce-dot"></span>No announcements posted yet &mdash; class officers can post updates here.</div>
-      </div>
     </aside>
   </div>
 </section>
@@ -1497,6 +1540,95 @@
       setTimeout(function(){ ripple.remove(); }, 650);
     });
   });
+
+  // ---- Announcements board: load existing posts, let anyone add one ----
+  var ANNOUNCE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
+
+  var announceList = document.getElementById('announceList');
+  var announceToggle = document.getElementById('announceToggle');
+  var announceForm = document.getElementById('announceForm');
+  var announceName = document.getElementById('announceName');
+  var announceMsg = document.getElementById('announceMsg');
+  var announceStatus = document.getElementById('announceStatus');
+  var announceSubmitBtn = document.getElementById('announceSubmitBtn');
+
+  function escapeHtml(str){
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderAnnouncements(items){
+    if (!items || items.length === 0){
+      announceList.innerHTML = '<div class="ws-announce-item"><span class="ws-announce-dot"></span>No announcements posted yet &mdash; be the first to post an update.</div>';
+      return;
+    }
+    announceList.innerHTML = items.map(function(item){
+      var name = escapeHtml(item.name || 'Anonymous');
+      var msg = escapeHtml(item.message || '');
+      return '<div class="ws-announce-item"><span class="ws-announce-dot"></span><span><span class="ws-announce-name">' + name + ':</span> ' + msg + '</span></div>';
+    }).join('');
+  }
+
+  function loadAnnouncements(){
+    fetch(ANNOUNCE_SCRIPT_URL + "?action=getAnnouncements")
+      .then(function(res){ return res.json(); })
+      .then(function(data){ renderAnnouncements(data.announcements || []); })
+      .catch(function(){
+        announceList.innerHTML = '<div class="ws-announce-item"><span class="ws-announce-dot"></span>Could not load announcements right now.</div>';
+      });
+  }
+
+  if (announceToggle && announceForm){
+    announceToggle.addEventListener('click', function(){
+      var isOpen = announceForm.classList.toggle('open');
+      announceToggle.textContent = isOpen ? 'Cancel' : '+ Post an update';
+      if (isOpen) announceName.focus();
+    });
+  }
+
+  if (announceForm){
+    announceForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = announceName.value.trim();
+      var msg = announceMsg.value.trim();
+      if (!name || !msg) return;
+
+      announceSubmitBtn.disabled = true;
+      announceSubmitBtn.textContent = 'Posting...';
+      announceStatus.textContent = '';
+      announceStatus.className = 'ws-announce-status';
+
+      var postUrl = ANNOUNCE_SCRIPT_URL
+        + "?action=postAnnouncement"
+        + "&name=" + encodeURIComponent(name)
+        + "&message=" + encodeURIComponent(msg);
+
+      fetch(postUrl)
+        .then(function(res){ return res.json(); })
+        .then(function(result){
+          if (result.result === 'success'){
+            announceForm.reset();
+            announceForm.classList.remove('open');
+            announceToggle.textContent = '+ Post an update';
+            loadAnnouncements();
+          } else {
+            announceStatus.textContent = result.message || 'Something went wrong.';
+            announceStatus.className = 'ws-announce-status error';
+          }
+        })
+        .catch(function(){
+          announceStatus.textContent = 'Could not connect. Check your internet and try again.';
+          announceStatus.className = 'ws-announce-status error';
+        })
+        .finally(function(){
+          announceSubmitBtn.disabled = false;
+          announceSubmitBtn.textContent = 'Post';
+        });
+    });
+  }
+
+  loadAnnouncements();
 })();
 </script>
 
