@@ -360,7 +360,7 @@
     clip-path:inset(0 0 100% 0); opacity:0;
     transition:clip-path 1s cubic-bezier(.22,1,.36,1), opacity .6s ease;
   }
-  .finale-content.revealed{ clip-path:inset(0 0 0% 0); opacity:1; }
+  .finale.revealed .finale-content{ clip-path:inset(0 0 0% 0); opacity:1; }
   .finale-eyebrow{
     font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px;
     letter-spacing:.14em; text-transform:uppercase; color:var(--green-700); margin:0 0 16px;
@@ -1022,8 +1022,8 @@
      dashboard below. No tool recap here anymore: the dashboard
      itself is one scroll away and shows the same four tools as
      full interactive cards, so repeating them here was redundant. -->
-<section class="finale">
-  <div class="finale-content" data-reveal>
+<section class="finale" data-reveal>
+  <div class="finale-content">
     <p class="finale-eyebrow">Everything connects</p>
     <h2>One portal. Four essential tools.</h2>
     <p>Attendance, records, activity tracking, and class oversight &mdash; all in the same place, just below.</p>
