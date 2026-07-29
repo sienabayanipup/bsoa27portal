@@ -407,7 +407,7 @@
      ============================================================ */
   .workspace-section{
     position:relative; overflow:hidden; z-index:1;
-    padding:128px 32px 64px;
+    padding:128px 32px 104px;
     max-width:1220px; margin:0 auto;
   }
   .workspace-section::before{
@@ -481,70 +481,28 @@
   .wsh-status .status-sep{ opacity:.4; }
   #wsClock{ font-variant-numeric:tabular-nums; color:var(--ink); }
 
-  /* ---------- Workspace grid: tiered tools + desk sidebar ---------- */
+  /* ---------- Workspace grid: calm vertical Bento stack ----------
+     One clear rhythm: full-width Attendance hero, a two-up row for
+     Mark Activity + Lookup, then a full-width Overview analytics
+     card. No sidebar, no decorative widgets — every element here
+     is either a tool or the announcements board. */
   .workspace-grid{
-    display:grid; grid-template-columns:2fr 1fr; gap:24px; align-items:start;
+    display:grid; grid-template-columns:1fr; gap:28px;
     perspective:1400px;
   }
-  .ws-main{ display:flex; flex-direction:column; gap:24px; min-width:0; }
+  .ws-row-secondary{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; }
+  @media (max-width:900px){ .ws-row-secondary{ grid-template-columns:1fr; } }
 
-  /* Second tier: Overview (secondary feature, its own chart) sits
-     beside a single grouped panel for Lookup + Activity — two
-     supporting tools presented as one compact list instead of two
-     more competing card-shaped panels. */
-  .ws-secondary{ display:grid; grid-template-columns:1.35fr 1fr; gap:24px; align-items:stretch; }
-
-  a.ws-card.ws-secondary-feature{ min-height:224px; justify-content:space-between; }
-  .ws-secondary-feature .ws-mini-chart{
-    margin-top:18px; padding-top:16px; border-top:1px solid var(--line);
-  }
-  .ws-secondary-feature .ws-mini-chart .task-row{ margin-bottom:10px; }
-  .ws-secondary-feature .ws-mini-chart .task-bar-fill{ width:78%; }
-
-  /* Support group — Lookup + Overview unified into a single compact
-     panel (two rows, one border, one shadow) rather than two separate
-     floating cards competing for attention. */
-  .ws-support{
-    display:flex; flex-direction:column; border-radius:18px; overflow:hidden;
-    background:linear-gradient(155deg, rgba(255,253,247,0.82), rgba(255,253,247,0.55));
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    border:1px solid rgba(231,224,208,0.9);
-    box-shadow:0 8px 24px rgba(36,31,26,0.07), 0 2px 8px rgba(36,31,26,0.04);
-  }
-  a.ws-support-item{
-    display:flex; align-items:center; gap:14px; padding:20px 22px;
-    text-decoration:none; color:var(--ink); border-bottom:1px solid var(--line);
-    opacity:0; transform:translateX(-14px);
-    transition:background .2s ease, opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1);
-  }
-  a.ws-support-item.revealed{ opacity:1; transform:translateX(0); }
-  a.ws-support-item:last-child{ border-bottom:none; }
-  a.ws-support-item:hover{ background:rgba(122,12,30,0.035); }
-  .ws-support-icon{
-    flex:0 0 auto; width:40px; height:40px; border-radius:11px;
-    display:flex; align-items:center; justify-content:center; transition:transform .25s cubic-bezier(.2,.8,.3,1.4);
-  }
-  a.ws-support-item:hover .ws-support-icon{ transform:scale(1.08) rotate(-3deg); }
-  .ws-support-icon svg{ width:19px; height:19px; stroke-width:1.9px; }
-  .ws-support-lookup .ws-support-icon{ color:var(--blue-700); background:rgba(19,78,143,0.1); }
-  .ws-support-overview .ws-support-icon{ color:var(--gold-700); background:rgba(138,109,31,0.1); }
-  .ws-support-text{ flex:1 1 auto; min-width:0; }
-  .ws-support-text .sst-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:14px; margin:0 0 2px; }
-  .ws-support-text .sst-desc{ font-size:12px; color:var(--muted); margin:0; line-height:1.4; }
-  a.ws-support-item .arrow{ flex:0 0 auto; color:var(--muted); transition:transform .25s ease; }
-  a.ws-support-item:hover .arrow{ transform:translateX(4px); color:var(--ink); }
-  @media (max-width:900px){ .ws-secondary{ grid-template-columns:1fr; } }
-
-  /* Featured Attendance card: same DNA as the other tool cards, just
-     wider/lower with a live mini attendance strip so it reads as the
-     "desk blotter" of the workspace rather than a scaled-up tile. */
+  /* Featured Attendance card: the primary feature. Wider, lower,
+     more whitespace, with a live mini attendance strip so it reads
+     as the "desk blotter" of the workspace. */
   a.ws-card.ws-featured{
-    flex-direction:row; align-items:center; gap:30px; padding:32px 34px;
-    min-height:172px;
+    flex-direction:row; align-items:center; gap:36px; padding:40px 40px 38px;
+    min-height:188px;
   }
   .ws-featured-text{ flex:1 1 auto; min-width:0; }
-  .ws-featured .ws-icon-badge{ width:60px; height:60px; margin-bottom:14px; }
-  .ws-featured .ws-title{ font-size:20px; }
+  .ws-featured .ws-icon-badge{ width:60px; height:60px; margin-bottom:16px; }
+  .ws-featured .ws-title{ font-size:21px; }
   .ws-featured-visual{
     flex:0 0 auto; width:150px; background:rgba(122,12,30,0.045);
     border:1px solid rgba(122,12,30,0.12); border-radius:12px; padding:14px 14px 12px;
@@ -556,76 +514,91 @@
   .ws-featured-visual .week-grid .d{ background:#f0e0e0; }
   .ws-featured-visual .week-grid .d.done{ background:var(--maroon-700); }
   @media (max-width:900px){
-    a.ws-card.ws-featured{ flex-direction:column; align-items:flex-start; }
+    a.ws-card.ws-featured{ flex-direction:column; align-items:flex-start; padding:32px 30px; }
     .ws-featured-visual{ width:100%; }
   }
 
-  /* ---------- Desk sidebar: sticky note / nameplate / corkboard ---------- */
-  .ws-sidebar{ display:flex; flex-direction:column; gap:18px; min-width:0; }
-  .ws-widget{
-    position:relative; border-radius:16px; padding:20px 20px 18px;
-    background:linear-gradient(155deg, rgba(255,253,247,0.82), rgba(255,253,247,0.55));
-    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    border:1px solid rgba(231,224,208,0.9);
-    box-shadow:0 8px 24px rgba(36,31,26,0.07), 0 2px 8px rgba(36,31,26,0.04);
-    opacity:0; transform:translateY(30px) scale(.95); filter:blur(4px);
-    transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), filter .5s ease;
-  }
-  .ws-widget.revealed{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
-  .ws-widget-label{
-    display:flex; align-items:center; gap:7px; margin:0 0 12px;
-    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px;
-    letter-spacing:.09em; text-transform:uppercase; color:var(--gold-700);
-  }
-  .ws-widget-label svg{ width:13px; height:13px; }
+  /* Standalone secondary cards: Mark Activity + Lookup, each a real
+     independent feature card rather than a compact nav row. */
+  a.ws-card.ws-standalone{ min-height:266px; justify-content:space-between; padding:30px 30px 26px; }
+  .ws-mini-chart{ margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
+  .ws-mini-chart .task-bar-fill{ width:78%; }
 
-  /* Quick Notes — a pinned index card, complete with a brass pin and
-     faint ruled lines, rather than a generic "notes" widget */
-  .ws-notes{ padding-top:26px; }
-  .ws-notes::before{
-    content:""; position:absolute; top:-7px; left:26px; width:14px; height:14px; border-radius:50%;
-    background:radial-gradient(circle at 34% 30%, #f3d98a, var(--gold-700) 70%);
-    box-shadow:0 3px 5px rgba(36,31,26,0.28);
+  /* Student Lookup preview: a real search-tool mock, not a menu row */
+  .ws-lookup-preview{
+    margin-top:20px; padding-top:16px; border-top:1px solid var(--line);
   }
-  .ws-note-text{
-    font-family:'Dancing Script', cursive; font-weight:600; font-size:17px; line-height:1.55;
-    color:var(--ink); margin:0; opacity:.88;
+  .ws-lp-search{
+    display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:9px;
+    background:rgba(19,78,143,0.06); border:1px solid rgba(19,78,143,0.14);
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--blue-700); opacity:.85;
   }
-  .ws-note-lines{ margin-top:12px; display:flex; flex-direction:column; gap:9px; }
-  .ws-note-lines i{ display:block; height:1px; background:var(--line); }
-  .ws-note-lines i:last-child{ width:60%; }
+  .ws-lp-search svg{ width:14px; height:14px; flex:0 0 auto; stroke-width:2px; }
+  .ws-lp-result{ display:flex; align-items:center; gap:10px; margin-top:14px; }
+  .ws-lp-avatar{
+    flex:0 0 auto; width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; color:var(--blue-700);
+    background:rgba(19,78,143,0.12);
+  }
+  .ws-lp-name{ margin:0; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12.5px; color:var(--ink); }
+  .ws-lp-meta{ margin:2px 0 0; font-size:11px; color:var(--muted); }
+  .ws-lp-recent{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-top:14px; }
+  .ws-lp-recent span:first-child{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .ws-lp-chip{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--blue-700);
+    background:rgba(19,78,143,0.08); border:1px solid rgba(19,78,143,0.16);
+    border-radius:999px; padding:3px 9px;
+  }
 
-  /* Portal Version — a small brass desk nameplate */
-  .ws-version{
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    border-top:2px solid var(--gold-700);
-  }
-  .ws-version-num{
-    font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:13.5px; color:var(--maroon-700);
-  }
-  .ws-version-tag{
-    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px;
-    letter-spacing:.05em; text-transform:uppercase; color:#2f8f5c;
-    background:rgba(47,143,92,0.1); border:1px solid rgba(47,143,92,0.25);
-    border-radius:999px; padding:4px 10px;
-  }
+  /* Class Overview: the analytics conclusion — a real dashboard
+     preview with stats, progress bars, and a mini trend chart. */
+  a.ws-card.ws-analytics{ padding:34px 36px 30px; }
+  .ws-analytics-head{ display:flex; align-items:center; gap:18px; }
+  .ws-analytics-head .ws-icon-badge{ margin:0; }
+  .ws-analytics-body{ margin-top:26px; padding-top:22px; border-top:1px solid var(--line); }
+  .ws-stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; }
+  .ws-stat{ display:flex; flex-direction:column; gap:4px; }
+  .ws-stat-num{ font-family:'Playfair Display', serif; font-weight:700; font-size:24px; color:var(--maroon-700); }
+  .ws-stat-label{ font-size:11px; color:var(--muted); letter-spacing:.02em; }
+  .ws-progress-group{ margin-top:24px; display:flex; flex-direction:column; gap:14px; }
+  .ws-progress-row{ display:flex; flex-direction:column; gap:6px; }
+  .ws-progress-label{ font-size:11.5px; font-weight:600; color:var(--ink); }
+  .ws-progress-track{ height:7px; border-radius:4px; background:rgba(138,109,31,0.12); overflow:hidden; }
+  .ws-progress-fill{ height:100%; border-radius:4px; background:var(--gold-700); }
+  .ws-progress-fill-alt{ background:var(--green-700); }
+  .ws-mini-bars{ display:flex; align-items:flex-end; gap:8px; height:52px; margin-top:24px; }
+  .wmb{ flex:1 1 auto; height:var(--h); border-radius:4px 4px 0 0; background:linear-gradient(180deg, rgba(138,109,31,0.55), rgba(138,109,31,0.28)); }
+  @media (max-width:640px){ .ws-stat-grid{ grid-template-columns:repeat(2, 1fr); } }
 
   /* Announcements — full-width corkboard above the tool grid, open to anyone */
   .ws-board{
-    position:relative; border-radius:18px; padding:22px 26px 20px; margin-bottom:24px;
+    position:relative; border-radius:18px; padding:24px 28px 22px; margin-bottom:24px;
     background:linear-gradient(155deg, rgba(255,253,247,0.82), rgba(255,253,247,0.55));
     backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
     border:1px solid rgba(231,224,208,0.9);
+    border-top:3px solid var(--editorial-gold);
     box-shadow:0 8px 24px rgba(36,31,26,0.07), 0 2px 8px rgba(36,31,26,0.04);
     opacity:0; transform:translateY(30px) scale(.97); filter:blur(4px);
-    transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), filter .5s ease;
+    transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1), filter .5s ease, box-shadow .35s ease;
   }
   .ws-board.revealed{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+  .ws-board:hover{ box-shadow:0 14px 32px rgba(36,31,26,0.1), 0 4px 10px rgba(36,31,26,0.06); }
   .ws-board-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
-  .ws-board-head .ws-widget-label{ margin:0; }
+  .ws-board-title{
+    margin:0; display:flex; align-items:center; gap:12px;
+    font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:17px; color:var(--ink);
+  }
+  .ws-announce-icon{
+    width:38px; height:38px; border-radius:11px; flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--editorial-gold);
+    background:linear-gradient(155deg, rgba(255,255,255,0.75) 0%, rgba(184,138,44,0.14) 55%, rgba(184,138,44,0.2) 100%);
+    box-shadow:0 3px 8px rgba(184,138,44,0.2), inset 0 1px 1px rgba(255,255,255,0.75), inset 0 -3px 5px rgba(184,138,44,0.16);
+  }
+  .ws-announce-icon svg{ width:18px; height:18px; stroke-width:1.8px; }
   .ws-board-toggle{
-    font-family:'Inter', sans-serif; font-weight:700; font-size:12px; color:var(--gold-700);
-    background:rgba(138,109,31,0.1); border:1px solid rgba(138,109,31,0.25); border-radius:999px;
+    font-family:'Inter', sans-serif; font-weight:700; font-size:12px; color:var(--editorial-gold);
+    background:rgba(184,138,44,0.1); border:1px solid rgba(184,138,44,0.25); border-radius:999px;
     padding:6px 14px; cursor:pointer; transition:background .15s ease;
   }
   .ws-board-toggle:hover{ background:rgba(138,109,31,0.18); }
@@ -658,14 +631,8 @@
   .ws-announce-status.success{ color:#2f6f42; }
   @media (max-width:640px){ .ws-announce-form{ grid-template-columns:1fr; } }
 
-  @media (max-width:1000px){
-    .workspace-grid{ grid-template-columns:1fr; }
-    .ws-sidebar{ flex-direction:row; flex-wrap:wrap; }
-    .ws-sidebar .ws-widget{ flex:1 1 220px; }
-  }
   @media (max-width:760px){
-    .ws-secondary{ grid-template-columns:1fr; }
-    .ws-sidebar{ flex-direction:column; }
+    .ws-row-secondary{ grid-template-columns:1fr; }
   }
 
   a.ws-card{
@@ -800,14 +767,13 @@
   @media (max-width:600px){
     .finale{ min-height:auto; padding:72px 20px 56px; }
     .finale p{ max-width:100%; }
-    .workspace-section{ padding:64px 16px 32px; }
+    .workspace-section{ padding:64px 16px 72px; }
     .workspace-header{ margin-bottom:32px; padding-bottom:20px; }
     a.ws-card{ padding:22px 20px 20px; }
     a.ws-card.ws-featured{ padding:24px 20px; gap:20px; }
-    .ws-secondary-feature{ min-height:auto; }
+    a.ws-card.ws-standalone{ min-height:auto; }
     .ws-featured-visual{ padding:12px 12px 10px; }
-    a.ws-support-item{ padding:16px 18px; }
-    .ws-widget{ padding:16px 16px 14px; }
+    .ws-board{ padding:18px 20px 16px; }
     .btn-primary{ padding:15px 24px; width:100%; justify-content:center; }
   }
 
@@ -1098,10 +1064,12 @@
 
   <div class="ws-board" id="wsAnnounceBoard" data-reveal-item style="--rd:0">
     <div class="ws-board-head">
-      <div class="ws-widget-label">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg>
+      <p class="ws-board-title">
+        <span class="ws-announce-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg>
+        </span>
         Announcements
-      </div>
+      </p>
       <button type="button" class="ws-board-toggle" id="announceToggle">+ Post an update</button>
     </div>
 
@@ -1118,82 +1086,118 @@
   </div>
 
   <div class="workspace-grid" id="workspaceGrid">
-    <div class="ws-main">
-      <a class="ws-card ws-attendance ws-featured" href="attendance.html" data-reveal-item style="--rd:0">
-        <div class="ws-featured-text">
+
+    <a class="ws-card ws-attendance ws-featured" href="attendance.html" data-reveal-item style="--rd:1">
+      <div class="ws-featured-text">
+        <div class="ws-icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
+          </svg>
+        </div>
+        <div class="ws-title">Weekly Attendance</div>
+        <p class="ws-desc">Submit your name, student number, date, and subject for the week &mdash; and watch the week's record fill in.</p>
+        <div class="ws-card-footer">Open <span class="arrow">&rarr;</span></div>
+      </div>
+      <div class="ws-featured-visual" aria-hidden="true">
+        <span class="fv-label">This week</span>
+        <div class="week-grid">
+          <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div class="d"></div><div class="d"></div>
+        </div>
+      </div>
+    </a>
+
+    <div class="ws-row-secondary">
+      <a class="ws-card ws-mark ws-standalone" href="mark_activity.html" data-reveal-item style="--rd:2">
+        <div>
           <div class="ws-icon-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-              <path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
+              <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
             </svg>
           </div>
-          <div class="ws-title">Weekly Attendance</div>
-          <p class="ws-desc">Submit your name, student number, date, and subject for the week &mdash; and watch the week's record fill in.</p>
-          <div class="ws-card-footer">Open <span class="arrow">&rarr;</span></div>
+          <div class="ws-title">Mark My Activity</div>
+          <p class="ws-desc">Confirm you've completed an activity for a subject. Progress fills in as tasks are checked off.</p>
         </div>
-        <div class="ws-featured-visual" aria-hidden="true">
-          <span class="fv-label">This week</span>
-          <div class="week-grid">
-            <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <div class="d"></div><div class="d"></div>
-          </div>
+        <div class="ws-mini-chart" aria-hidden="true">
+          <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo</div>
+          <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper</div>
+          <div class="task-bar-track"><div class="task-bar-fill"></div></div>
         </div>
+        <div class="ws-card-footer">Open <span class="arrow">&rarr;</span></div>
       </a>
 
-      <div class="ws-secondary">
-        <a class="ws-card ws-mark ws-secondary-feature" href="mark_activity.html" data-reveal-item style="--rd:1">
-          <div>
-            <div class="ws-icon-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
-              </svg>
-            </div>
-            <div class="ws-title">Mark My Activity</div>
-            <p class="ws-desc">Confirm you've completed an activity for a subject. Progress fills in as tasks are checked off.</p>
+      <a class="ws-card ws-lookup ws-standalone" href="lookup.html" data-reveal-item style="--rd:3">
+        <div>
+          <div class="ws-icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           </div>
-          <div class="ws-mini-chart" aria-hidden="true">
-            <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo</div>
-            <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper</div>
-            <div class="task-bar-track"><div class="task-bar-fill"></div></div>
-          </div>
-          <div class="ws-card-footer">Open <span class="arrow">&rarr;</span></div>
-        </a>
-
-        <div class="ws-support">
-          <a class="ws-support-item ws-support-lookup" href="lookup.html" data-reveal-item style="--rd:2">
-            <div class="ws-support-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
-            <div class="ws-support-text">
-              <p class="sst-title">Student Lookup</p>
-              <p class="sst-desc">Search grades &amp; records</p>
-            </div>
-            <span class="arrow">&rarr;</span>
-          </a>
-          <a class="ws-support-item ws-support-overview" href="overview.html" data-reveal-item style="--rd:3">
-            <div class="ws-support-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-            </div>
-            <div class="ws-support-text">
-              <p class="sst-title">Class Overview</p>
-              <p class="sst-desc">For officers &mdash; full class snapshot</p>
-            </div>
-            <span class="arrow">&rarr;</span>
-          </a>
+          <div class="ws-title">Student Lookup</div>
+          <p class="ws-desc">Search grades &amp; records for any student number, instantly.</p>
         </div>
-      </div>
+        <div class="ws-lookup-preview" aria-hidden="true">
+          <div class="ws-lp-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <span>202x-xxxxx-MN-0</span>
+          </div>
+          <div class="ws-lp-result">
+            <span class="ws-lp-avatar">JD</span>
+            <div>
+              <p class="ws-lp-name">Juan Dela Cruz</p>
+              <p class="ws-lp-meta">ENGL 017 &middot; 94%</p>
+            </div>
+          </div>
+          <div class="ws-lp-recent">
+            <span>Recent</span>
+            <span class="ws-lp-chip">2025-14723-MN-0</span>
+            <span class="ws-lp-chip">2025-10981-MN-0</span>
+          </div>
+        </div>
+        <div class="ws-card-footer">Open <span class="arrow">&rarr;</span></div>
+      </a>
     </div>
 
-    <aside class="ws-sidebar">
-      <div class="ws-widget ws-notes" data-reveal-item style="--rd:4">
-        <p class="ws-note-text">Don't forget to log this week's attendance before Friday.</p>
-        <div class="ws-note-lines"><i></i><i></i><i></i></div>
+    <a class="ws-card ws-overview ws-analytics" href="overview.html" data-reveal-item style="--rd:4">
+      <div class="ws-analytics-head">
+        <div class="ws-icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        </div>
+        <div>
+          <div class="ws-title">Class Overview</div>
+          <p class="ws-desc">For officers &mdash; the full class snapshot, at a glance.</p>
+        </div>
       </div>
+      <div class="ws-analytics-body" aria-hidden="true">
+        <div class="ws-stat-grid">
+          <div class="ws-stat"><span class="ws-stat-num">92%</span><span class="ws-stat-label">Attendance</span></div>
+          <div class="ws-stat"><span class="ws-stat-num">45</span><span class="ws-stat-label">Students</span></div>
+          <div class="ws-stat"><span class="ws-stat-num">87%</span><span class="ws-stat-label">Activities done</span></div>
+          <div class="ws-stat"><span class="ws-stat-num">3</span><span class="ws-stat-label">Pending</span></div>
+        </div>
+        <div class="ws-progress-group">
+          <div class="ws-progress-row">
+            <span class="ws-progress-label">Attendance submissions</span>
+            <div class="ws-progress-track"><div class="ws-progress-fill" style="width:92%"></div></div>
+          </div>
+          <div class="ws-progress-row">
+            <span class="ws-progress-label">Activity completion</span>
+            <div class="ws-progress-track"><div class="ws-progress-fill ws-progress-fill-alt" style="width:87%"></div></div>
+          </div>
+        </div>
+        <div class="ws-mini-bars">
+          <div class="wmb" style="--h:60%"></div>
+          <div class="wmb" style="--h:75%"></div>
+          <div class="wmb" style="--h:82%"></div>
+          <div class="wmb" style="--h:70%"></div>
+          <div class="wmb" style="--h:92%"></div>
+        </div>
+      </div>
+      <div class="ws-card-footer">Open <span class="arrow">&rarr;</span></div>
+    </a>
 
-    </aside>
   </div>
 </section>
 
