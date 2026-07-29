@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
+<title>PUP OUS Student Lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-900:#0c2840;
+    --blue-700:#134e8f;
+    --blue-500:#1f65ac;
+    --accent-500:#cfe4f5;
+    --accent-100:#eaf1f8;
+    --paper:#faf6ea;
+    --card:#fffdf7;
+    --line:#e3d3a0;
+    --ink:#2b1210;
+    --ink-soft:#6b5347;
+    --error:#b3402a;
+    --good:#2f6f42;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(122,12,30,0.06), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(19,78,143,0.06), transparent 45%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding:32px 16px 60px;
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+  }
+
+
+  .page-desc{
+    margin:6px 0 0;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+
+  .letterhead{
+    background:var(--card);
+    color:var(--ink);
+    padding:20px 28px 20px;
+    border-radius:12px 12px 0 0;
+    border-top:5px solid var(--blue-700);
+    box-shadow:0 8px 24px rgba(11,43,77,0.08);
+  }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--blue-700);
+    opacity:.75;
+    text-decoration:none;
+    margin-bottom:10px;
+    transition:opacity .15s ease;
+  }
+  .back-link:hover{ opacity:1; }
+  .letterhead-divider{
+    height:1px;
+    background:var(--line);
+    margin-bottom:14px;
+  }
+  .letterhead-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .seal{
+    flex:0 0 auto;
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Playfair Display', serif;
+    font-weight:700;
+    font-size:14px;
+    color:var(--blue-700);
+    background:rgba(19,78,143,0.10);
+  }
+  .eyebrow{
+    margin:0 0 3px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--blue-700);
+  }
+  h1{
+    margin:0;
+    font-family:'Playfair Display', serif;
+    font-weight:700;
+    font-size:22px;
+  }
+
+  .search-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 12px 12px;
+    padding:22px 28px 26px;
+    box-shadow:0 8px 24px rgba(11,43,77,0.10);
+    margin-bottom:24px;
+  }
+  .search-row{
+    display:flex;
+    gap:10px;
+  }
+  input#searchInput{
+    flex:1;
+    padding:12px 14px;
+    font-size:15px;
+    font-family:'IBM Plex Mono', monospace;
+    border:1.5px solid var(--line);
+    border-radius:7px;
+    background:#fffefb;
+    color:var(--ink);
+  }
+  input#searchInput:focus{
+    outline:none;
+    border-color:var(--blue-500);
+    box-shadow:0 0 0 3px rgba(142,202,230,0.35);
+  }
+  button#searchBtn{
+    padding:12px 22px;
+    background:var(--blue-700);
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    border:none;
+    border-radius:7px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    box-shadow:0 4px 12px rgba(19,78,143,0.22);
+  }
+  button#searchBtn:hover:not(:disabled){ background:var(--blue-500); transform:translateY(-1px); }
+  button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; }
+  .hint{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:8px 2px 0;
+  }
+  .status-msg{
+    font-size:13.5px;
+    font-weight:600;
+    margin-top:12px;
+  }
+  .status-msg.error{ color:var(--error); }
+  .status-msg.loading{ color:var(--ink-soft); }
+
+  .disclaimer{
+    font-size:12px;
+    line-height:1.5;
+    color:var(--ink-soft);
+    text-align:center;
+    margin:0 0 22px;
+  }
+
+  .student-header{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:5px solid var(--blue-700);
+    border-radius:8px;
+    padding:14px 20px;
+    margin-bottom:16px;
+    box-shadow:0 4px 14px rgba(11,43,77,0.08);
+  }
+  .student-header-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .export-btn{
+    flex:0 0 auto;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--blue-700);
+    background:var(--accent-100);
+    border:1px solid var(--blue-500);
+    border-radius:20px;
+    padding:7px 14px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s ease;
+  }
+  .export-btn:hover{ background:var(--accent-500); }
+  .student-header .name{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
+    font-size:19px;
+    color:var(--blue-900);
+  }
+  .student-header .number{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  .results{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .record-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 4px 14px rgba(11,43,77,0.08);
+  }
+  .record-card .rc-header{
+    background:var(--accent-100);
+    padding:10px 18px;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--blue-900);
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    user-select:none;
+  }
+  .record-card .rc-chevron{
+    font-size:11px;
+    transition:transform .2s ease;
+    flex:0 0 auto;
+  }
+  .record-card.collapsed .rc-chevron{
+    transform:rotate(-90deg);
+  }
+  .record-card.collapsed .rc-body{
+    display:none;
+  }
+  .record-card.collapsed .rc-header{
+    border-bottom:none;
+  }
+  .record-card .rc-body{
+    padding:14px 18px 18px;
+  }
+  .record-card .no-record{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+  .kv-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px 16px;
+  }
+  .kv{
+    display:flex;
+    flex-direction:column;
+    padding:6px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .kv .k{
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+  }
+  .kv .v{
+    font-size:14px;
+    font-weight:600;
+    margin-top:2px;
+    word-break:break-word;
+  }
+  .v.passed{ color:var(--good); }
+  .v.present{ color:var(--good); }
+  .v.absent{ color:var(--error); }
+
+  @media (max-width:480px){
+    .kv-grid{ grid-template-columns:1fr; }
+    .search-row{ flex-direction:column; }
+  }
+
+  .activity-group{
+    margin-bottom:14px;
+  }
+  .activity-group:last-child{ margin-bottom:0; }
+  .activity-group-title{
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--blue-900);
+    margin-bottom:6px;
+  }
+  .attendance-title-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .attendance-title-row .activity-group-title{
+    margin-bottom:0;
+  }
+  .attendance-count-badge{
+    font-size:10.5px;
+    font-weight:700;
+    color:#fff;
+    background:var(--blue-500);
+    padding:2px 8px;
+    border-radius:20px;
+    letter-spacing:.02em;
+  }
+  .activity-chip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .activity-chip{
+    font-size:11.5px;
+    font-weight:600;
+    padding:5px 10px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:#fffefb;
+    color:var(--ink-soft);
+    cursor:default;
+  }
+  .activity-chip.done{
+    background:#e6f4ea;
+    border-color:#bfe3cc;
+    color:var(--good);
+  }
+  .activity-chip.not-done{
+    background:#fbeceA;
+    border-color:#f0cfcb;
+    color:var(--error);
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .letterhead, .search-card, .disclaimer, .export-btn{ display:none !important; }
+    .student-header{ border:1.5px solid var(--blue-700); box-shadow:none; }
+    .record-card{ box-shadow:none; break-inside:avoid; }
+    .record-card.collapsed .rc-body{ display:block !important; }
+    .rc-chevron{ display:none; }
+    .rc-header{ cursor:default; }
+    * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+  /* ---- Zoom + fade page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  ::view-transition-old(root){
+    animation:
+      bsoa-fade-out 140ms ease-out forwards,
+      bsoa-zoom-out 200ms ease-out forwards;
+  }
+  ::view-transition-new(root){
+    animation: bsoa-fade-in 260ms cubic-bezier(0,0,.2,1) forwards;
+  }
+  @keyframes bsoa-fade-out{
+    to{ opacity:0; }
+  }
+  @keyframes bsoa-zoom-out{
+    to{ transform:scale(1.02); }
+  }
+  @keyframes bsoa-fade-in{
+    from{ opacity:0; transform:scale(.98); }
+    to{ opacity:1; transform:scale(1); }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="letterhead">
+    <a class="back-link" href="index.html">&larr; Back to Dashboard</a>
+    <div class="letterhead-divider"></div>
+    <div class="letterhead-row">
+      <div class="seal">PUP</div>
+      <div>
+        <p class="eyebrow">BSOAOUMN 2-7</p>
+        <h1>Student Lookup</h1>
+        <p class="page-desc">Monitor your attendance, activities, grades, and enrollment in one place.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-card">
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="e.g. 202x-xxxxx-MN-0" autocomplete="off">
+      <button id="searchBtn">Search</button>
+    </div>
+    <p class="hint">Enter a student number to pull their record from the 1st Sem Summary, Base Tracker, 2nd Sem Grades, and 1st Sem Enrollment sheets.</p>
+    <p class="status-msg" id="statusMsg"></p>
+  </div>
+
+  <p class="disclaimer">This tool is for the exclusive use of BSOAOUMN 2-7 and is intended for academic monitoring purposes only.</p>
+
+  <div class="student-header" id="studentHeader">
+    <div class="student-header-row">
+      <div>
+        <div class="name" id="studentHeaderName"></div>
+        <div class="number" id="studentHeaderNumber"></div>
+      </div>
+      <button type="button" class="export-btn" id="exportBtn">&#128190; Export as PDF</button>
+    </div>
+  </div>
+
+  <div class="results" id="resultsArea"></div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
+
+  const SHEET_LABELS = {
+    "1ST SEM SUMMARY": "1st Sem Summary",
+    "Base_Tracker": "Base Tracker (Attendance)",
+    "Base_Tracker_ACTIVITY": "Activity Tracker",
+    "2ND SEM GRADES": "2nd Sem Grades",
+    "1ST SEM ENROLLMENT": "1st Sem Enrollment"
+  };
+
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const statusMsg = document.getElementById('statusMsg');
+  const resultsArea = document.getElementById('resultsArea');
+  const studentHeader = document.getElementById('studentHeader');
+  const studentHeaderName = document.getElementById('studentHeaderName');
+  const studentHeaderNumber = document.getElementById('studentHeaderNumber');
+  const exportBtn = document.getElementById('exportBtn');
+
+  exportBtn.addEventListener('click', () => {
+    window.print();
+  });
+
+  function renderGroupedActivities(body, entries){
+    // entries look like ["ENGL 017 - 07/21/2026", "Done"] — split on " - "
+    // to group everything under its subject.
+    const groups = {};
+    entries.forEach(([k, v]) => {
+      const idx = k.indexOf(' - ');
+      const subject = idx === -1 ? k : k.slice(0, idx);
+      const dateLabel = idx === -1 ? '' : k.slice(idx + 3);
+      if (!groups[subject]) groups[subject] = [];
+      groups[subject].push({ dateLabel, value: v });
+    });
+
+    Object.keys(groups).sort().forEach(subject => {
+      const groupWrap = document.createElement('div');
+      groupWrap.className = 'activity-group';
+
+      const title = document.createElement('div');
+      title.className = 'activity-group-title';
+      title.textContent = subject;
+      groupWrap.appendChild(title);
+
+      const chipRow = document.createElement('div');
+      chipRow.className = 'activity-chip-row';
+      groups[subject].forEach(({ dateLabel, value }) => {
+        const chip = document.createElement('span');
+        const doneClass = String(value).trim().toLowerCase() === 'done' ? 'done' : 'not-done';
+        chip.className = 'activity-chip ' + doneClass;
+        chip.textContent = (dateLabel || value) + (dateLabel ? '' : '');
+        chip.title = dateLabel ? (dateLabel + ': ' + value) : value;
+        chipRow.appendChild(chip);
+      });
+      groupWrap.appendChild(chipRow);
+      body.appendChild(groupWrap);
+    });
+  }
+
+  function renderAttendanceGroups(body, entries){
+    // entries look like ["ENGL 017", "3 time(s) — 07/20/2026, 07/21/2026, 07/22/2026"]
+    entries.forEach(([subject, value]) => {
+      const groupWrap = document.createElement('div');
+      groupWrap.className = 'activity-group';
+
+      const titleRow = document.createElement('div');
+      titleRow.className = 'attendance-title-row';
+
+      const title = document.createElement('span');
+      title.className = 'activity-group-title';
+      title.textContent = subject;
+      titleRow.appendChild(title);
+
+      const dashIdx = String(value).indexOf('\u2014');
+      const countPart = dashIdx === -1 ? String(value).trim() : String(value).slice(0, dashIdx).trim();
+      const datesPart = dashIdx === -1 ? '' : String(value).slice(dashIdx + 1).trim();
+
+      const countBadge = document.createElement('span');
+      countBadge.className = 'attendance-count-badge';
+      countBadge.textContent = countPart;
+      titleRow.appendChild(countBadge);
+
+      groupWrap.appendChild(titleRow);
+
+      const chipRow = document.createElement('div');
+      chipRow.className = 'activity-chip-row';
+      const dates = datesPart ? datesPart.split(',').map(d => d.trim()).filter(Boolean) : [];
+      dates.forEach(dateLabel => {
+        const chip = document.createElement('span');
+        chip.className = 'activity-chip done';
+        chip.textContent = dateLabel;
+        chipRow.appendChild(chip);
+      });
+      groupWrap.appendChild(chipRow);
+      body.appendChild(groupWrap);
+    });
+  }
+
+  function findStudentName(data){
+    for (const sheetKey of Object.keys(data)){
+      const record = data[sheetKey];
+      if (!record) continue;
+      for (const [k, v] of Object.entries(record)){
+        const key = k.trim().toUpperCase();
+        if ((key === 'STUDENT NAME' || key === 'NAME OF STUDENT') && v){
+          return v;
+        }
+      }
+    }
+    return null;
+  }
+
+  function valueClass(key, value){
+    const v = String(value).trim().toLowerCase();
+    if (v === 'passed' || v === 'p' || v === 'present' || v === 'enrolled') return 'passed';
+    if (v === 'a' || v === 'absent' || v === 'inc' || v === 'failed') return 'absent';
+    return '';
+  }
+
+  function renderResults(data){
+    resultsArea.innerHTML = '';
+    Object.keys(SHEET_LABELS).forEach(sheetKey => {
+      const label = SHEET_LABELS[sheetKey];
+      const record = data[sheetKey];
+
+      const card = document.createElement('div');
+      card.className = 'record-card';
+
+      const header = document.createElement('div');
+      header.className = 'rc-header';
+
+      const headerLabel = document.createElement('span');
+      headerLabel.textContent = label;
+      header.appendChild(headerLabel);
+
+      const chevron = document.createElement('span');
+      chevron.className = 'rc-chevron';
+      chevron.textContent = '\u25BC';
+      header.appendChild(chevron);
+
+      header.addEventListener('click', () => {
+        card.classList.toggle('collapsed');
+      });
+
+      card.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'rc-body';
+
+      const REDUNDANT_KEYS = ['STUDENT NAME', 'NAME OF STUDENT', 'STUDENT NUMBER'];
+      const filteredEntries = record
+        ? Object.entries(record).filter(([k]) => !REDUNDANT_KEYS.includes(k.trim().toUpperCase()))
+        : [];
+
+      if (!record || filteredEntries.length === 0) {
+        body.innerHTML = '<p class="no-record">No record found in this sheet.</p>';
+      } else if (sheetKey === 'Base_Tracker_ACTIVITY') {
+        renderGroupedActivities(body, filteredEntries);
+      } else if (sheetKey === 'Base_Tracker') {
+        renderAttendanceGroups(body, filteredEntries);
+      } else {
+        const grid = document.createElement('div');
+        grid.className = 'kv-grid';
+        filteredEntries.forEach(([k, v]) => {
+          const item = document.createElement('div');
+          item.className = 'kv';
+          const kEl = document.createElement('span');
+          kEl.className = 'k';
+          kEl.textContent = k;
+          const vEl = document.createElement('span');
+          vEl.className = 'v ' + valueClass(k, v);
+          vEl.textContent = (v === null || v === undefined || v === '') ? '—' : v;
+          item.appendChild(kEl);
+          item.appendChild(vEl);
+          grid.appendChild(item);
+        });
+        body.appendChild(grid);
+      }
+
+      card.appendChild(body);
+      resultsArea.appendChild(card);
+    });
+  }
+
+  function runSearch(){
+    const studentNumber = searchInput.value.trim();
+    if (!studentNumber){
+      statusMsg.textContent = "Please enter a student number.";
+      statusMsg.className = "status-msg error";
+      return;
+    }
+    if (SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+      statusMsg.textContent = "Setup needed: add your Google Apps Script Web App URL in the code.";
+      statusMsg.className = "status-msg error";
+      return;
+    }
+
+    searchBtn.disabled = true;
+    searchBtn.textContent = "Searching...";
+    statusMsg.textContent = "Looking up record...";
+    statusMsg.className = "status-msg loading";
+    resultsArea.innerHTML = `
+      <div class="record-card"><div class="rc-header">Loading&hellip;</div><div class="rc-body"><p class="no-record">Fetching records&hellip;</p></div></div>
+    `;
+    studentHeader.style.display = 'none';
+
+    const url = SCRIPT_URL + "?studentNumber=" + encodeURIComponent(studentNumber);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          statusMsg.textContent = data.error;
+          statusMsg.className = "status-msg error";
+          return;
+        }
+        const anyFound = Object.values(data).some(r => r && Object.keys(r).length > 0);
+        statusMsg.textContent = anyFound
+          ? "Record found."
+          : "No matching student number found in any sheet.";
+        statusMsg.className = anyFound ? "status-msg" : "status-msg error";
+
+        if (anyFound){
+          const name = findStudentName(data);
+          if (name){
+            studentHeaderName.textContent = name;
+            studentHeaderNumber.textContent = studentNumber;
+            studentHeader.style.display = 'block';
+          }
+        }
+
+        renderResults(data);
+      })
+      .catch(() => {
+        statusMsg.textContent = "Could not connect. Check your internet and try again.";
+        statusMsg.className = "status-msg error";
+      })
+      .finally(() => {
+        searchBtn.disabled = false;
+        searchBtn.textContent = "Search";
+      });
+  }
+
+  searchBtn.addEventListener('click', runSearch);
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') runSearch();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="view-transition" content="same-origin">
+<title>PUP OUS Class Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold-900:#402d0c;
+    --gold-700:#8a6d1f;
+    --gold-500:#a3812f;
+    --accent-500:#e8dcc0;
+    --accent-100:#f6f0e2;
+    --paper:#faf6ea;
+    --card:#fffdf7;
+    --line:#e3d3a0;
+    --ink:#2b1210;
+    --ink-soft:#6b5347;
+    --error:#b3402a;
+    --good:#2f6f42;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(138,109,31,0.05), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(138,109,31,0.08), transparent 45%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding:32px 16px 60px;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+
+  /* ---- Password gate ---- */
+  .gate-overlay{
+    position:fixed;
+    inset:0;
+    background:var(--paper);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .gate-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-top:5px solid var(--gold-700);
+    border-radius:12px;
+    padding:28px 26px;
+    max-width:340px;
+    width:100%;
+    box-shadow:0 12px 30px rgba(138,109,31,0.12);
+    text-align:center;
+  }
+  .gate-card .gate-title{
+    font-family:'Playfair Display', serif;
+    font-weight:700;
+    font-size:19px;
+    margin:0 0 6px;
+  }
+  .gate-card .gate-sub{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0 0 16px;
+  }
+  .gate-card input{
+    width:100%;
+    padding:11px 12px;
+    font-size:15px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fdfcf9;
+    color:var(--ink);
+    margin-bottom:10px;
+    text-align:center;
+    letter-spacing:.1em;
+  }
+  .gate-card input:focus{
+    outline:none;
+    border-color:var(--gold-500);
+    box-shadow:0 0 0 3px rgba(138,109,31,0.15);
+  }
+  .gate-card button{
+    width:100%;
+    padding:11px;
+    background:var(--gold-700);
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .gate-card button:hover{ background:var(--gold-500); }
+  .gate-error{
+    color:var(--error);
+    font-size:12.5px;
+    font-weight:600;
+    margin-top:10px;
+    display:none;
+  }
+
+  /* ---- Letterhead ---- */
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--gold-700);
+    opacity:.75;
+    text-decoration:none;
+    margin-bottom:10px;
+    transition:opacity .15s ease;
+  }
+  .back-link:hover{ opacity:1; }
+  .letterhead{
+    background:var(--card);
+    color:var(--ink);
+    padding:20px 28px 18px;
+    border-radius:12px 12px 0 0;
+    border-top:5px solid var(--gold-700);
+    box-shadow:0 8px 24px rgba(138,109,31,0.08);
+  }
+  .letterhead-divider{
+    height:1px;
+    background:var(--line);
+    margin-bottom:14px;
+  }
+  .letterhead-row{ display:flex; align-items:center; gap:14px; }
+  .seal{
+    flex:0 0 auto;
+    width:48px; height:48px;
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display', serif;
+    font-weight:700; font-size:14px;
+    color:var(--gold-700);
+    background:rgba(138,109,31,0.12);
+  }
+  .eyebrow{
+    margin:0 0 3px; font-size:11px; font-weight:700;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--gold-700);
+  }
+  h1{ margin:0; font-family:'Playfair Display', serif; font-weight:700; font-size:22px; color:var(--ink); }
+  .page-desc{ margin:6px 0 0; font-size:12.5px; color:var(--ink-soft); font-weight:500; }
+
+  .content-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 12px 12px;
+    padding:24px 28px 28px;
+    box-shadow:0 8px 24px rgba(92,70,15,0.10);
+  }
+
+  .section-title{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--gold-900);
+    margin:0 0 12px;
+  }
+  .section-block{ margin-bottom:30px; }
+  .section-block:last-child{ margin-bottom:0; }
+
+  .check-form{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:6px;
+  }
+  .check-form select, .check-form input{
+    flex:1;
+    min-width:140px;
+    padding:10px 12px;
+    font-size:14px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fdfcf9;
+    color:var(--ink);
+    font-family:inherit;
+  }
+  .check-form select:disabled{ opacity:.6; }
+  .check-form button{
+    flex:0 0 auto;
+    padding:10px 18px;
+    background:var(--gold-700);
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .12s ease;
+  }
+  .check-form button:hover:not(:disabled){ background:var(--gold-500); }
+  .check-form button:disabled{ opacity:.6; cursor:not-allowed; }
+
+  .status-msg{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    padding:8px 0;
+  }
+  .status-msg.error{ color:var(--error); font-weight:600; }
+
+  .check-summary-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin:16px 0;
+  }
+  .check-summary-box{
+    border-radius:10px;
+    padding:14px 16px;
+    text-align:center;
+  }
+  .check-summary-box.good{ background:#e6f4ea; }
+  .check-summary-box.bad{ background:#fbeceA; }
+  .check-summary-box .num{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
+    font-size:26px;
+  }
+  .check-summary-box.good .num{ color:var(--good); }
+  .check-summary-box.bad .num{ color:var(--error); }
+  .check-summary-box .lbl{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+
+  .missing-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .missing-item{
+    padding:9px 14px;
+    background:#fbeceA;
+    border:1px solid #f0cfcb;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--error);
+  }
+  .missing-item span{
+    color:var(--ink-soft);
+    font-weight:400;
+  }
+  .present-item{
+    padding:9px 14px;
+    background:#e6f4ea;
+    border:1px solid #bfe3cc;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--good);
+  }
+  .present-item span{
+    color:var(--ink-soft);
+    font-weight:400;
+  }
+  .roster-columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .roster-col-title{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:8px;
+  }
+  .roster-col-title.good-title{ color:var(--good); }
+  .roster-col-title.bad-title{ color:var(--error); }
+
+  .result-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    user-select:none;
+    margin-top:16px;
+  }
+  .result-header .toggle-label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--gold-700);
+  }
+  .result-header .chevron{
+    font-size:11px;
+    color:var(--gold-700);
+    transition:transform .15s ease;
+  }
+  .result-body.collapsed{ display:none; }
+  .result-header.collapsed .chevron{ transform:rotate(-90deg); }
+
+  @media (max-width:480px){
+    .roster-columns{ grid-template-columns:1fr; }
+  }
+
+  .disclaimer{
+    font-size:12px;
+    line-height:1.5;
+    color:var(--ink-soft);
+    text-align:center;
+    margin:20px 0 0;
+  }
+  /* ---- Zoom + fade page transitions (Chrome/Edge; safely ignored elsewhere) ---- */
+  ::view-transition-old(root){
+    animation:
+      bsoa-fade-out 140ms ease-out forwards,
+      bsoa-zoom-out 200ms ease-out forwards;
+  }
+  ::view-transition-new(root){
+    animation: bsoa-fade-in 260ms cubic-bezier(0,0,.2,1) forwards;
+  }
+  @keyframes bsoa-fade-out{
+    to{ opacity:0; }
+  }
+  @keyframes bsoa-zoom-out{
+    to{ transform:scale(1.02); }
+  }
+  @keyframes bsoa-fade-in{
+    from{ opacity:0; transform:scale(.98); }
+    to{ opacity:1; transform:scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-card">
+    <p class="gate-title">Officers Only</p>
+    <p class="gate-sub">Enter the officer password to view Class Overview.</p>
+    <input type="password" id="gatePassword" placeholder="Password" autocomplete="off">
+    <button type="button" id="gateSubmit">Unlock</button>
+    <p class="gate-error" id="gateError">Incorrect password. Please try again.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="letterhead">
+    <a class="back-link" href="index.html">&larr; Back to Dashboard</a>
+    <div class="letterhead-divider"></div>
+    <div class="letterhead-row">
+      <div class="seal">PUP</div>
+      <div>
+        <p class="eyebrow">BSOAOUMN 2-7</p>
+        <h1>Class Overview</h1>
+        <p class="page-desc">Check who's missing attendance or activity submissions for a specific date.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+
+    <div class="section-block">
+      <div class="section-title">Attendance &mdash; Absentees for a Date</div>
+      <div class="check-form">
+        <select id="attSubject">
+          <option value="" disabled selected>Select a subject</option>
+          <option value="ENGL 017">ENGL 017</option>
+          <option value="GEED 033">GEED 033</option>
+          <option value="OFAD 201">OFAD 201</option>
+          <option value="PATHFIT 3">PATHFIT 3</option>
+          <option value="GEED 003">GEED 003</option>
+          <option value="OFAD 203">OFAD 203</option>
+          <option value="OFAD 202">OFAD 202</option>
+        </select>
+        <input type="date" id="attDate">
+        <button id="attCheckBtn" type="button">Check</button>
+      </div>
+      <p id="attStatus" class="status-msg" style="display:none;"></p>
+      <div id="attResult"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Activity &mdash; Not Yet Submitted</div>
+      <div class="check-form">
+        <select id="actSubject">
+          <option value="" disabled selected>Select a subject</option>
+          <option value="ENGL 017">ENGL 017</option>
+          <option value="GEED 033">GEED 033</option>
+          <option value="OFAD 201">OFAD 201</option>
+          <option value="PATHFIT 3">PATHFIT 3</option>
+          <option value="GEED 003">GEED 003</option>
+          <option value="OFAD 203">OFAD 203</option>
+          <option value="OFAD 202">OFAD 202</option>
+        </select>
+        <select id="actDate" disabled>
+          <option value="" disabled selected>Select a subject first</option>
+        </select>
+        <button id="actCheckBtn" type="button">Check</button>
+      </div>
+      <p id="actStatus" class="status-msg" style="display:none;"></p>
+      <div id="actResult"></div>
+    </div>
+
+  </div>
+
+  <p class="disclaimer">This tool is for the exclusive use of BSOAOUMN 2-7 officers and is intended for academic monitoring purposes only.</p>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
+
+  // ---- Password gate ----
+  // Change this to whatever password you want your officers to use.
+  const OFFICER_PASSWORD = "bsoaoumn27";
+
+  const gateOverlay = document.getElementById('gateOverlay');
+  const gatePassword = document.getElementById('gatePassword');
+  const gateSubmit = document.getElementById('gateSubmit');
+  const gateError = document.getElementById('gateError');
+
+  function unlock(){
+    gateOverlay.style.display = 'none';
+    sessionStorage.setItem('overviewAuthed', 'true');
+  }
+
+  if (sessionStorage.getItem('overviewAuthed') === 'true'){
+    unlock();
+  }
+
+  function tryUnlock(){
+    if (gatePassword.value === OFFICER_PASSWORD){
+      unlock();
+    } else {
+      gateError.style.display = 'block';
+      gatePassword.value = '';
+      gatePassword.focus();
+    }
+  }
+  gateSubmit.addEventListener('click', tryUnlock);
+  gatePassword.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+  // ---- Attendance absentee check ----
+  const attSubject = document.getElementById('attSubject');
+  const attDate = document.getElementById('attDate');
+  const attCheckBtn = document.getElementById('attCheckBtn');
+  const attStatus = document.getElementById('attStatus');
+  const attResult = document.getElementById('attResult');
+
+  attDate.valueAsDate = new Date();
+
+  attCheckBtn.addEventListener('click', () => {
+    const subject = attSubject.value;
+    const date = attDate.value;
+
+    if (!subject || !date){
+      attStatus.textContent = "Please choose both a subject and a date.";
+      attStatus.className = "status-msg error";
+      attStatus.style.display = 'block';
+      attResult.innerHTML = '';
+      return;
+    }
+
+    attCheckBtn.disabled = true;
+    attCheckBtn.textContent = "Checking...";
+    attStatus.textContent = "Checking...";
+    attStatus.className = "status-msg";
+    attStatus.style.display = 'block';
+    attResult.innerHTML = '';
+
+    const url = SCRIPT_URL
+      + "?action=getAttendanceForDate"
+      + "&subject=" + encodeURIComponent(subject)
+      + "&date=" + encodeURIComponent(date);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          attStatus.textContent = data.error;
+          attStatus.className = "status-msg error";
+          return;
+        }
+        attStatus.style.display = 'none';
+
+        let html = `<div class="check-summary-row">
+          <div class="check-summary-box good"><div class="num">${data.presentCount}</div><div class="lbl">Present</div></div>
+          <div class="check-summary-box bad"><div class="num">${data.absentCount}</div><div class="lbl">Absent</div></div>
+        </div>`;
+
+        html += `<div class="result-header" id="attResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="attResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Present (${data.presentCount})</div>`;
+        if (data.presentees && data.presentees.length > 0){
+          html += `<div class="missing-list">`;
+          data.presentees.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one checked in yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Absent (${data.absentCount})</div>`;
+        if (data.absentees && data.absentees.length > 0){
+          html += `<div class="missing-list">`;
+          data.absentees.forEach(s => {
+            html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">Everyone was present. Nice!</p>`;
+        }
+        html += `</div>`;
+
+        html += `</div></div>`;
+
+        attResult.innerHTML = html;
+
+        const attHeader = document.getElementById('attResultHeader');
+        const attBody = document.getElementById('attResultBody');
+        attHeader.addEventListener('click', () => {
+          attBody.classList.toggle('collapsed');
+          attHeader.classList.toggle('collapsed');
+        });
+      })
+      .catch(() => {
+        attStatus.textContent = "Could not connect. Check your internet and try again.";
+        attStatus.className = "status-msg error";
+      })
+      .finally(() => {
+        attCheckBtn.disabled = false;
+        attCheckBtn.textContent = "Check";
+      });
+  });
+
+  // ---- Activity not-submitted check ----
+  const actSubject = document.getElementById('actSubject');
+  const actDate = document.getElementById('actDate');
+  const actCheckBtn = document.getElementById('actCheckBtn');
+  const actStatus = document.getElementById('actStatus');
+  const actResult = document.getElementById('actResult');
+
+  actSubject.addEventListener('change', () => {
+    const subject = actSubject.value;
+    actDate.innerHTML = '<option value="" disabled selected>Loading dates...</option>';
+    actDate.disabled = true;
+
+    fetch(SCRIPT_URL + "?action=getActivityDates&subject=" + encodeURIComponent(subject))
+      .then(res => res.json())
+      .then(data => {
+        const dates = data.dates || [];
+        if (dates.length === 0){
+          actDate.innerHTML = '<option value="" disabled selected>No activity dates found</option>';
+          return;
+        }
+        actDate.innerHTML = '<option value="" disabled selected>Select a date</option>' +
+          dates.map(d => `<option value="${d}">${d}</option>`).join('');
+        actDate.disabled = false;
+      })
+      .catch(() => {
+        actDate.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
+      });
+  });
+
+  actCheckBtn.addEventListener('click', () => {
+    const subject = actSubject.value;
+    const dateLabel = actDate.value;
+
+    if (!subject || !dateLabel){
+      actStatus.textContent = "Please choose both a subject and an activity date.";
+      actStatus.className = "status-msg error";
+      actStatus.style.display = 'block';
+      actResult.innerHTML = '';
+      return;
+    }
+
+    actCheckBtn.disabled = true;
+    actCheckBtn.textContent = "Checking...";
+    actStatus.textContent = "Checking...";
+    actStatus.className = "status-msg";
+    actStatus.style.display = 'block';
+    actResult.innerHTML = '';
+
+    const url = SCRIPT_URL
+      + "?action=getActivityStatusByDate"
+      + "&subject=" + encodeURIComponent(subject)
+      + "&dateLabel=" + encodeURIComponent(dateLabel);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          actStatus.textContent = data.error;
+          actStatus.className = "status-msg error";
+          return;
+        }
+        actStatus.style.display = 'none';
+
+        let html = `<div class="check-summary-row">
+          <div class="check-summary-box good"><div class="num">${data.doneCount}</div><div class="lbl">Submitted</div></div>
+          <div class="check-summary-box bad"><div class="num">${data.notDoneCount}</div><div class="lbl">Not Submitted</div></div>
+        </div>`;
+
+        html += `<div class="result-header" id="actResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="actResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Submitted (${data.doneCount})</div>`;
+        if (data.doneStudents && data.doneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.doneStudents.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one has submitted yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Not Submitted (${data.notDoneCount})</div>`;
+        if (data.notDoneStudents && data.notDoneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.notDoneStudents.forEach(s => {
+            html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">Everyone has submitted this activity. Nice!</p>`;
+        }
+        html += `</div>`;
+
+        html += `</div></div>`;
+
+        actResult.innerHTML = html;
+
+        const actHeader = document.getElementById('actResultHeader');
+        const actBody = document.getElementById('actResultBody');
+        actHeader.addEventListener('click', () => {
+          actBody.classList.toggle('collapsed');
+          actHeader.classList.toggle('collapsed');
+        });
+      })
+      .catch(() => {
+        actStatus.textContent = "Could not connect. Check your internet and try again.";
+        actStatus.className = "status-msg error";
+      })
+      .finally(() => {
+        actCheckBtn.disabled = false;
+        actCheckBtn.textContent = "Check";
+      });
+  });
+</script>
+
+</body>
+</html>
