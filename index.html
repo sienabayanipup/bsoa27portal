@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#FAF6F1">
-<title>Office Administration Workspace &mdash; BSOAOUMN 2-7</title>
+<title>Office Administration Portal &mdash; BSOAOUMN 2-7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,680;1,9..144,300;1,9..144,340;1,9..144,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ==========================================================================
    TOKENS — executive workspace palette. Emerald is the primary signature
@@ -100,10 +100,10 @@ a{ color:inherit; }
   padding:22px clamp(20px,4vw,44px); pointer-events:none;
 }
 .top-bar > *{ pointer-events:auto; }
-.top-mark{ display:inline-flex; align-items:center; gap:9px; font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+.top-mark{ display:inline-flex; align-items:center; gap:9px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); }
 .top-mark svg{ width:13px; height:13px; color:var(--emerald); }
 .top-pill{
-  display:inline-flex; align-items:center; gap:9px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; letter-spacing:.02em; color:var(--ink-soft);
+  display:inline-flex; align-items:center; gap:9px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; letter-spacing:.06em; color:var(--ink-soft);
   background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1);
 }
@@ -116,40 +116,34 @@ a{ color:inherit; }
    afterward, and a very light scroll-parallax on the console only.
    ========================================================================== */
 .hero{ position:relative; z-index:1; min-height:100vh; display:flex; align-items:center; padding:120px clamp(20px,5vw,64px) 80px; max-width:1320px; margin:0 auto; }
-.hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; }
+.hero-grid{ display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; }
 .hero-eyebrow{
-  display:inline-flex; align-items:center; gap:10px; font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:10.5px;
-  letter-spacing:.24em; text-transform:uppercase; color:var(--bronze-text); margin:0 0 22px;
+  display:inline-flex; align-items:center; gap:13px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px;
+  letter-spacing:.34em; text-transform:uppercase; color:var(--bronze-text); margin:0 0 34px;
   opacity:0; transform:translateY(-6px); animation:rise .7s var(--ease) forwards; animation-delay:.1s;
 }
-.hero-eyebrow::before{ content:""; width:14px; height:1px; background:var(--bronze); }
+.hero-eyebrow::before{ content:""; width:22px; height:1px; background:var(--bronze); flex:0 0 auto; }
 .hero h1{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(46px,6vw,84px); line-height:.98; letter-spacing:-0.025em; color:var(--ink); }
 .hero h1 .line{ display:block; opacity:0; transform:translateY(28px); animation:rise .85s var(--ease) forwards; }
-.hero h1 .line:nth-child(1){ animation-delay:.22s; }
-.hero h1 .line:nth-child(2){ font-style:italic; font-weight:300; color:var(--emerald-deep); animation-delay:.36s; }
-@keyframes rise{ to{ opacity:1; transform:translateY(0); } }
-.hero-rule{ width:38px; height:1px; margin:30px 0 24px; background:var(--emerald); opacity:0; animation:rise .6s var(--ease) forwards; animation-delay:.55s; }
-.hero p.lead{ font-size:15.5px; line-height:1.75; color:var(--ink-soft); max-width:440px;
-  opacity:0; transform:translateY(14px); animation:rise .7s var(--ease) forwards; animation-delay:.62s; }
-.hero-meta{ display:flex; flex-wrap:wrap; gap:22px; margin-top:26px;
-  opacity:0; transform:translateY(14px); animation:rise .7s var(--ease) forwards; animation-delay:.75s; }
-.hero-meta span{ display:inline-flex; align-items:center; gap:7px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; color:var(--muted); }
-.hero-meta svg{ width:13px; height:13px; }
-.hero-cta{
-  display:inline-flex; align-items:center; gap:10px; margin-top:38px;
-  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:14px; color:var(--surface);
-  background:linear-gradient(160deg, var(--emerald) 0%, var(--emerald-deep) 100%); border:none; text-decoration:none;
-  border-radius:100px; padding:16px 30px 16px 32px;
-  box-shadow:0 12px 28px -10px rgba(78,22,32,.45), inset 0 1px 0 rgba(255,255,255,.14);
-  transition:transform .35s var(--spring), box-shadow .35s ease;
-  opacity:0; transform:translateY(14px); animation:riseCta .7s var(--ease) forwards; animation-delay:.88s;
+.hero h1 .line:nth-child(1){
+  font-weight:600; font-size:clamp(52px,7.6vw,108px); line-height:.92; letter-spacing:-0.035em;
+  animation-delay:.22s;
 }
-@keyframes riseCta{ to{ opacity:1; transform:translateY(0); } }
-.hero-cta:hover{ transform:translateY(-2px) scale(1.02); box-shadow:0 20px 40px -12px rgba(78,22,32,.55), inset 0 1px 0 rgba(255,255,255,.2); }
-.hero-cta svg{ transition:transform .25s ease; }
-.hero-cta:hover svg{ transform:translateX(4px); }
+.hero h1 .line:nth-child(2){
+  display:block; font-style:italic; font-weight:300; font-size:clamp(34px,4.6vw,62px); line-height:1.08;
+  letter-spacing:-0.005em; color:var(--emerald-deep); margin-top:.13em; animation-delay:.38s;
+}
+@keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+.hero-rule{ width:38px; height:1px; margin:42px 0 30px; background:var(--emerald); opacity:0; animation:rise .6s var(--ease) forwards; animation-delay:.55s; }
+.hero p.lead{ font-family:'Inter', sans-serif; font-size:16.5px; font-weight:400; line-height:1.8; letter-spacing:.001em; color:var(--ink-soft); max-width:30em;
+  opacity:0; transform:translateY(14px); animation:rise .7s var(--ease) forwards; animation-delay:.62s; }
 
-/* -- Floating console (the hero's "wow" — glass panel + depth, no photo needed) -- */
+/* -- Floating console (the hero's focal point — a real link into the dashboard) -- */
+.console-link{ display:block; text-decoration:none; color:inherit; cursor:pointer; transition:transform .5s var(--spring); }
+.console-link:hover{ transform:translateY(-8px) scale(1.014); }
+.console-link:active{ transform:translateY(-4px) scale(1.006); }
+.console-link:hover .console{ box-shadow:var(--shadow-3), 0 34px 80px -22px rgba(78,22,32,.32), inset 0 1px 0 rgba(255,255,255,.7); }
+.console-link:focus-visible{ outline:2px solid var(--emerald); outline-offset:8px; border-radius:22px; }
 .console-stage{ position:relative; perspective:1600px; opacity:0; animation:consoleIn 1s var(--ease) forwards; animation-delay:.3s; }
 @keyframes consoleIn{ from{ opacity:0; transform:translateY(30px) scale(.96); } to{ opacity:1; transform:translateY(0) scale(1); } }
 .console-glow{ position:absolute; inset:-16% -10%; z-index:-1;
@@ -161,6 +155,7 @@ a{ color:inherit; }
   box-shadow:var(--shadow-3), inset 0 1px 0 rgba(255,255,255,.7);
   transform:rotateX(6deg) rotateY(-8deg); transform-style:preserve-3d;
   animation:consoleFloat 7s ease-in-out infinite;
+  transition:box-shadow .5s ease;
   will-change:transform;
 }
 @keyframes consoleFloat{ 0%,100%{ transform:rotateX(6deg) rotateY(-8deg) translateY(0); } 50%{ transform:rotateX(5deg) rotateY(-7deg) translateY(-10px); } }
@@ -188,12 +183,12 @@ a{ color:inherit; }
 /* ==========================================================================
    STAT BAND — quiet editorial beat: three big numbers, tiny captions
    ========================================================================== */
-.stat-band{ position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:60px 24px 140px; }
+.stat-band{ position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:72px 24px 150px; }
 .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(20px,4vw,48px); text-align:center; }
 .stat-row .stat{ opacity:0; transform:translateY(18px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .stat-row .stat.revealed{ opacity:1; transform:translateY(0); }
-.stat-num{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(40px,6vw,64px); letter-spacing:-0.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
-.stat-cap{ margin-top:8px; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+.stat-num{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(42px,6vw,68px); letter-spacing:-0.03em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.stat-cap{ margin-top:12px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
 .stat-divider{ width:1px; background:var(--hair); align-self:stretch; margin:6px 0; }
 @media (max-width:700px){ .stat-row{ grid-template-columns:1fr; gap:36px; } .stat-divider{ display:none; } }
 
@@ -202,12 +197,12 @@ a{ color:inherit; }
    card shape twice in a row. Ghost index numerals are the structuring
    device (this genuinely is the order officers/students touch each tool).
    ========================================================================== */
-.workspace{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:0 24px 140px; }
-.ws-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:44px;
+.workspace{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:0 24px 150px; }
+.ws-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:56px;
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .ws-head.revealed{ opacity:1; transform:translateY(0); }
-.ws-eyebrow{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:10px; }
-.ws-head h2{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(28px,3.2vw,40px); letter-spacing:-0.015em; color:var(--ink); }
+.ws-eyebrow{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:16px; }
+.ws-head h2{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(30px,3.4vw,44px); line-height:1.18; letter-spacing:-0.02em; max-width:16em; color:var(--ink); }
 
 .bento{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
   grid-template-areas:
@@ -236,9 +231,9 @@ a.b-card:hover::before{ opacity:1; }
 a.b-card:hover .b-index{ opacity:.09; }
 .b-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; color:var(--accent); background:var(--accent-tint); }
 .b-icon svg{ width:21px; height:21px; stroke-width:1.7px; }
-.b-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:17px; letter-spacing:-0.005em; margin-bottom:9px; }
-.b-desc{ font-size:13px; line-height:1.65; color:var(--muted); flex:1; }
-.b-footer{ display:flex; align-items:center; gap:7px; margin-top:20px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:11.5px; color:var(--accent); }
+.b-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:18px; letter-spacing:-0.015em; margin-bottom:10px; }
+.b-desc{ font-size:13.5px; line-height:1.7; letter-spacing:.002em; color:var(--muted); flex:1; }
+.b-footer{ display:flex; align-items:center; gap:7px; margin-top:22px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); }
 .b-footer .arrow{ display:inline-block; transition:transform .25s ease; }
 a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 
@@ -331,28 +326,20 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
     linear-gradient(155deg, #2E2024 0%, #241A1D 46%, #1C1315 100%); }
 .panorama-grain{ position:absolute; inset:0; opacity:.06; mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
-.panorama-content{ position:relative; z-index:1; width:100%; padding:64px clamp(28px,6vw,90px); display:grid; grid-template-columns:1fr auto; align-items:center; gap:40px; }
-.panorama-eyebrow{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:11px; letter-spacing:.08em; color:#E8C4C0; margin-bottom:16px; }
-.panorama h2{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(28px,3.6vw,42px); line-height:1.1; letter-spacing:-0.015em; color:#FDFAF7; max-width:560px; }
-.panorama-chips{ display:flex; flex-direction:column; gap:12px; }
-.pchip{ display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.07); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  border-radius:14px; padding:13px 18px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12.5px; color:#FDFAF7;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.09); transition:transform .4s var(--spring), background .3s ease; }
-.pchip:hover{ transform:translateY(-3px); background:rgba(255,255,255,.11); }
-.pchip .pdot{ width:8px; height:8px; border-radius:50%; }
-.pchip:nth-child(1) .pdot{ background:var(--emerald); } .pchip:nth-child(2) .pdot{ background:var(--slate); }
-.pchip:nth-child(3) .pdot{ background:var(--teal); } .pchip:nth-child(4) .pdot{ background:var(--bronze); }
-@media (max-width:800px){ .panorama-content{ grid-template-columns:1fr; padding:48px 26px; } .panorama-chips{ flex-direction:row; flex-wrap:wrap; } }
+.panorama-content{ position:relative; z-index:1; width:100%; padding:76px clamp(28px,6vw,96px); }
+.panorama-eyebrow{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#E8C4C0; margin-bottom:24px; }
+.panorama h2{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(30px,4vw,50px); line-height:1.24; letter-spacing:-0.018em; color:#FDFAF7; max-width:19em; margin-left:auto; }
+@media (max-width:800px){ .panorama-content{ padding:52px 26px; } .panorama h2{ margin-left:0; } }
 
 /* ==========================================================================
    FOOTER
    ========================================================================== */
-footer{ position:relative; z-index:1; text-align:center; padding:0 32px 70px; max-width:1240px; margin:0 auto; }
-footer::before{ content:""; display:block; width:1px; height:38px; margin:0 auto 30px; background:linear-gradient(180deg, transparent, var(--bronze)); }
-footer .fmark{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:16px; color:var(--ink); margin-bottom:8px; }
-footer .fsub{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:24px; }
-footer .disclaimer{ font-size:11.5px; line-height:1.65; color:var(--muted); max-width:460px; margin:0 auto 20px; }
-footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--muted); opacity:.7; }
+footer{ position:relative; z-index:1; text-align:center; padding:130px 32px 110px; max-width:560px; margin:0 auto; }
+footer::before{ content:""; display:block; width:130px; height:1px; margin:0 auto 52px;
+  background:linear-gradient(90deg, transparent, var(--bronze) 50%, transparent); opacity:.8; }
+footer .fmark{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(26px,3vw,36px); letter-spacing:-0.015em; color:var(--ink); margin-bottom:22px; }
+footer .fdesc{ font-family:'Inter', sans-serif; font-size:14.5px; line-height:1.75; letter-spacing:.003em; color:var(--ink-soft); max-width:36em; margin:0 auto 52px; }
+footer .fmeta{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); opacity:.8; }
 
 @media (max-width:900px){
   .hero{ padding-top:140px; }
@@ -399,39 +386,32 @@ footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var
         <span class="line">Administration</span>
       </h1>
       <div class="hero-rule"></div>
-      <p class="lead">A centralized workspace for BSOAOUMN 2-7 students and class officers &mdash; attendance monitoring, activity tracking, student records, and internal academic management, all in one place.</p>
-      <div class="hero-meta">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>Secure</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.3 2.3L15.5 9.5"/></svg>Reliable</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="var(--bronze)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Internal use only</span>
-      </div>
-      <a class="hero-cta" href="#dashboard">
-        Enter your workspace
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-      </a>
+      <p class="lead">A calmer way to keep the class organized &mdash; see what's done, what's pending, and what needs attention, without digging through spreadsheets.</p>
     </div>
 
-    <div class="console-stage">
-      <div class="console-glow" aria-hidden="true"></div>
-      <div class="console" aria-hidden="true">
-        <div class="console-bar"><i></i><i></i><i></i><span>workspace.local</span></div>
-        <div class="console-body">
-          <p class="console-greeting">Good morning 👋</p>
-          <p class="console-date" id="consoleDate">&nbsp;</p>
-          <div class="console-tiles">
-            <div class="ctile t1"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="lbl">Attendance</span></div>
-            <div class="ctile t2"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span class="lbl">Lookup</span></div>
-            <div class="ctile t3"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><span class="lbl">Activity</span></div>
-            <div class="ctile t4"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span><span class="lbl">Overview</span></div>
-          </div>
-          <div class="console-chart">
-            <i style="height:55%; animation-delay:.1s"></i><i style="height:85%; animation-delay:.18s"></i>
-            <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
-            <i style="height:92%; animation-delay:.42s"></i>
+    <a class="console-link" href="#dashboard" aria-label="View the dashboard tools">
+      <div class="console-stage">
+        <div class="console-glow" aria-hidden="true"></div>
+        <div class="console">
+          <div class="console-bar"><i></i><i></i><i></i><span>portal.local</span></div>
+          <div class="console-body">
+            <p class="console-greeting">Good morning 👋</p>
+            <p class="console-date" id="consoleDate">&nbsp;</p>
+            <div class="console-tiles">
+              <div class="ctile t1"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="lbl">Attendance</span></div>
+              <div class="ctile t2"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span class="lbl">Lookup</span></div>
+              <div class="ctile t3"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><span class="lbl">Activity</span></div>
+              <div class="ctile t4"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span><span class="lbl">Overview</span></div>
+            </div>
+            <div class="console-chart">
+              <i style="height:55%; animation-delay:.1s"></i><i style="height:85%; animation-delay:.18s"></i>
+              <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
+              <i style="height:92%; animation-delay:.42s"></i>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </a>
   </div>
 </section>
 
@@ -463,7 +443,7 @@ footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var
 <section class="workspace" id="dashboard">
   <div class="ws-head" data-reveal>
     <div>
-      <p class="ws-eyebrow">Your workspace</p>
+      <p class="ws-eyebrow">Your tools</p>
       <h2>Everything a class officer used to track on paper, now one screen.</h2>
     </div>
   </div>
@@ -573,16 +553,8 @@ footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var
   <div class="panorama-bg"></div>
   <div class="panorama-grain"></div>
   <div class="panorama-content">
-    <div>
-      <p class="panorama-eyebrow">Everything, Connected</p>
-      <h2>Attendance records, activity tracking, student lookup, and class insights &mdash; four connected tools that help every student stay organized throughout the semester.</h2>
-    </div>
-    <div class="panorama-chips">
-      <div class="pchip"><span class="pdot"></span>Weekly Attendance</div>
-      <div class="pchip"><span class="pdot"></span>Student Lookup</div>
-      <div class="pchip"><span class="pdot"></span>Mark My Activity</div>
-      <div class="pchip"><span class="pdot"></span>Class Overview</div>
-    </div>
+    <p class="panorama-eyebrow">Why it stays trustworthy</p>
+    <h2>Update a record in one place and it's already correct everywhere else &mdash; no separate spreadsheet quietly falling out of date.</h2>
   </div>
 </section>
 
@@ -590,10 +562,9 @@ footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var
      FOOTER
      ============================================================ -->
 <footer>
-  <p class="fmark">Office Administration Workspace</p>
-  <p class="fsub">BSOAOUMN 2-7 &middot; Academic Monitoring Portal</p>
-  <p class="disclaimer">This portal is exclusively for the students and class officers. All information is provided for academic monitoring and internal class management only.</p>
-  <div class="line2">Student Portal &nbsp;&middot;&nbsp; Internal Academic Monitoring &nbsp;&middot;&nbsp; Version 8.0.0 &nbsp;&middot;&nbsp; &copy; 2026</div>
+  <p class="fmark">Office Administration Portal</p>
+  <p class="fdesc">Built for BSOAOUMN 2-7, so the class record stays honest without anyone chasing paper.</p>
+  <p class="fmeta">Version 8.0 &nbsp;&middot;&nbsp; &copy; 2026</p>
 </footer>
 
 <script>
@@ -732,11 +703,11 @@ footer .line2{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var
     window.addEventListener('mouseleave', function(){ glow.classList.remove('on'); });
   }
 
-  /* ---- Smooth-scroll CTA ---- */
-  var cta = document.querySelector('.hero-cta');
-  if (cta){
-    cta.addEventListener('click', function(e){
-      var href = cta.getAttribute('href');
+  /* ---- Smooth-scroll dashboard preview link ---- */
+  var consoleLink = document.querySelector('.console-link');
+  if (consoleLink){
+    consoleLink.addEventListener('click', function(e){
+      var href = consoleLink.getAttribute('href');
       if (href && href.charAt(0) === '#'){
         var target = document.querySelector(href);
         if (target){ e.preventDefault(); target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block:'start' }); }
