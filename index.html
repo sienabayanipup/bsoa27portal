@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#FAF6F1">
 <title>Office Administration Portal &mdash; BSOAOUMN 2-7</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23FAF6F1' stroke='%236B1F2E' stroke-width='3.5'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-size='22' font-weight='600' text-anchor='middle' fill='%236B1F2E'%3E2%C2%B77%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,680;1,9..144,300;1,9..144,340;1,9..144,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -93,6 +94,26 @@ a{ color:inherit; }
 .grain{ position:absolute; inset:-10%; opacity:.035; mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 @media (prefers-reduced-motion: reduce){ .ambient .blob{ animation:none !important; } }
+
+/* ---------- Identity — the "2·7" seal, a minimal academic monogram used
+   consistently in the top bar, console, and footer. Also the signature
+   accent line: a 3px burgundy rule along the top edge of every card,
+   the one repeating "fingerprint" detail across the whole portal. ---------- */
+.mono-seal{
+  display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+  width:20px; height:20px; border-radius:50%; border:1.3px solid currentColor;
+  font-family:'Fraunces', serif; font-weight:600; font-optical-sizing:auto; font-size:9px; letter-spacing:-0.03em;
+}
+.card-signature::after{ content:""; position:absolute; top:0; left:0; right:0; height:3px; z-index:2; pointer-events:none;
+  background:var(--accent,var(--emerald)); opacity:.55; border-radius:22px 22px 0 0; }
+
+/* Office-administration character: a near-invisible filing/document grid,
+   index-card rules at binder-tab spacing. Never louder than 4% opacity. */
+.filing-texture{ position:absolute; inset:0; z-index:0; pointer-events:none; opacity:.04;
+  background-image:
+    repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(0deg, var(--ink) 0 1px, transparent 1px 40px);
+}
 
 .cursor-glow{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity .5s ease;
   background:radial-gradient(circle 440px at var(--cx,50%) var(--cy,30%), rgba(107,31,46,.05), transparent 72%); }
@@ -226,16 +247,16 @@ a{ color:inherit; }
 .ctile.t4{ background:var(--bronze-tint); } .ctile.t4 .cdot{ background:var(--bronze); color:#fff; }
 .ctile::after{ content:""; position:absolute; inset:0; transform:translateX(-120%);
   background:linear-gradient(75deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); }
-.ctile.t1::after{ animation:tileShimmerLoop 9s ease-in-out .8s infinite; }
-.ctile.t3::after{ animation:tileShimmerLoop 9s ease-in-out 4.4s infinite; }
+.ctile.t1::after{ animation:tileShimmerLoop 1.4s ease-in-out .9s 1 forwards; }
+.ctile.t3::after{ animation:tileShimmerLoop 1.4s ease-in-out 1.5s 1 forwards; }
 @keyframes tileShimmerLoop{ 0%{ transform:translateX(-120%); } 16%{ transform:translateX(120%); } 100%{ transform:translateX(120%); } }
 .console-sync{ display:flex; align-items:center; gap:7px; margin-bottom:14px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); }
 .console-sync .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); flex:0 0 auto; animation:consolePulse 2.4s infinite; }
 .console-chart{ display:flex; align-items:flex-end; gap:6px; height:44px; padding:0 2px; }
 .console-chart i{ flex:1; background:linear-gradient(180deg, var(--emerald), var(--emerald-deep)); border-radius:3px 3px 0 0; opacity:.85; animation:barGrow 1.2s var(--ease) both; }
 @keyframes barGrow{ from{ transform:scaleY(0); transform-origin:bottom; } to{ transform:scaleY(1); transform-origin:bottom; } }
-.console-activity{ display:flex; align-items:center; gap:8px; margin-top:16px; padding-top:14px; border-top:1px solid var(--hair); font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--ink-soft); opacity:1; transition:opacity .45s ease; }
-.console-activity .ca-dot{ width:5px; height:5px; border-radius:50%; background:var(--bronze); flex:0 0 auto; }
+.console-activity{ display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid var(--hair); font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--ink-soft); opacity:1; transition:opacity .45s ease; }
+.console-activity .ca-avatar{ width:17px; height:17px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center; justify-content:center; background:var(--bronze-tint); color:var(--bronze-text); font-size:8px; font-weight:800; letter-spacing:0; }
 .console-activity.fading{ opacity:0; }
 @media (prefers-reduced-motion: reduce){ .ctile::after{ display:none; } .console-bar-live .cdot-live, .console-sync .cdot-live{ animation:none; } .console-activity{ transition:none; } }
 @media (max-width:900px){ .console{ transform:none; margin:0 auto; } .console{ animation:none; } }
@@ -301,41 +322,56 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 /* Announcements — grid-area announce, corkboard, quiet
    (sized up from the standard bento card — this one stands alone,
    so it needs to read clearly rather than blend in like a tool tile) */
-.b-announce{ grid-area:announce; --accent:var(--bronze); --accent-tint:var(--bronze-tint); padding:26px 30px; border-radius:16px; box-shadow:var(--shadow-1); border:1px solid var(--hair); background:linear-gradient(165deg, var(--surface), var(--bronze-tint) 260%); transform:translateY(10px) scale(1); }
+.b-announce{ grid-area:announce; --accent:var(--bronze); --accent-tint:var(--bronze-tint); padding:34px 38px; border-radius:20px; box-shadow:var(--shadow-1); border:1px solid var(--hair); background:linear-gradient(165deg, var(--surface), var(--bronze-tint) 260%); transform:translateY(10px) scale(1); }
 .b-announce.revealed{ transform:translateY(0) scale(1); }
 .b-announce .b-index{ display:none; }
 .b-announce-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:0; flex-wrap:wrap; }
-.b-announce-title{ display:flex; align-items:center; gap:11px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:15px; letter-spacing:.01em; color:var(--ink); }
-.b-announce-title .b-icon{ width:28px; height:28px; border-radius:9px; margin-bottom:0; }
-.b-announce-title .b-icon svg{ width:14px; height:14px; }
-.b-announce-head-right{ display:flex; align-items:center; gap:10px; }
-.b-announce-live{ display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
-.b-announce-live .cdot-live{ width:5px; height:5px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
-.b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11.5px; color:var(--bronze-text); background:var(--bronze-tint); border:none; border-radius:100px; padding:8px 14px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring); white-space:nowrap; }
+.b-announce-title{ display:flex; align-items:center; gap:14px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:19px; letter-spacing:.01em; color:var(--ink); }
+.b-announce-title .b-icon{ width:36px; height:36px; border-radius:11px; margin-bottom:0; }
+.b-announce-title .b-icon svg{ width:18px; height:18px; }
+.b-announce-head-right{ display:flex; align-items:center; gap:12px; }
+.b-announce-live{ display:inline-flex; align-items:center; gap:7px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
+.b-announce-live .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
+.b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13.5px; color:var(--bronze-text); background:var(--bronze-tint); border:none; border-radius:100px; padding:10px 18px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring); white-space:nowrap; }
 .b-announce-toggle:hover{ background:rgba(217,169,168,.22); transform:translateY(-1px); }
-.b-announce-meta{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); margin:2px 0 8px 39px; }
+.b-announce-meta{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:12.5px; color:var(--muted); margin:4px 0 10px 50px; }
 @media (max-width:640px){ .b-announce-meta{ margin-left:0; } }
-.b-announce-list{ max-height:150px; overflow-y:auto; }
-.b-announce-item{ display:flex; align-items:flex-start; gap:11px; padding:11px 0; font-size:14.5px; line-height:1.6; color:var(--ink); border-bottom:1px solid var(--hair); }
+.b-announce-list{ max-height:190px; overflow-y:auto; }
+.b-announce-item{ display:flex; align-items:flex-start; gap:13px; padding:13px 0; font-size:16px; line-height:1.6; color:var(--ink); border-bottom:1px solid var(--hair); }
 .b-announce-item:last-child{ border-bottom:none; }
-.b-announce-dot{ flex:0 0 auto; width:5px; height:5px; border-radius:50%; background:var(--bronze); margin-top:7px; }
-.b-announce-name{ font-weight:700; color:var(--ink); font-size:14.5px; }
-.b-announce-form{ display:none; grid-template-columns:1fr 2fr auto; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid var(--hair); align-items:center; }
+.b-announce-dot{ flex:0 0 auto; width:6px; height:6px; border-radius:50%; background:var(--bronze); margin-top:8px; }
+.b-announce-name{ font-weight:700; color:var(--ink); font-size:16px; }
+.b-announce-form{ display:none; grid-template-columns:1fr 2fr auto; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid var(--hair); align-items:center; }
 .b-announce-form.open{ display:grid; }
-.b-announce-form input{ padding:11px 13px; font-size:13.5px; font-family:'Inter', sans-serif; border:none; border-radius:9px; background:var(--paper); color:var(--ink); box-shadow:inset 0 0 0 1px var(--hair); }
+.b-announce-form input{ padding:13px 15px; font-size:14.5px; font-family:'Inter', sans-serif; border:none; border-radius:9px; background:var(--paper); color:var(--ink); box-shadow:inset 0 0 0 1px var(--hair); }
 .b-announce-form input:focus{ outline:none; box-shadow:inset 0 0 0 1.5px var(--bronze); }
-.b-announce-form button{ padding:11px 18px; background:var(--emerald); color:#fff; font-size:13px; font-weight:700; border:none; border-radius:9px; cursor:pointer; white-space:nowrap; }
+.b-announce-form button{ padding:13px 20px; background:var(--emerald); color:#fff; font-size:14px; font-weight:700; border:none; border-radius:9px; cursor:pointer; white-space:nowrap; }
 .b-announce-form button:disabled{ opacity:.6; cursor:not-allowed; }
-.b-announce-status{ grid-column:1/-1; margin:2px 0 0; font-size:12px; font-weight:600; min-height:14px; }
+.b-announce-status{ grid-column:1/-1; margin:2px 0 0; font-size:13px; font-weight:600; min-height:14px; }
 .b-announce-status.error{ color:#B5443D; }
-@media (max-width:640px){ .b-announce-form{ grid-template-columns:1fr; } .b-announce{ padding:18px 18px; } .b-announce-title{ font-size:12.5px; } }
+@media (max-width:640px){ .b-announce-form{ grid-template-columns:1fr; } .b-announce{ padding:22px 20px; } .b-announce-title{ font-size:15.5px; } }
 
 /* Attendance — grid-area attendance, wide featured */
-.b-attendance{ grid-area:attendance; --accent:var(--emerald); --accent-tint:var(--emerald-tint); }
-.b-attendance .b-index{ opacity:.042; right:10px; }
-.b-attendance .b-icon{ width:50px; height:50px; }
-.b-attendance .b-title{ font-size:20px; }
+.b-attendance{ grid-area:attendance; --accent:var(--emerald); --accent-tint:var(--emerald-tint);
+  padding:38px 38px 34px; box-shadow:var(--shadow-3), 0 46px 110px -34px rgba(78,22,32,.3), inset 0 1px 0 rgba(255,255,255,.7);
+  background:linear-gradient(158deg, var(--surface) 55%, var(--emerald-tint) 340%); }
+a.b-attendance:hover{ box-shadow:var(--shadow-3), 0 50px 120px -30px rgba(78,22,32,.34), inset 0 1px 0 rgba(255,255,255,.7); }
+.b-attendance .b-index{ opacity:.05; right:10px; font-size:150px; }
+.b-attendance .b-icon{ width:56px; height:56px; }
+.b-attendance .b-icon svg{ width:26px; height:26px; }
+.b-kicker{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:12px; }
+.b-attendance .b-title{ font-size:22.5px; margin-bottom:12px; }
 .b-attendance .b-desc{ flex:none; max-width:36em; }
+.bap-week{ margin-top:20px; padding-top:18px; border-top:1px solid var(--hair); }
+.bap-week-label{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.bap-week-row{ display:flex; gap:7px; margin-bottom:13px; }
+.bwk{ flex:1; display:flex; align-items:center; justify-content:center; height:30px; border-radius:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; }
+.bwk.present{ background:var(--emerald-tint); color:var(--emerald); }
+.bwk.absent{ background:rgba(181,68,61,.1); color:var(--error); }
+.bwk.pending{ background:var(--paper-secondary); color:var(--muted); border:1px dashed var(--hair); }
+.bap-week-pct{ font-size:12.5px; color:var(--ink-soft); }
+.bap-week-pct-num{ font-family:'Fraunces', serif; font-weight:600; color:var(--emerald); font-size:15px; margin-right:4px; }
+@media (max-width:600px){ .b-attendance{ padding:30px 26px 26px; } .bap-week-row{ flex-wrap:wrap; } .bwk{ flex:1 1 15%; } }
 
 .b-attendance-preview{ display:grid; grid-template-columns:1fr 1fr; margin-top:24px; padding-top:22px; border-top:1px solid var(--hair); }
 .bap-col{ padding-right:28px; }
@@ -361,10 +397,16 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 .lp-avatar{ width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; color:var(--slate); background:var(--slate-tint); }
 .lp-name{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12.5px; }
 .lp-meta{ margin-top:2px; font-size:11px; color:var(--muted); }
+.lp-detail-row{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; }
+.lp-detail-row span:first-child{ color:var(--muted); font-weight:600; }
+.lp-detail-row span:last-child{ color:var(--ink); font-weight:700; font-variant-numeric:tabular-nums; }
+.lp-progress{ height:5px; border-radius:3px; background:var(--slate-tint); overflow:hidden; margin-top:10px; }
+.lp-progress-fill{ height:100%; border-radius:3px; background:var(--slate); }
 
 /* Activity — grid-area activity */
 .b-activity{ grid-area:activity; --accent:var(--teal); --accent-tint:var(--teal-tint); justify-content:space-between; }
 .task-row{ display:flex; align-items:center; gap:9px; margin-bottom:10px; font-size:11.5px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; }
+.task-row .task-time{ margin-left:auto; font-weight:600; color:var(--muted); font-size:10.5px; white-space:nowrap; }
 .task-check{ width:16px; height:16px; border-radius:50%; background:var(--teal); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
 .task-check svg{ width:9px; height:9px; stroke:#fff; }
 .task-track{ height:5px; border-radius:3px; background:rgba(76,118,87,.14); overflow:hidden; margin-top:16px; }
@@ -430,6 +472,34 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 }
 @media (prefers-reduced-motion: reduce){ .wf-track.flow-active .wf-track-dot{ animation:none; opacity:0; } }
 
+/* Card lift — mirrors the dot's dwell time at each node above, so the
+   matching card rises as the dot "arrives" at its number. */
+.wf-grid.flow-active .wf1{ animation:wfLift1 7s var(--ease) infinite; }
+.wf-grid.flow-active .wf2{ animation:wfLift2 7s var(--ease) infinite; }
+.wf-grid.flow-active .wf3{ animation:wfLift3 7s var(--ease) infinite; }
+.wf-grid.flow-active .wf4{ animation:wfLift4 7s var(--ease) infinite; }
+@keyframes wfLift1{
+  0%,6%{ transform:translateY(-7px) scale(1.015); box-shadow:var(--shadow-3); }
+  16%,100%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
+}
+@keyframes wfLift2{
+  0%,20%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
+  27%,52%{ transform:translateY(-7px) scale(1.015); box-shadow:var(--shadow-3); }
+  62%,100%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
+}
+@keyframes wfLift3{
+  0%,52%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
+  60%,85%{ transform:translateY(-7px) scale(1.015); box-shadow:var(--shadow-3); }
+  93%,100%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
+}
+@keyframes wfLift4{
+  0%,88%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
+  94%,100%{ transform:translateY(-7px) scale(1.015); box-shadow:var(--shadow-3); }
+}
+@media (prefers-reduced-motion: reduce){
+  .wf-grid.flow-active .wf1, .wf-grid.flow-active .wf2, .wf-grid.flow-active .wf3, .wf-grid.flow-active .wf4{ animation:none; }
+}
+
 .wf-card{
   position:relative; z-index:1; overflow:hidden; border-radius:20px; padding:30px 24px 26px;
   background:var(--surface); box-shadow:var(--shadow-2);
@@ -479,7 +549,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
   letter-spacing:-0.03em; color:var(--ink); opacity:.035; white-space:nowrap; }
 .foot-row{ position:relative; z-index:1; max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
   border-top:1px solid var(--hair); padding-top:32px; margin-bottom:16px; text-align:center; }
-.foot-meta{ font-family:'Inter', sans-serif; font-size:12.5px; letter-spacing:.005em; color:var(--muted); }
+.foot-meta{ font-family:'Inter', sans-serif; font-size:12px; letter-spacing:.01em; color:var(--muted); opacity:.88; }
 .foot-sep{ color:var(--hair); }
 
 @media (max-width:600px){
@@ -515,7 +585,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 
 <div class="top-bar">
   <span class="top-mark">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
+    <span class="mono-seal" style="color:var(--emerald)" aria-hidden="true">2&middot;7</span>
     Office Administration Portal
   </span>
   <div class="top-right">
@@ -556,7 +626,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
       <div class="console-stage">
         <div class="console-glow" aria-hidden="true"></div>
         <div class="console">
-          <div class="console-bar"><i></i><i></i><i></i><span>portal.local</span><span class="console-bar-live"><span class="cdot-live"></span>Live</span></div>
+          <div class="console-bar"><i></i><i></i><i></i><span class="mono-seal" style="width:16px;height:16px;font-size:7.5px;color:var(--emerald);margin-left:4px" aria-hidden="true">2&middot;7</span><span>portal.local</span><span class="console-bar-live"><span class="cdot-live"></span>Live</span></div>
           <div class="console-body">
             <p class="console-greeting">Good morning 👋</p>
             <p class="console-date" id="consoleDate">&nbsp;</p>
@@ -572,7 +642,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
               <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
               <i style="height:92%; animation-delay:.42s"></i>
             </div>
-            <div class="console-activity" id="consoleActivity"><span class="ca-dot"></span><span id="consoleActivityText">Maria just submitted attendance</span></div>
+            <div class="console-activity" id="consoleActivity"><span class="ca-avatar" id="consoleActivityAvatar">M</span><span id="consoleActivityText">Maria just submitted attendance</span></div>
           </div>
         </div>
       </div>
@@ -584,6 +654,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
      WORKSPACE — bento dashboard (the features, front and center)
      ============================================================ -->
 <section class="workspace band-b" id="dashboard">
+  <div class="filing-texture" aria-hidden="true"></div>
   <div class="ws-head" data-reveal>
     <div>
       <p class="ws-eyebrow">Your tools</p>
@@ -593,9 +664,10 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 
   <div class="bento">
 
-    <a class="b-card b-attendance" href="attendance.html" data-reveal-item style="--rd:0">
+    <a class="b-card b-attendance card-signature" href="attendance.html" data-reveal-item style="--rd:0">
       <span class="b-index" aria-hidden="true">01</span>
       <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
+      <span class="b-kicker">Most used this week</span>
       <div class="b-title">Weekly Attendance</div>
       <p class="b-desc">Every Saturday, submit your name, student number, and subject &mdash; and this week's record fills in automatically.</p>
       <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
@@ -617,9 +689,22 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
           <div class="bap-time">8:00 AM</div>
         </div>
       </div>
+
+      <div class="bap-week" aria-hidden="true">
+        <span class="bap-week-label">Last 6 Sessions</span>
+        <div class="bap-week-row">
+          <span class="bwk present" title="Jun 20 — Present">J20</span>
+          <span class="bwk present" title="Jun 27 — Present">J27</span>
+          <span class="bwk absent" title="Jul 4 — Absent">JL4</span>
+          <span class="bwk present" title="Jul 11 — Present">J11</span>
+          <span class="bwk present" title="Jul 18 — Present">J18</span>
+          <span class="bwk present" title="Jul 25 — Present">J25</span>
+        </div>
+        <div class="bap-week-pct"><span class="bap-week-pct-num">92%</span>attendance rate this term</div>
+      </div>
     </a>
 
-    <a class="b-card b-lookup" href="lookup.html" data-reveal-item style="--rd:1">
+    <a class="b-card b-lookup card-signature" href="lookup.html" data-reveal-item style="--rd:1">
       <span class="b-index" aria-hidden="true">02</span>
       <div>
         <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
@@ -629,11 +714,13 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
       <div>
         <div class="lp-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>202x-xxxxx-MN-0</span></div>
         <div class="lp-result"><span class="lp-avatar">JD</span><div><p class="lp-name">Juan Dela Cruz</p><p class="lp-meta">ENGL 017 &middot; 94%</p></div></div>
+        <div class="lp-detail-row"><span>Attendance</span><span>17 / 18</span></div>
+        <div class="lp-progress"><div class="lp-progress-fill" style="width:94%"></div></div>
       </div>
       <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
 
-    <a class="b-card b-activity" href="mark_activity.html" data-reveal-item style="--rd:2">
+    <a class="b-card b-activity card-signature" href="mark_activity.html" data-reveal-item style="--rd:2">
       <span class="b-index" aria-hidden="true">03</span>
       <div>
         <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
@@ -641,18 +728,19 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
         <p class="b-desc">Confirm you've completed an activity for a subject. Progress fills in as tasks are checked off.</p>
       </div>
       <div>
-        <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo</div>
-        <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper</div>
+        <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo<span class="task-time">Jul 28</span></div>
+        <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper<span class="task-time">Jul 26</span></div>
         <div class="task-track"><div class="task-fill"></div></div>
+        <p style="margin-top:10px;font-size:10.5px;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;">7 of 9 tasks logged &middot; 78% complete</p>
       </div>
       <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
 
-    <a class="b-card b-overview" href="overview.html" data-reveal-item style="--rd:3">
+    <a class="b-card b-overview card-signature" href="overview.html" data-reveal-item style="--rd:3">
       <span class="b-index" aria-hidden="true">04</span>
       <div class="ov-head">
         <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
-        <div><div class="b-title">Class Overview</div><p class="b-desc">For officers &mdash; the full class snapshot, at a glance.</p></div>
+        <div><div class="b-title">Class Overview</div><p class="b-desc">For leaders &mdash; the full class snapshot, at a glance.</p></div>
       </div>
       <div class="ov-stats">
         <div><div class="ov-stat-num" data-count-to="92" data-suffix="%">0%</div><div class="ov-stat-label">Attendance</div></div>
@@ -717,7 +805,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
      ============================================================ -->
 <section class="announce-section band-b" id="announcements">
   <span class="announce-eyebrow" data-reveal>Board</span>
-  <div class="b-card b-announce" data-reveal-item style="--rd:0">
+  <div class="b-card b-announce card-signature" data-reveal-item style="--rd:0">
     <span class="b-index" aria-hidden="true">00</span>
     <div class="b-announce-head">
       <p class="b-announce-title">
@@ -747,7 +835,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
      ============================================================ -->
 <section class="cta band-a" data-reveal>
   <span class="cta-eyebrow">BSOAOUMN 2&ndash;7</span>
-  <h2>Everything students need to stay on track, now in one screen.</h2>
+  <h2>Attendance, records, activity &mdash; finally, all in one place.</h2>
   <a class="cta-link" href="#dashboard">Open your tools <span class="arrow">&rarr;</span></a>
 </section>
 
@@ -757,6 +845,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 <footer class="band-b">
   <span class="foot-watermark" aria-hidden="true">BSOAOUMN</span>
   <div class="foot-row">
+    <span class="mono-seal" style="color:var(--muted)" aria-hidden="true">2&middot;7</span>
     <span class="foot-meta">Built to simplify attendance, records, and class management in one connected workspace.</span>
     <span class="foot-sep">&middot;</span>
     <span class="foot-meta">Version 9 &nbsp;&middot;&nbsp; &copy; 2026</span>
@@ -833,21 +922,23 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 
   /* ---- Console activity ticker — one believable line at a time ---- */
   var activityText = document.getElementById('consoleActivityText');
+  var activityAvatar = document.getElementById('consoleActivityAvatar');
   var activityEl = document.getElementById('consoleActivity');
   if (activityText && activityEl && !reduced){
     var activityMessages = [
-      'Maria just submitted attendance',
-      'Kyle marked Module 3 complete',
-      '3 lookups in the last hour',
-      'Attendance synced to Sheets',
-      'Jomar checked in at 8:03 AM'
+      { initials:'M', text:'Maria just submitted attendance' },
+      { initials:'K', text:'Kyle marked Module 3 complete' },
+      { initials:'#', text:'3 lookups in the last hour' },
+      { initials:'\u2713', text:'Attendance synced to Sheets' },
+      { initials:'J', text:'Jomar checked in at 8:03 AM' }
     ];
     var activityIdx = 0;
     setInterval(function(){
       activityEl.classList.add('fading');
       setTimeout(function(){
         activityIdx = (activityIdx + 1) % activityMessages.length;
-        activityText.textContent = activityMessages[activityIdx];
+        activityText.textContent = activityMessages[activityIdx].text;
+        if (activityAvatar) activityAvatar.textContent = activityMessages[activityIdx].initials;
         activityEl.classList.remove('fading');
       }, 450);
     }, 5000);
@@ -912,13 +1003,18 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 
   /* ---- Data-flow pipeline dot (workflow section) — starts once visible ---- */
   var wfTrack = document.getElementById('wfTrack');
+  var wfGrid = document.getElementById('wfGrid');
   if (wfTrack){
     if (reduced || !('IntersectionObserver' in window)){
       /* leave inactive — reduced motion keeps the line static */
     } else {
       var wfObs = new IntersectionObserver(function(entries, obs){
         entries.forEach(function(entry){
-          if (entry.isIntersecting){ wfTrack.classList.add('flow-active'); obs.unobserve(entry.target); }
+          if (entry.isIntersecting){
+            wfTrack.classList.add('flow-active');
+            if (wfGrid) wfGrid.classList.add('flow-active');
+            obs.unobserve(entry.target);
+          }
         });
       }, { threshold:.35 });
       wfObs.observe(wfTrack);
@@ -933,9 +1029,6 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
       raf = false;
       if (!pending) return;
       var card = pending.card, rect = pending.rect, x = pending.x, y = pending.y;
-      var cx = rect.width/2, cy = rect.height/2;
-      var rx = ((y-cy)/cy) * -3, ry = ((x-cx)/cx) * 3;
-      card.style.transform = 'perspective(1000px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-6px) scale(1.008)';
       card.style.setProperty('--mx', (x/rect.width)*100 + '%');
       card.style.setProperty('--my', (y/rect.height)*100 + '%');
       pending = null;
@@ -948,27 +1041,9 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
         pending = { card:card, x:e.clientX-rect.left, y:e.clientY-rect.top, rect:rect };
         if (!raf){ raf = true; requestAnimationFrame(flush); }
       });
-      card.addEventListener('mouseleave', function(){ card.style.transform = ''; rect = null; });
+      card.addEventListener('mouseleave', function(){ rect = null; });
     });
   }
-
-  /* ---- Ripple on click ---- */
-  document.querySelectorAll('a.b-card').forEach(function(card){
-    card.addEventListener('click', function(e){
-      var rect = card.getBoundingClientRect();
-      var ripple = document.createElement('span');
-      var size = Math.max(rect.width, rect.height) * 1.8;
-      ripple.style.cssText = 'position:absolute;border-radius:50%;transform:scale(0);pointer-events:none;z-index:2;background:rgba(0,0,0,.05);animation:rippleAnim .6s ease-out forwards;';
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-      ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-      card.appendChild(ripple);
-      setTimeout(function(){ ripple.remove(); }, 650);
-    });
-  });
-  var rippleStyle = document.createElement('style');
-  rippleStyle.textContent = '@keyframes rippleAnim{ to{ transform:scale(1); opacity:0; } }';
-  document.head.appendChild(rippleStyle);
 
   /* ---- Magnetic hover on primary buttons ---- */
   if (!isTouchDevice() && !reduced){
