@@ -126,7 +126,9 @@ a{ color:inherit; }
     radial-gradient(ellipse 70% 60% at 85% 20%, rgba(217,169,168,.16), transparent 60%),
     linear-gradient(135deg, var(--graphite) 0%, var(--graphite-soft) 42%, var(--ink-soft) 78%, var(--muted) 100%);
 }
-.hero-grid{ display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; max-width:1320px; margin:0 auto; }
+.hero-grain{ position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay; pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+.hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; max-width:1320px; margin:0 auto; }
 .hero-eyebrow{
   display:inline-flex; align-items:center; gap:13px; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10.5px;
   letter-spacing:.34em; text-transform:uppercase; color:var(--bronze-tint); margin:0 0 34px;
@@ -141,7 +143,7 @@ a{ color:inherit; }
 }
 .hero h1 .line:nth-child(2){
   display:block; font-style:italic; font-weight:300; font-size:clamp(52px,7.6vw,108px); line-height:.92;
-  letter-spacing:-0.035em; color:var(--bronze-tint); margin-top:.13em; animation-delay:.38s;
+  letter-spacing:-0.035em; color:var(--bronze-tint); margin-top:.14em; animation-delay:.38s;
 }
 @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
 .hero-rule{ width:38px; height:1px; margin:42px 0 30px; background:var(--bronze-bright); opacity:0; animation:rise .6s var(--ease) forwards; animation-delay:.55s; }
@@ -363,6 +365,11 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 
 .node-map{ position:relative; width:100%; max-width:720px; height:460px; margin:0 auto; }
 .map-lines{ position:absolute; inset:0; width:100%; height:100%; z-index:0; }
+.map-line{ stroke:var(--hair); stroke-width:2; transition:stroke .3s var(--ease), stroke-width .3s var(--ease), opacity .3s var(--ease); }
+.map-line.active{ stroke:var(--accent-active,var(--emerald)); stroke-width:2.5; opacity:1; }
+.map-line.dim{ opacity:.35; }
+.hub{ transition:box-shadow .3s var(--ease), border-color .3s var(--ease); }
+.hub.active{ box-shadow:var(--shadow-3); border-color:var(--bronze); }
 .hub{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;
   width:150px; height:150px; border-radius:50%; background:var(--surface); box-shadow:var(--shadow-2);
@@ -461,7 +468,8 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
   .hero-eyebrow::before{ display:none; }
 }
 @media (max-width:600px){
-  .hero h1{ font-size:clamp(38px,11vw,56px); }
+  .hero h1 .line:nth-child(1),
+  .hero h1 .line:nth-child(2){ font-size:clamp(38px,11vw,56px); letter-spacing:-0.02em; }
   .stat-band{ padding-bottom:100px; }
   .b-card{ padding:26px 24px 22px; }
   .problem{ padding-bottom:100px; }
@@ -487,7 +495,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <div class="top-bar">
   <span class="top-mark">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/></svg>
-    Academic Monitoring System
+    Office Administration Portal
   </span>
   <span class="top-pill"><span class="dot"></span>System online</span>
 </div>
@@ -496,9 +504,10 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
      HERO
      ============================================================ -->
 <section class="hero">
+  <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-grid">
     <div class="hero-copy">
-      <span class="hero-eyebrow">Polytechnic University of the Philippines</span>
+      <span class="hero-eyebrow">BSOAOUMN 2&ndash;7</span>
       <h1>
         <span class="line">One record,</span>
         <span class="line">quietly kept.</span>
@@ -564,10 +573,10 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     <h2>Forty&#8209;five students. Four different places to check.</h2>
   </div>
   <div class="problem-lines">
-    <p class="p-line" data-reveal-item style="--rd:0">Every Saturday, someone forgets to submit attendance.</p>
-    <p class="p-line" data-reveal-item style="--rd:1">The officer checks a spreadsheet, then a group chat, then a notebook.</p>
-    <p class="p-line" data-reveal-item style="--rd:2">Grades live in one file, activity progress in another.</p>
-    <p class="p-line" data-reveal-item style="--rd:3">By the time it's all reconciled, <em>the week is already over.</em></p>
+    <p class="p-line" data-reveal-item style="--rd:0">Every week began with Google Forms, polls, and spreadsheets shared across the group chats.</p>
+    <p class="p-line" data-reveal-item style="--rd:1">Keeping every record up to date depended on constant checking and manual follow-ups.</p>
+    <p class="p-line" data-reveal-item style="--rd:2">Leaders checked attendance, tracked activity submissions, and monitored previous semester records.</p>
+    <p class="p-line" data-reveal-item style="--rd:3">By the time everything was checked, <em>another class had already begun.</em></p>
   </div>
   <div class="p-resolve" data-reveal>
     <p>So we put it all in <em>one place</em> instead.</p>
@@ -586,29 +595,29 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 
   <div class="node-map" id="nodeMap">
     <svg class="map-lines" viewBox="0 0 720 460" preserveAspectRatio="none" aria-hidden="true">
-      <line x1="360" y1="230" x2="90" y2="50" style="stroke:var(--hair); stroke-width:2;"></line>
-      <line x1="360" y1="230" x2="630" y2="50" style="stroke:var(--hair); stroke-width:2;"></line>
-      <line x1="360" y1="230" x2="90" y2="410" style="stroke:var(--hair); stroke-width:2;"></line>
-      <line x1="360" y1="230" x2="630" y2="410" style="stroke:var(--hair); stroke-width:2;"></line>
+      <line class="map-line" data-l="0" x1="360" y1="230" x2="90" y2="50"></line>
+      <line class="map-line" data-l="1" x1="360" y1="230" x2="630" y2="50"></line>
+      <line class="map-line" data-l="2" x1="360" y1="230" x2="90" y2="410"></line>
+      <line class="map-line" data-l="3" x1="360" y1="230" x2="630" y2="410"></line>
     </svg>
     <div class="hub">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M8 17V9"/><path d="M13 17V5"/><path d="M18 17v-3"/></svg>
       <b>Google Sheets</b>
       <span>The single record</span>
     </div>
-    <div class="node n-tl" data-reveal-item style="--rd:0; --accent:var(--emerald); --accent-tint:var(--emerald-tint);">
+    <div class="node n-tl" data-i="0" data-reveal-item style="--rd:0; --accent:var(--emerald); --accent-tint:var(--emerald-tint);">
       <div class="n-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
       <b>Weekly Attendance</b><span>Submitted every Saturday</span>
     </div>
-    <div class="node n-tr" data-reveal-item style="--rd:1; --accent:var(--slate); --accent-tint:var(--slate-tint);">
+    <div class="node n-tr" data-i="1" data-reveal-item style="--rd:1; --accent:var(--slate); --accent-tint:var(--slate-tint);">
       <div class="n-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
       <b>Student Lookup</b><span>Search any record instantly</span>
     </div>
-    <div class="node n-bl" data-reveal-item style="--rd:2; --accent:var(--teal); --accent-tint:var(--teal-tint);">
+    <div class="node n-bl" data-i="2" data-reveal-item style="--rd:2; --accent:var(--teal); --accent-tint:var(--teal-tint);">
       <div class="n-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
       <b>Mark My Activity</b><span>Confirm work as it's done</span>
     </div>
-    <div class="node n-br" data-reveal-item style="--rd:3; --accent:var(--bronze); --accent-tint:var(--bronze-tint);">
+    <div class="node n-br" data-i="3" data-reveal-item style="--rd:3; --accent:var(--bronze); --accent-tint:var(--bronze-tint);">
       <div class="n-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
       <b>Class Overview</b><span>The full picture, for officers</span>
     </div>
@@ -927,6 +936,33 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
   var rippleStyle = document.createElement('style');
   rippleStyle.textContent = '@keyframes rippleAnim{ to{ transform:scale(1); opacity:0; } }';
   document.head.appendChild(rippleStyle);
+
+  /* ---- Node-map hover: highlight the connecting line, dim the rest ---- */
+  var nodeMap = document.getElementById('nodeMap');
+  if (nodeMap){
+    var mapNodes = nodeMap.querySelectorAll('.node');
+    var mapLines = nodeMap.querySelectorAll('.map-line');
+    var mapHub = nodeMap.querySelector('.hub');
+    mapNodes.forEach(function(node){
+      var i = node.getAttribute('data-i');
+      var accent = node.style.getPropertyValue('--accent');
+      node.addEventListener('mouseenter', function(){
+        mapLines.forEach(function(line){
+          if (line.getAttribute('data-l') === i){
+            line.classList.add('active'); line.classList.remove('dim');
+            line.style.setProperty('--accent-active', accent);
+          } else {
+            line.classList.add('dim'); line.classList.remove('active');
+          }
+        });
+        if (mapHub) mapHub.classList.add('active');
+      });
+      node.addEventListener('mouseleave', function(){
+        mapLines.forEach(function(line){ line.classList.remove('active','dim'); });
+        if (mapHub) mapHub.classList.remove('active');
+      });
+    });
+  }
 
   /* ---- Signature cursor glow ---- */
   var glow = document.getElementById('cursorGlow');
