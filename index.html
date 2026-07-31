@@ -216,7 +216,12 @@ a{ color:inherit; }
 /* ==========================================================================
    ANNOUNCEMENTS — standalone board, not a "tool"
    ========================================================================== */
-.announce-section{ position:relative; z-index:1; max-width:760px; margin:0 auto; padding:70px 24px 10px; }
+/* ---------- Alternating section bands (full-bleed, hero excluded) ---------- */
+.band-a, .band-b{ position:relative; z-index:1; }
+.band-a{ background:var(--paper-secondary); box-shadow:0 0 0 100vmax var(--paper-secondary); clip-path:inset(0 -100vmax); }
+.band-b{ background:var(--paper); box-shadow:0 0 0 100vmax var(--paper); clip-path:inset(0 -100vmax); }
+
+.announce-section{ position:relative; z-index:1; max-width:760px; margin:0 auto; padding:70px 24px 30px; }
 .announce-eyebrow{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:20px;
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .announce-eyebrow.revealed{ opacity:1; transform:translateY(0); }
@@ -433,8 +438,8 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     <div class="hero-copy">
       <span class="hero-eyebrow">BSOAOUMN 2&ndash;7</span>
       <h1>
-        <span class="line">Quietly organized.</span>
-        <span class="line">Always ready.</span>
+        <span class="line">Less clutter.</span>
+        <span class="line">More clarity.</span>
       </h1>
       <div class="hero-rule"></div>
       <p class="lead">Attendance, records, activity, and the class overview &mdash; all reading from the same live sheet, updated the moment something changes.</p>
@@ -476,7 +481,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <!-- ============================================================
      ANNOUNCEMENTS — standalone board, separate from the tools
      ============================================================ -->
-<section class="announce-section" id="announcements">
+<section class="announce-section band-a" id="announcements">
   <span class="announce-eyebrow" data-reveal>Board</span>
   <div class="b-card b-announce" data-reveal-item style="--rd:0">
     <div class="b-announce-head">
@@ -501,7 +506,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <!-- ============================================================
      WORKSPACE — bento dashboard (the features, front and center)
      ============================================================ -->
-<section class="workspace" id="dashboard">
+<section class="workspace band-b" id="dashboard">
   <div class="ws-head" data-reveal>
     <div>
       <p class="ws-eyebrow">Your tools</p>
@@ -570,7 +575,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
       <span class="b-index" aria-hidden="true">04</span>
       <div class="ov-head">
         <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
-        <div><div class="b-title">Class Overview</div><p class="b-desc">For officers &mdash; the full class snapshot, at a glance.</p></div>
+        <div><div class="b-title">Class Overview</div><p class="b-desc">For leaders &mdash; the full class snapshot, at a glance.</p></div>
       </div>
       <div class="ov-stats">
         <div><div class="ov-stat-num" data-count-to="92" data-suffix="%">0%</div><div class="ov-stat-label">Attendance</div></div>
@@ -591,7 +596,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <!-- ============================================================
      WORKFLOW — short "how it works", 4 steps not 6
      ============================================================ -->
-<section class="workflow" id="workflow">
+<section class="workflow band-a" id="workflow">
   <div class="workflow-head" data-reveal>
     <span class="workflow-eyebrow">How it works</span>
     <h2>From a tap on Saturday morning to a dashboard everyone can trust.</h2>
@@ -611,7 +616,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     </div>
     <div class="wf-step" data-reveal-item style="--rd:3">
       <span class="wf-num">4</span>
-      <div class="wf-copy"><b>Overview</b><span>Officers see the full class picture update in real time, no reconciling required.</span></div>
+      <div class="wf-copy"><b>Overview</b><span>Leaders see the full class picture update in real time, no reconciling required.</span></div>
     </div>
   </div>
 </section>
@@ -619,7 +624,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <!-- ============================================================
      CTA — closing statement
      ============================================================ -->
-<section class="cta" data-reveal>
+<section class="cta band-b" data-reveal>
   <span class="cta-eyebrow">BSOAOUMN 2&ndash;7</span>
   <h2>Your record is one tap away.</h2>
   <a class="cta-link" href="#dashboard">Open your tools <span class="arrow">&rarr;</span></a>
@@ -628,7 +633,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <!-- ============================================================
      FOOTER
      ============================================================ -->
-<footer>
+<footer class="band-a">
   <div class="foot-row">
     <span class="foot-mark">Office Administration Portal</span>
     <span class="foot-meta">Maintained for BSOAOUMN 2&ndash;7 &nbsp;&middot;&nbsp; Version 8.0 &nbsp;&middot;&nbsp; &copy; 2026</span>
