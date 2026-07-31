@@ -126,6 +126,16 @@ a{ color:inherit; }
 @keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(76,118,87,.4);} 70%{ box-shadow:0 0 0 5px rgba(76,118,87,0);} 100%{ box-shadow:0 0 0 0 rgba(76,118,87,0);} }
 @media (max-width:560px){ .top-clock{ display:none; } }
 
+.top-announce{
+  display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);
+  background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1); transition:transform .3s var(--spring), background .2s ease;
+}
+.top-announce:hover{ transform:translateY(-1px); background:rgba(253,250,247,.92); }
+.top-announce svg{ width:13px; height:13px; color:var(--bronze-text); stroke-width:2px; }
+.top-announce .ta-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 5px; border-radius:100px; background:var(--emerald); color:#fff; font-size:9.5px; font-weight:800; line-height:1; letter-spacing:0; }
+@media (max-width:560px){ .top-announce .ta-label{ display:none; } }
+
 /* ==========================================================================
    HERO — single viewport, editorial headline + floating console panel.
    No scroll-jacking: one orchestrated entrance on load, a slow float
@@ -141,6 +151,8 @@ a{ color:inherit; }
 .hero-grain{ position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay; pointer-events:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 .hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; box-sizing:border-box; }
+.hero-copy{ transition:transform .9s var(--ease); will-change:transform; }
+@media (max-width:900px){ .hero-copy{ transition:none !important; transform:none !important; } }
 .hero-eyebrow{
   display:inline-flex; align-items:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px;
   letter-spacing:.34em; text-transform:uppercase; color:var(--bronze-tint); margin:0 0 34px;
@@ -177,7 +189,8 @@ a{ color:inherit; }
 .console-link:active{ transform:translateY(-4px) scale(1.006); }
 .console-link:hover .console{ box-shadow:var(--shadow-3), 0 34px 80px -22px rgba(78,22,32,.32), inset 0 1px 0 rgba(255,255,255,.7); }
 .console-link:focus-visible{ outline:2px solid var(--emerald); outline-offset:8px; border-radius:22px; }
-.console-stage{ position:relative; perspective:1600px; opacity:0; animation:consoleIn 1s var(--ease) forwards; animation-delay:.3s; }
+.console-stage{ position:relative; perspective:1600px; opacity:0; animation:consoleIn 1s var(--ease) forwards; animation-delay:.3s; transition:transform .9s var(--ease); will-change:transform; }
+@media (max-width:900px){ .console-stage{ transition:none !important; transform:none !important; } }
 @keyframes consoleIn{ from{ opacity:0; transform:translateY(30px) scale(.96); } to{ opacity:1; transform:translateY(0) scale(1); } }
 .console-glow{ position:absolute; inset:-16% -10%; z-index:-1;
   background:radial-gradient(ellipse 55% 55% at 55% 45%, rgba(107,31,46,.12), transparent 70%); }
@@ -221,7 +234,10 @@ a{ color:inherit; }
 .console-chart{ display:flex; align-items:flex-end; gap:6px; height:44px; padding:0 2px; }
 .console-chart i{ flex:1; background:linear-gradient(180deg, var(--emerald), var(--emerald-deep)); border-radius:3px 3px 0 0; opacity:.85; animation:barGrow 1.2s var(--ease) both; }
 @keyframes barGrow{ from{ transform:scaleY(0); transform-origin:bottom; } to{ transform:scaleY(1); transform-origin:bottom; } }
-@media (prefers-reduced-motion: reduce){ .ctile::after{ display:none; } .console-bar-live .cdot-live, .console-sync .cdot-live{ animation:none; } }
+.console-activity{ display:flex; align-items:center; gap:8px; margin-top:16px; padding-top:14px; border-top:1px solid var(--hair); font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--ink-soft); opacity:1; transition:opacity .45s ease; }
+.console-activity .ca-dot{ width:5px; height:5px; border-radius:50%; background:var(--bronze); flex:0 0 auto; }
+.console-activity.fading{ opacity:0; }
+@media (prefers-reduced-motion: reduce){ .ctile::after{ display:none; } .console-bar-live .cdot-live, .console-sync .cdot-live{ animation:none; } .console-activity{ transition:none; } }
 @media (max-width:900px){ .console{ transform:none; margin:0 auto; } .console{ animation:none; } }
 
 /* ==========================================================================
@@ -232,8 +248,8 @@ a{ color:inherit; }
 .band-a{ background:var(--paper-secondary); box-shadow:0 0 0 100vmax var(--paper-secondary); clip-path:inset(0 -100vmax); }
 .band-b{ background:var(--paper); box-shadow:0 0 0 100vmax var(--paper); clip-path:inset(0 -100vmax); }
 
-.announce-section{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:86px 24px 46px; }
-.announce-eyebrow{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:20px;
+.announce-section{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:40px 24px 40px; }
+.announce-eyebrow{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .announce-eyebrow.revealed{ opacity:1; transform:translateY(0); }
 
@@ -242,7 +258,7 @@ a{ color:inherit; }
    card shape twice in a row. Ghost index numerals are the structuring
    device (this genuinely is the order officers/students touch each tool).
    ========================================================================== */
-.workspace{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:58px 24px 118px; }
+.workspace{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:64px 24px 96px; }
 .ws-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:56px;
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .ws-head.revealed{ opacity:1; transform:translateY(0); }
@@ -273,8 +289,9 @@ a.b-card:hover::before{ opacity:1; }
 .b-index{ position:absolute; top:-.14em; right:16px; z-index:0; pointer-events:none;
   font-family:'Fraunces', serif; font-weight:600; font-optical-sizing:auto; font-size:130px; line-height:1; color:var(--accent,var(--emerald)); opacity:.05; transition:opacity .3s ease; }
 a.b-card:hover .b-index{ opacity:.09; }
-.b-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; color:var(--accent); background:var(--accent-tint); }
+.b-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; color:var(--accent); background:var(--accent-tint); transition:transform .35s var(--spring); }
 .b-icon svg{ width:21px; height:21px; stroke-width:1.7px; }
+a.b-card:hover .b-icon{ transform:scale(1.08); }
 .b-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:18px; letter-spacing:-0.015em; margin-bottom:10px; }
 .b-desc{ font-size:13.5px; line-height:1.7; letter-spacing:.002em; color:var(--muted); flex:1; }
 .b-footer{ display:flex; align-items:center; gap:7px; margin-top:22px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); }
@@ -284,33 +301,34 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 /* Announcements — grid-area announce, corkboard, quiet
    (sized up from the standard bento card — this one stands alone,
    so it needs to read clearly rather than blend in like a tool tile) */
-.b-announce{ grid-area:announce; --accent:var(--bronze); --accent-tint:var(--bronze-tint); padding:38px 40px 34px; }
-.b-announce .b-index{ font-size:150px; top:-.1em; }
-.b-announce-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
-.b-announce-title{ display:flex; align-items:center; gap:16px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:21px; }
-.b-announce-title .b-icon{ width:46px; height:46px; border-radius:13px; }
-.b-announce-title .b-icon svg{ width:24px; height:24px; }
-.b-announce-head-right{ display:flex; align-items:center; gap:14px; }
-.b-announce-live{ display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
-.b-announce-live .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
-.b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13px; color:var(--bronze-text); background:var(--bronze-tint); border:none; border-radius:100px; padding:11px 20px; cursor:pointer; transition:background .15s ease; white-space:nowrap; }
-.b-announce-toggle:hover{ background:rgba(217,169,168,.22); }
-.b-announce-meta{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:11.5px; color:var(--muted); margin:0 0 22px 62px; }
+.b-announce{ grid-area:announce; --accent:var(--bronze); --accent-tint:var(--bronze-tint); padding:26px 30px; border-radius:16px; box-shadow:var(--shadow-1); border:1px solid var(--hair); background:linear-gradient(165deg, var(--surface), var(--bronze-tint) 260%); transform:translateY(10px) scale(1); }
+.b-announce.revealed{ transform:translateY(0) scale(1); }
+.b-announce .b-index{ display:none; }
+.b-announce-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:0; flex-wrap:wrap; }
+.b-announce-title{ display:flex; align-items:center; gap:11px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:15px; letter-spacing:.01em; color:var(--ink); }
+.b-announce-title .b-icon{ width:28px; height:28px; border-radius:9px; margin-bottom:0; }
+.b-announce-title .b-icon svg{ width:14px; height:14px; }
+.b-announce-head-right{ display:flex; align-items:center; gap:10px; }
+.b-announce-live{ display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
+.b-announce-live .cdot-live{ width:5px; height:5px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
+.b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11.5px; color:var(--bronze-text); background:var(--bronze-tint); border:none; border-radius:100px; padding:8px 14px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring); white-space:nowrap; }
+.b-announce-toggle:hover{ background:rgba(217,169,168,.22); transform:translateY(-1px); }
+.b-announce-meta{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); margin:2px 0 8px 39px; }
 @media (max-width:640px){ .b-announce-meta{ margin-left:0; } }
-.b-announce-list{ max-height:220px; overflow-y:auto; }
-.b-announce-item{ display:flex; align-items:flex-start; gap:13px; padding:14px 0; font-size:16.5px; line-height:1.65; color:var(--ink); border-bottom:1px solid var(--hair); }
+.b-announce-list{ max-height:150px; overflow-y:auto; }
+.b-announce-item{ display:flex; align-items:flex-start; gap:11px; padding:11px 0; font-size:14.5px; line-height:1.6; color:var(--ink); border-bottom:1px solid var(--hair); }
 .b-announce-item:last-child{ border-bottom:none; }
-.b-announce-dot{ flex:0 0 auto; width:7px; height:7px; border-radius:50%; background:var(--bronze); margin-top:10px; }
-.b-announce-name{ font-weight:700; color:var(--ink); font-size:16.5px; }
-.b-announce-form{ display:none; grid-template-columns:1fr 2fr auto; gap:14px; margin-top:20px; padding-top:20px; align-items:center; }
+.b-announce-dot{ flex:0 0 auto; width:5px; height:5px; border-radius:50%; background:var(--bronze); margin-top:7px; }
+.b-announce-name{ font-weight:700; color:var(--ink); font-size:14.5px; }
+.b-announce-form{ display:none; grid-template-columns:1fr 2fr auto; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid var(--hair); align-items:center; }
 .b-announce-form.open{ display:grid; }
-.b-announce-form input{ padding:14px 16px; font-size:15px; font-family:'Inter', sans-serif; border:none; border-radius:11px; background:var(--paper); color:var(--ink); box-shadow:inset 0 0 0 1px var(--hair); }
+.b-announce-form input{ padding:11px 13px; font-size:13.5px; font-family:'Inter', sans-serif; border:none; border-radius:9px; background:var(--paper); color:var(--ink); box-shadow:inset 0 0 0 1px var(--hair); }
 .b-announce-form input:focus{ outline:none; box-shadow:inset 0 0 0 1.5px var(--bronze); }
-.b-announce-form button{ padding:14px 22px; background:var(--emerald); color:#fff; font-size:14.5px; font-weight:700; border:none; border-radius:11px; cursor:pointer; white-space:nowrap; }
+.b-announce-form button{ padding:11px 18px; background:var(--emerald); color:#fff; font-size:13px; font-weight:700; border:none; border-radius:9px; cursor:pointer; white-space:nowrap; }
 .b-announce-form button:disabled{ opacity:.6; cursor:not-allowed; }
-.b-announce-status{ grid-column:1/-1; margin:2px 0 0; font-size:13px; font-weight:600; min-height:16px; }
+.b-announce-status{ grid-column:1/-1; margin:2px 0 0; font-size:12px; font-weight:600; min-height:14px; }
 .b-announce-status.error{ color:#B5443D; }
-@media (max-width:640px){ .b-announce-form{ grid-template-columns:1fr; } .b-announce{ padding:28px 26px 26px; } .b-announce-title{ font-size:18px; } }
+@media (max-width:640px){ .b-announce-form{ grid-template-columns:1fr; } .b-announce{ padding:18px 18px; } .b-announce-title{ font-size:12.5px; } }
 
 /* Attendance — grid-area attendance, wide featured */
 .b-attendance{ grid-area:attendance; --accent:var(--emerald); --accent-tint:var(--emerald-tint); }
@@ -363,12 +381,14 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 .ov-bars{ display:flex; align-items:flex-end; gap:9px; height:46px; margin-top:24px; }
 .ovb{ flex:1; height:0%; border-radius:4px 4px 0 0; background:var(--bronze); opacity:.55; transition:height .9s var(--ease); }
 .b-overview.revealed .ovb{ height:var(--h); }
+.ov-updated{ display:flex; align-items:center; gap:7px; margin-top:14px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); }
+.ov-updated .cdot-live{ width:5px; height:5px; border-radius:50%; background:var(--teal); flex:0 0 auto; animation:consolePulse 2.4s infinite; }
 @media (max-width:640px){ .ov-stats{ grid-template-columns:repeat(2,1fr); } }
 
 /* ==========================================================================
    WORKFLOW — short "how it works" step list
    ========================================================================== */
-.workflow{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:64px 24px 108px; }
+.workflow{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:64px 24px 80px; }
 .workflow-head{ margin-bottom:48px; opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .workflow-head.revealed{ opacity:1; transform:translateY(0); }
 .workflow-eyebrow{ display:inline-flex; align-items:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:16px; }
@@ -378,6 +398,37 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 .wf-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; position:relative; }
 @media (max-width:900px){ .wf-grid{ grid-template-columns:1fr 1fr; } }
 @media (max-width:560px){ .wf-grid{ grid-template-columns:1fr; } }
+
+/* Connecting data-flow track — sits above the row so the line and
+   traveling dot are never hidden behind opaque card backgrounds.
+   Falls back to each card's own numbered circle below 900px. */
+.wf-track{ display:none; position:relative; margin:0 0 22px; }
+.wf-track-row{ position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; }
+.wf-node{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:14px; }
+.wf-node.n1{ background:var(--emerald-tint); color:var(--emerald); }
+.wf-node.n2{ background:var(--slate-tint); color:var(--slate); }
+.wf-node.n3{ background:var(--teal-tint); color:var(--teal); }
+.wf-node.n4{ background:var(--bronze-tint); color:var(--bronze-text); }
+.wf-track-path{ position:absolute; left:19px; right:19px; top:50%; height:1px; z-index:0; transform:translateY(-50%); }
+.wf-track-line{ position:absolute; inset:0; background:linear-gradient(90deg, var(--emerald) 0%, var(--slate) 34%, var(--teal) 67%, var(--bronze-text) 100%); opacity:.28; }
+.wf-track-dot{ position:absolute; top:0; left:0; width:7px; height:7px; margin-top:-3px; margin-left:-3.5px; border-radius:50%;
+  background:var(--emerald); box-shadow:0 0 0 5px rgba(107,31,46,.14); opacity:0; }
+.wf-track.flow-active .wf-track-dot{ opacity:1; animation:wfFlowMove 7s var(--ease) infinite; }
+@keyframes wfFlowMove{
+  0%{ left:0%; background:var(--emerald); box-shadow:0 0 0 5px rgba(107,31,46,.14); }
+  27%{ left:33.33%; background:var(--slate); box-shadow:0 0 0 5px rgba(79,109,134,.14); }
+  52%{ left:33.33%; background:var(--slate); box-shadow:0 0 0 5px rgba(79,109,134,.14); }
+  60%{ left:66.66%; background:var(--teal); box-shadow:0 0 0 5px rgba(76,118,87,.14); }
+  85%{ left:66.66%; background:var(--teal); box-shadow:0 0 0 5px rgba(76,118,87,.14); }
+  94%{ left:100%; background:var(--bronze-text); box-shadow:0 0 0 5px rgba(139,74,76,.14); }
+  100%{ left:100%; background:var(--bronze-text); box-shadow:0 0 0 5px rgba(139,74,76,.14); }
+}
+@media (min-width:901px){
+  .wf-track{ display:block; }
+  .wf-card .wf-num{ display:none; }
+}
+@media (prefers-reduced-motion: reduce){ .wf-track.flow-active .wf-track-dot{ animation:none; opacity:0; } }
 
 .wf-card{
   position:relative; z-index:1; overflow:hidden; border-radius:20px; padding:30px 24px 26px;
@@ -404,7 +455,7 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 /* ==========================================================================
    CTA — closing statement before the footer
    ========================================================================== */
-.cta{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:104px 24px 28px; text-align:center; border-top:1px solid var(--hair);
+.cta{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:96px 24px 32px; text-align:center; border-top:1px solid var(--hair);
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .cta.revealed{ opacity:1; transform:translateY(0); }
 .cta-eyebrow{ display:inline-flex; align-items:center; justify-content:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); }
@@ -421,15 +472,20 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 /* ==========================================================================
    FOOTER — flat row, mark left / meta right
    ========================================================================== */
-footer{ position:relative; z-index:1; padding:0 32px 70px; }
-.foot-row{ max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
-  border-top:1px solid var(--hair); padding-top:32px; }
+footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
+  background:linear-gradient(180deg, transparent, rgba(107,31,46,.035) 60%, rgba(107,31,46,.05)); }
+.foot-watermark{ position:absolute; left:50%; bottom:-.22em; transform:translateX(-50%); z-index:0; pointer-events:none;
+  font-family:'Fraunces', serif; font-weight:600; font-optical-sizing:auto; font-size:clamp(64px,14vw,220px); line-height:1;
+  letter-spacing:-0.03em; color:var(--ink); opacity:.035; white-space:nowrap; }
+.foot-row{ position:relative; z-index:1; max-width:1240px; margin:0 auto; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+  border-top:1px solid var(--hair); padding-top:32px; margin-bottom:16px; text-align:center; }
 .foot-mark{ font-family:'Fraunces', serif; font-style:italic; font-weight:400; font-size:17px; letter-spacing:-0.01em; color:var(--ink); }
 .foot-meta{ font-family:'Inter', sans-serif; font-size:12.5px; letter-spacing:.005em; color:var(--muted); }
-.foot-note{ max-width:1240px; margin:14px auto 0; font-family:'Inter', sans-serif; font-size:12px; letter-spacing:.005em; color:var(--muted); opacity:.75; }
+.foot-sep{ color:var(--hair); }
 
 @media (max-width:600px){
-  .foot-row{ flex-direction:column; align-items:flex-start; gap:10px; }
+  .foot-row{ flex-direction:column; gap:8px; }
+  .foot-sep{ display:none; }
 }
 
 @media (max-width:900px){
@@ -464,6 +520,11 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     Office Administration Portal
   </span>
   <div class="top-right">
+    <a class="top-announce" href="#announcements" id="topAnnounce" aria-label="Jump to announcements">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg>
+      <span class="ta-label">Updates</span>
+      <span class="ta-badge" id="topAnnounceBadge" hidden>0</span>
+    </a>
     <span class="top-clock" id="topClock">--:--:--</span>
     <span class="top-pill"><span class="dot"></span>System online</span>
   </div>
@@ -512,40 +573,11 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
               <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
               <i style="height:92%; animation-delay:.42s"></i>
             </div>
+            <div class="console-activity" id="consoleActivity"><span class="ca-dot"></span><span id="consoleActivityText">Maria just submitted attendance</span></div>
           </div>
         </div>
       </div>
     </a>
-  </div>
-</section>
-
-<!-- ============================================================
-     ANNOUNCEMENTS — standalone board, separate from the tools
-     ============================================================ -->
-<section class="announce-section band-a" id="announcements">
-  <span class="announce-eyebrow" data-reveal>Board</span>
-  <div class="b-card b-announce" data-reveal-item style="--rd:0">
-    <span class="b-index" aria-hidden="true">00</span>
-    <div class="b-announce-head">
-      <p class="b-announce-title">
-        <span class="b-icon" style="width:38px;height:38px;margin:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
-        Announcements
-      </p>
-      <div class="b-announce-head-right">
-        <span class="b-announce-live"><span class="cdot-live"></span>Live</span>
-        <button type="button" class="b-announce-toggle" id="announceToggle">+ Post an update</button>
-      </div>
-    </div>
-    <p class="b-announce-meta" id="announceMeta">Loading updates&hellip;</p>
-    <div class="b-announce-list" id="announceList">
-      <div class="b-announce-item"><span class="b-announce-dot"></span>Loading announcements&hellip;</div>
-    </div>
-    <form class="b-announce-form" id="announceForm">
-      <input type="text" id="announceName" placeholder="Your name" required autocomplete="off">
-      <input type="text" id="announceMsg" placeholder="Write an announcement&hellip;" required autocomplete="off">
-      <button type="submit" id="announceSubmitBtn">Post</button>
-      <p class="b-announce-status" id="announceStatus"></p>
-    </form>
   </div>
 </section>
 
@@ -633,6 +665,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
         <div class="ovb" style="--h:60%"></div><div class="ovb" style="--h:75%"></div><div class="ovb" style="--h:82%"></div>
         <div class="ovb" style="--h:70%"></div><div class="ovb" style="--h:92%"></div>
       </div>
+      <div class="ov-updated"><span class="cdot-live"></span>Updated 4 minutes ago &middot; 5-week attendance trend</div>
       <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
     </a>
 
@@ -647,7 +680,16 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     <span class="workflow-eyebrow">How it works</span>
     <h2>From a tap on Saturday morning to a dashboard everyone can trust.</h2>
   </div>
-  <div class="wf-grid">
+  <div class="wf-track" id="wfTrack" aria-hidden="true">
+    <div class="wf-track-path"><div class="wf-track-line"></div><div class="wf-track-dot"></div></div>
+    <div class="wf-track-row">
+      <div class="wf-node n1">1</div>
+      <div class="wf-node n2">2</div>
+      <div class="wf-node n3">3</div>
+      <div class="wf-node n4">4</div>
+    </div>
+  </div>
+  <div class="wf-grid" id="wfGrid">
     <div class="wf-card wf1" data-reveal-item style="--rd:0">
       <span class="wf-ghost" aria-hidden="true">01</span>
       <span class="wf-num">1</span>
@@ -672,9 +714,39 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 </section>
 
 <!-- ============================================================
+     ANNOUNCEMENTS — compact notification strip, quiet by design
+     ============================================================ -->
+<section class="announce-section band-b" id="announcements">
+  <span class="announce-eyebrow" data-reveal>Board</span>
+  <div class="b-card b-announce" data-reveal-item style="--rd:0">
+    <span class="b-index" aria-hidden="true">00</span>
+    <div class="b-announce-head">
+      <p class="b-announce-title">
+        <span class="b-icon" style="width:38px;height:38px;margin:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
+        Announcements
+      </p>
+      <div class="b-announce-head-right">
+        <span class="b-announce-live"><span class="cdot-live"></span>Live</span>
+        <button type="button" class="b-announce-toggle" id="announceToggle">+ Post an update</button>
+      </div>
+    </div>
+    <p class="b-announce-meta" id="announceMeta">Loading updates&hellip;</p>
+    <div class="b-announce-list" id="announceList">
+      <div class="b-announce-item"><span class="b-announce-dot"></span>Loading announcements&hellip;</div>
+    </div>
+    <form class="b-announce-form" id="announceForm">
+      <input type="text" id="announceName" placeholder="Your name" required autocomplete="off">
+      <input type="text" id="announceMsg" placeholder="Write an announcement&hellip;" required autocomplete="off">
+      <button type="submit" id="announceSubmitBtn">Post</button>
+      <p class="b-announce-status" id="announceStatus"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================
      CTA — closing statement
      ============================================================ -->
-<section class="cta band-b" data-reveal>
+<section class="cta band-a" data-reveal>
   <span class="cta-eyebrow">BSOAOUMN 2&ndash;7</span>
   <h2>Everything students need to stay on track, now in one screen.</h2>
   <a class="cta-link" href="#dashboard">Open your tools <span class="arrow">&rarr;</span></a>
@@ -683,12 +755,13 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <!-- ============================================================
      FOOTER
      ============================================================ -->
-<footer class="band-a">
+<footer class="band-b">
+  <span class="foot-watermark" aria-hidden="true">BSOAOUMN</span>
   <div class="foot-row">
-    <span class="foot-mark">Office Administration Portal</span>
-    <span class="foot-meta">Maintained for BSOAOUMN 2&ndash;7 &nbsp;&middot;&nbsp; Version 8.5 &nbsp;&middot;&nbsp; &copy; 2026</span>
+    <span class="foot-meta">Built to simplify attendance, records, and class management in one connected workspace.</span>
+    <span class="foot-sep">&middot;</span>
+    <span class="foot-meta">Version 9 &nbsp;&middot;&nbsp; &copy; 2026</span>
   </div>
-  <p class="foot-note">Built exclusively for BSOAOUMN 2&ndash;7 to simplify attendance, records, and class management in one connected workspace.</p>
 </footer>
 
 <script>
@@ -717,6 +790,33 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
   }
   tick(); setInterval(tick, 1000);
 
+  /* ---- Signature moment: calm layered parallax on the hero ----
+     Copy and console drift in opposite directions as the cursor moves,
+     a slow, low-amplitude depth effect meant to be noticed after a
+     moment rather than immediately. Disabled on touch / narrow / reduced-motion. */
+  var heroEl = document.querySelector('.hero');
+  var heroCopyEl = document.querySelector('.hero-copy');
+  var heroConsoleStage = document.querySelector('.console-stage');
+  if (heroEl && heroCopyEl && heroConsoleStage && !reduced && !isTouchDevice() && window.innerWidth > 900){
+    var hpRaf = false, hpX = 0, hpY = 0;
+    function applyHeroParallax(){
+      hpRaf = false;
+      heroCopyEl.style.transform = 'translate(' + (hpX * -7) + 'px,' + (hpY * -5) + 'px)';
+      heroConsoleStage.style.transform = 'translate(' + (hpX * 12) + 'px,' + (hpY * 9) + 'px)';
+    }
+    heroEl.addEventListener('mousemove', function(e){
+      var r = heroEl.getBoundingClientRect();
+      hpX = ((e.clientX - r.left) / r.width - .5) * 2;
+      hpY = ((e.clientY - r.top) / r.height - .5) * 2;
+      if (!hpRaf){ hpRaf = true; requestAnimationFrame(applyHeroParallax); }
+    }, { passive:true });
+    heroEl.addEventListener('mouseleave', function(){
+      hpX = 0; hpY = 0;
+      requestAnimationFrame(applyHeroParallax);
+    });
+  }
+  function isTouchDevice(){ return window.matchMedia('(hover: none)').matches; }
+
   /* ---- Console "Synced Xs ago" ticker — tiny believable activity ---- */
   var syncText = document.getElementById('consoleSyncText');
   if (syncText && !reduced){
@@ -730,6 +830,28 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
         syncText.textContent = 'Synced just now';
       }
     }, 1000);
+  }
+
+  /* ---- Console activity ticker — one believable line at a time ---- */
+  var activityText = document.getElementById('consoleActivityText');
+  var activityEl = document.getElementById('consoleActivity');
+  if (activityText && activityEl && !reduced){
+    var activityMessages = [
+      'Maria just submitted attendance',
+      'Kyle marked Module 3 complete',
+      '3 lookups in the last hour',
+      'Attendance synced to Sheets',
+      'Jomar checked in at 8:03 AM'
+    ];
+    var activityIdx = 0;
+    setInterval(function(){
+      activityEl.classList.add('fading');
+      setTimeout(function(){
+        activityIdx = (activityIdx + 1) % activityMessages.length;
+        activityText.textContent = activityMessages[activityIdx];
+        activityEl.classList.remove('fading');
+      }, 450);
+    }, 5000);
   }
 
   /* ---- Hero stats count-up (runs once, on load — hero is above the fold) ---- */
@@ -789,6 +911,21 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     items.forEach(function(el){ itemObs.observe(el); });
   }
 
+  /* ---- Data-flow pipeline dot (workflow section) — starts once visible ---- */
+  var wfTrack = document.getElementById('wfTrack');
+  if (wfTrack){
+    if (reduced || !('IntersectionObserver' in window)){
+      /* leave inactive — reduced motion keeps the line static */
+    } else {
+      var wfObs = new IntersectionObserver(function(entries, obs){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting){ wfTrack.classList.add('flow-active'); obs.unobserve(entry.target); }
+        });
+      }, { threshold:.35 });
+      wfObs.observe(wfTrack);
+    }
+  }
+
   /* ---- Magnetic cursor tilt + shine on bento cards ---- */
   var isTouch = window.matchMedia('(hover: none)').matches;
   if (!isTouch && !reduced){
@@ -834,6 +971,19 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
   rippleStyle.textContent = '@keyframes rippleAnim{ to{ transform:scale(1); opacity:0; } }';
   document.head.appendChild(rippleStyle);
 
+  /* ---- Magnetic hover on primary buttons ---- */
+  if (!isTouchDevice() && !reduced){
+    document.querySelectorAll('.cta-link').forEach(function(btn){
+      btn.addEventListener('mousemove', function(e){
+        var r = btn.getBoundingClientRect();
+        var mx = (e.clientX - r.left - r.width/2) * .28;
+        var my = (e.clientY - r.top - r.height/2) * .28;
+        btn.style.transform = 'translate(' + mx + 'px,' + (my - 3) + 'px)';
+      });
+      btn.addEventListener('mouseleave', function(){ btn.style.transform = ''; });
+    });
+  }
+
   /* ---- Signature cursor glow ---- */
   var glow = document.getElementById('cursorGlow');
   if (glow && !reduced && !isTouch){
@@ -869,6 +1019,12 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 
   function renderAnnouncements(items){
     var meta = document.getElementById('announceMeta');
+    var badge = document.getElementById('topAnnounceBadge');
+    var count = items ? items.length : 0;
+    if (badge){
+      if (count > 0){ badge.textContent = count > 99 ? '99+' : String(count); badge.hidden = false; }
+      else { badge.hidden = true; }
+    }
     if (!items || items.length === 0){
       announceList.innerHTML = '<div class="b-announce-item"><span class="b-announce-dot"></span>No announcements posted yet &mdash; be the first to post an update.</div>';
       if (meta) meta.textContent = 'No updates yet';
