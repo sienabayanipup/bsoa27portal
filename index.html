@@ -196,11 +196,14 @@ a{ color:inherit; }
 .console-bar{ display:flex; align-items:center; gap:7px; padding:14px 18px; border-bottom:1px solid rgba(42,32,36,.06); }
 .console-bar i{ width:8px; height:8px; border-radius:50%; background:rgba(42,32,36,.14); }
 .console-bar span{ margin-left:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10px; color:var(--muted); letter-spacing:.03em; }
+.console-bar-live{ margin-left:auto; display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--teal); }
+.console-bar-live .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
+@keyframes consolePulse{ 0%{ box-shadow:0 0 0 0 rgba(76,118,87,.45);} 70%{ box-shadow:0 0 0 6px rgba(76,118,87,0);} 100%{ box-shadow:0 0 0 0 rgba(76,118,87,0);} }
 .console-body{ padding:22px 22px 24px; }
 .console-greeting{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:19px; color:var(--ink); margin-bottom:4px; }
 .console-date{ font-size:11.5px; color:var(--muted); margin-bottom:20px; }
-.console-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
-.ctile{ border-radius:12px; padding:13px 14px; display:flex; flex-direction:column; gap:8px; }
+.console-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.ctile{ position:relative; overflow:hidden; border-radius:12px; padding:13px 14px; display:flex; flex-direction:column; gap:8px; }
 .ctile .cdot{ width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; }
 .ctile .cdot svg{ width:11px; height:11px; stroke-width:2.4px; }
 .ctile span.lbl{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; color:var(--ink); }
@@ -208,9 +211,17 @@ a{ color:inherit; }
 .ctile.t2{ background:var(--slate-tint); } .ctile.t2 .cdot{ background:var(--slate); color:#fff; }
 .ctile.t3{ background:var(--teal-tint); } .ctile.t3 .cdot{ background:var(--teal); color:#fff; }
 .ctile.t4{ background:var(--bronze-tint); } .ctile.t4 .cdot{ background:var(--bronze); color:#fff; }
+.ctile::after{ content:""; position:absolute; inset:0; transform:translateX(-120%);
+  background:linear-gradient(75deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); }
+.ctile.t1::after{ animation:tileShimmerLoop 9s ease-in-out .8s infinite; }
+.ctile.t3::after{ animation:tileShimmerLoop 9s ease-in-out 4.4s infinite; }
+@keyframes tileShimmerLoop{ 0%{ transform:translateX(-120%); } 16%{ transform:translateX(120%); } 100%{ transform:translateX(120%); } }
+.console-sync{ display:flex; align-items:center; gap:7px; margin-bottom:14px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); }
+.console-sync .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); flex:0 0 auto; animation:consolePulse 2.4s infinite; }
 .console-chart{ display:flex; align-items:flex-end; gap:6px; height:44px; padding:0 2px; }
 .console-chart i{ flex:1; background:linear-gradient(180deg, var(--emerald), var(--emerald-deep)); border-radius:3px 3px 0 0; opacity:.85; animation:barGrow 1.2s var(--ease) both; }
 @keyframes barGrow{ from{ transform:scaleY(0); transform-origin:bottom; } to{ transform:scaleY(1); transform-origin:bottom; } }
+@media (prefers-reduced-motion: reduce){ .ctile::after{ display:none; } .console-bar-live .cdot-live, .console-sync .cdot-live{ animation:none; } }
 @media (max-width:900px){ .console{ transform:none; margin:0 auto; } .console{ animation:none; } }
 
 /* ==========================================================================
@@ -221,7 +232,7 @@ a{ color:inherit; }
 .band-a{ background:var(--paper-secondary); box-shadow:0 0 0 100vmax var(--paper-secondary); clip-path:inset(0 -100vmax); }
 .band-b{ background:var(--paper); box-shadow:0 0 0 100vmax var(--paper); clip-path:inset(0 -100vmax); }
 
-.announce-section{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:76px 24px 36px; }
+.announce-section{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:86px 24px 46px; }
 .announce-eyebrow{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:20px;
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .announce-eyebrow.revealed{ opacity:1; transform:translateY(0); }
@@ -231,7 +242,7 @@ a{ color:inherit; }
    card shape twice in a row. Ghost index numerals are the structuring
    device (this genuinely is the order officers/students touch each tool).
    ========================================================================== */
-.workspace{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:50px 24px 150px; }
+.workspace{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:58px 24px 118px; }
 .ws-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:56px;
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .ws-head.revealed{ opacity:1; transform:translateY(0); }
@@ -274,12 +285,18 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
    (sized up from the standard bento card — this one stands alone,
    so it needs to read clearly rather than blend in like a tool tile) */
 .b-announce{ grid-area:announce; --accent:var(--bronze); --accent-tint:var(--bronze-tint); padding:38px 40px 34px; }
-.b-announce-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:24px; }
+.b-announce .b-index{ font-size:150px; top:-.1em; }
+.b-announce-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
 .b-announce-title{ display:flex; align-items:center; gap:16px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:21px; }
 .b-announce-title .b-icon{ width:46px; height:46px; border-radius:13px; }
 .b-announce-title .b-icon svg{ width:24px; height:24px; }
+.b-announce-head-right{ display:flex; align-items:center; gap:14px; }
+.b-announce-live{ display:inline-flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
+.b-announce-live .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
 .b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13px; color:var(--bronze-text); background:var(--bronze-tint); border:none; border-radius:100px; padding:11px 20px; cursor:pointer; transition:background .15s ease; white-space:nowrap; }
 .b-announce-toggle:hover{ background:rgba(217,169,168,.22); }
+.b-announce-meta{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:11.5px; color:var(--muted); margin:0 0 22px 62px; }
+@media (max-width:640px){ .b-announce-meta{ margin-left:0; } }
 .b-announce-list{ max-height:220px; overflow-y:auto; }
 .b-announce-item{ display:flex; align-items:flex-start; gap:13px; padding:14px 0; font-size:16.5px; line-height:1.65; color:var(--ink); border-bottom:1px solid var(--hair); }
 .b-announce-item:last-child{ border-bottom:none; }
@@ -351,27 +368,43 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 /* ==========================================================================
    WORKFLOW — short "how it works" step list
    ========================================================================== */
-.workflow{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:0 24px 90px; }
+.workflow{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:64px 24px 108px; }
 .workflow-head{ margin-bottom:48px; opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .workflow-head.revealed{ opacity:1; transform:translateY(0); }
 .workflow-eyebrow{ display:inline-flex; align-items:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:16px; }
 .workflow-eyebrow::before{ content:""; width:22px; height:1px; background:var(--bronze); flex:0 0 auto; }
 .workflow-head h2{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(28px,3.4vw,42px); line-height:1.2; letter-spacing:-0.02em; color:var(--ink); max-width:22ch; }
-.wf-steps{ position:relative; }
-.wf-steps::before{ content:''; position:absolute; left:15px; top:10px; bottom:10px; width:1px; background:var(--hair); }
-.wf-step{ position:relative; display:flex; align-items:flex-start; gap:18px; padding:18px 0;
-  opacity:0; transform:translateY(16px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
-.wf-step.revealed{ opacity:1; transform:translateY(0); }
-.wf-num{ position:relative; z-index:1; flex:0 0 auto; width:32px; height:32px; border-radius:50%; background:var(--surface); border:1px solid var(--hair); box-shadow:var(--shadow-1);
-  display:flex; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans', sans-serif; font-size:12px; font-weight:700; color:var(--emerald); }
-.wf-copy{ max-width:640px; }
-.wf-copy b{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:15.5px; color:var(--ink); }
-.wf-copy span{ display:block; font-family:'Inter', sans-serif; font-size:13.5px; color:var(--ink-soft); margin-top:5px; line-height:1.65; }
+
+.wf-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; position:relative; }
+@media (max-width:900px){ .wf-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:560px){ .wf-grid{ grid-template-columns:1fr; } }
+
+.wf-card{
+  position:relative; z-index:1; overflow:hidden; border-radius:20px; padding:30px 24px 26px;
+  background:var(--surface); box-shadow:var(--shadow-2);
+  opacity:0; transform:translateY(28px) scale(.97); transition:opacity .6s var(--ease), transform .6s var(--spring), box-shadow .3s ease;
+}
+.wf-card::before{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+.wf-card.revealed{ opacity:1; transform:translateY(0) scale(1); }
+.wf-card:hover{ transform:translateY(-5px) scale(1.006); box-shadow:var(--shadow-3); }
+.wf-ghost{ position:absolute; top:-.16em; right:12px; z-index:0; pointer-events:none;
+  font-family:'Fraunces', serif; font-weight:600; font-optical-sizing:auto; font-size:84px; line-height:1; color:var(--accent,var(--emerald)); opacity:.06; }
+.wf-card > *{ position:relative; z-index:1; }
+.wf-num{ flex:0 0 auto; width:38px; height:38px; border-radius:11px; background:var(--accent-tint); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; font-weight:700; margin-bottom:20px; }
+.wf-copy b{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:16px; letter-spacing:-0.01em; color:var(--ink); margin-bottom:8px; }
+.wf-copy span{ display:block; font-family:'Inter', sans-serif; font-size:13.5px; color:var(--ink-soft); line-height:1.7; }
+
+.wf1{ --accent:var(--emerald); --accent-tint:var(--emerald-tint); }
+.wf2{ --accent:var(--slate); --accent-tint:var(--slate-tint); }
+.wf3{ --accent:var(--teal); --accent-tint:var(--teal-tint); }
+.wf4{ --accent:var(--bronze-text); --accent-tint:var(--bronze-tint); }
+@media (max-width:600px){ .wf-card{ padding:24px 22px 22px; } }
 
 /* ==========================================================================
    CTA — closing statement before the footer
    ========================================================================== */
-.cta{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:96px 24px 20px; text-align:center; border-top:1px solid var(--hair);
+.cta{ position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:104px 24px 28px; text-align:center; border-top:1px solid var(--hair);
   opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
 .cta.revealed{ opacity:1; transform:translateY(0); }
 .cta-eyebrow{ display:inline-flex; align-items:center; justify-content:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--bronze-text); }
@@ -393,6 +426,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
   border-top:1px solid var(--hair); padding-top:32px; }
 .foot-mark{ font-family:'Fraunces', serif; font-style:italic; font-weight:400; font-size:17px; letter-spacing:-0.01em; color:var(--ink); }
 .foot-meta{ font-family:'Inter', sans-serif; font-size:12.5px; letter-spacing:.005em; color:var(--muted); }
+.foot-note{ max-width:1240px; margin:14px auto 0; font-family:'Inter', sans-serif; font-size:12px; letter-spacing:.005em; color:var(--muted); opacity:.75; }
 
 @media (max-width:600px){
   .foot-row{ flex-direction:column; align-items:flex-start; gap:10px; }
@@ -452,9 +486,9 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
       <div class="hero-stats" id="heroStats">
         <div class="hstat"><span class="hstat-num" data-count-to="45">0</span><span class="hstat-cap">Students</span></div>
         <div class="hstat-divider" aria-hidden="true"></div>
-        <div class="hstat"><span class="hstat-num" data-count-to="4">0</span><span class="hstat-cap">Tools, in sync</span></div>
+        <div class="hstat"><span class="hstat-num" data-count-to="100" data-suffix="%">0%</span><span class="hstat-cap">Live sync</span></div>
         <div class="hstat-divider" aria-hidden="true"></div>
-        <div class="hstat"><span class="hstat-num" data-count-to="1">0</span><span class="hstat-cap">Source of truth</span></div>
+        <div class="hstat"><span class="hstat-num" data-count-to="0">0</span><span class="hstat-cap">Manual encoding</span></div>
       </div>
     </div>
 
@@ -462,7 +496,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
       <div class="console-stage">
         <div class="console-glow" aria-hidden="true"></div>
         <div class="console">
-          <div class="console-bar"><i></i><i></i><i></i><span>portal.local</span></div>
+          <div class="console-bar"><i></i><i></i><i></i><span>portal.local</span><span class="console-bar-live"><span class="cdot-live"></span>Live</span></div>
           <div class="console-body">
             <p class="console-greeting">Good morning 👋</p>
             <p class="console-date" id="consoleDate">&nbsp;</p>
@@ -472,6 +506,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
               <div class="ctile t3"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><span class="lbl">Activity</span></div>
               <div class="ctile t4"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span><span class="lbl">Overview</span></div>
             </div>
+            <div class="console-sync" id="consoleSync"><span class="cdot-live"></span><span id="consoleSyncText">Synced just now</span></div>
             <div class="console-chart">
               <i style="height:55%; animation-delay:.1s"></i><i style="height:85%; animation-delay:.18s"></i>
               <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
@@ -490,13 +525,18 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <section class="announce-section band-a" id="announcements">
   <span class="announce-eyebrow" data-reveal>Board</span>
   <div class="b-card b-announce" data-reveal-item style="--rd:0">
+    <span class="b-index" aria-hidden="true">00</span>
     <div class="b-announce-head">
       <p class="b-announce-title">
         <span class="b-icon" style="width:38px;height:38px;margin:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
         Announcements
       </p>
-      <button type="button" class="b-announce-toggle" id="announceToggle">+ Post an update</button>
+      <div class="b-announce-head-right">
+        <span class="b-announce-live"><span class="cdot-live"></span>Live</span>
+        <button type="button" class="b-announce-toggle" id="announceToggle">+ Post an update</button>
+      </div>
     </div>
+    <p class="b-announce-meta" id="announceMeta">Loading updates&hellip;</p>
     <div class="b-announce-list" id="announceList">
       <div class="b-announce-item"><span class="b-announce-dot"></span>Loading announcements&hellip;</div>
     </div>
@@ -607,20 +647,24 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     <span class="workflow-eyebrow">How it works</span>
     <h2>From a tap on Saturday morning to a dashboard everyone can trust.</h2>
   </div>
-  <div class="wf-steps">
-    <div class="wf-step" data-reveal-item style="--rd:0">
+  <div class="wf-grid">
+    <div class="wf-card wf1" data-reveal-item style="--rd:0">
+      <span class="wf-ghost" aria-hidden="true">01</span>
       <span class="wf-num">1</span>
       <div class="wf-copy"><b>Submit</b><span>Name, student number, subject &mdash; that's all it takes, from attendance to activity.</span></div>
     </div>
-    <div class="wf-step" data-reveal-item style="--rd:1">
+    <div class="wf-card wf2" data-reveal-item style="--rd:1">
+      <span class="wf-ghost" aria-hidden="true">02</span>
       <span class="wf-num">2</span>
       <div class="wf-copy"><b>Sync</b><span>Google Sheets updates instantly &mdash; the single source of truth behind every tool.</span></div>
     </div>
-    <div class="wf-step" data-reveal-item style="--rd:2">
+    <div class="wf-card wf3" data-reveal-item style="--rd:2">
+      <span class="wf-ghost" aria-hidden="true">03</span>
       <span class="wf-num">3</span>
       <div class="wf-copy"><b>Reflect</b><span>Lookup and the activity tracker refresh immediately, for anyone checking.</span></div>
     </div>
-    <div class="wf-step" data-reveal-item style="--rd:3">
+    <div class="wf-card wf4" data-reveal-item style="--rd:3">
+      <span class="wf-ghost" aria-hidden="true">04</span>
       <span class="wf-num">4</span>
       <div class="wf-copy"><b>Overview</b><span>Leaders see the full class picture update in real time, no reconciling required.</span></div>
     </div>
@@ -632,7 +676,7 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
      ============================================================ -->
 <section class="cta band-b" data-reveal>
   <span class="cta-eyebrow">BSOAOUMN 2&ndash;7</span>
-  <h2>Your record is one tap away.</h2>
+  <h2>Everything students need to stay on track, now in one screen.</h2>
   <a class="cta-link" href="#dashboard">Open your tools <span class="arrow">&rarr;</span></a>
 </section>
 
@@ -642,8 +686,9 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
 <footer class="band-a">
   <div class="foot-row">
     <span class="foot-mark">Office Administration Portal</span>
-    <span class="foot-meta">Maintained for BSOAOUMN 2&ndash;7 &nbsp;&middot;&nbsp; Version 8.0 &nbsp;&middot;&nbsp; &copy; 2026</span>
+    <span class="foot-meta">Maintained for BSOAOUMN 2&ndash;7 &nbsp;&middot;&nbsp; Version 8.5 &nbsp;&middot;&nbsp; &copy; 2026</span>
   </div>
+  <p class="foot-note">Built exclusively for BSOAOUMN 2&ndash;7 to simplify attendance, records, and class management in one connected workspace.</p>
 </footer>
 
 <script>
@@ -671,6 +716,21 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
     topClock.textContent = new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   }
   tick(); setInterval(tick, 1000);
+
+  /* ---- Console "Synced Xs ago" ticker — tiny believable activity ---- */
+  var syncText = document.getElementById('consoleSyncText');
+  if (syncText && !reduced){
+    var syncedAt = Date.now();
+    setInterval(function(){
+      var secs = Math.round((Date.now() - syncedAt) / 1000);
+      if (secs < 30){
+        syncText.textContent = secs < 3 ? 'Synced just now' : 'Synced ' + secs + 's ago';
+      } else {
+        syncedAt = Date.now();
+        syncText.textContent = 'Synced just now';
+      }
+    }, 1000);
+  }
 
   /* ---- Hero stats count-up (runs once, on load — hero is above the fold) ---- */
   var heroStats = document.getElementById('heroStats');
@@ -808,10 +868,13 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
   function escapeHtml(str){ var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
   function renderAnnouncements(items){
+    var meta = document.getElementById('announceMeta');
     if (!items || items.length === 0){
       announceList.innerHTML = '<div class="b-announce-item"><span class="b-announce-dot"></span>No announcements posted yet &mdash; be the first to post an update.</div>';
+      if (meta) meta.textContent = 'No updates yet';
       return;
     }
+    if (meta) meta.textContent = items.length + (items.length === 1 ? ' update posted' : ' updates posted');
     announceList.innerHTML = items.map(function(item){
       var name = escapeHtml(item.name || 'Anonymous');
       var msg = escapeHtml(item.message || '');
@@ -825,6 +888,8 @@ footer{ position:relative; z-index:1; padding:0 32px 70px; }
       .then(function(data){ renderAnnouncements(data.announcements || []); })
       .catch(function(){
         announceList.innerHTML = '<div class="b-announce-item"><span class="b-announce-dot"></span>Could not load announcements right now.</div>';
+        var meta = document.getElementById('announceMeta');
+        if (meta) meta.textContent = 'Board offline';
       });
   }
 
