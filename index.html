@@ -270,17 +270,27 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 @keyframes pulse2{ 0%{ box-shadow:0 0 0 0 rgba(232,196,192,.5);} 70%{ box-shadow:0 0 0 5px rgba(232,196,192,0);} 100%{ box-shadow:0 0 0 0 rgba(232,196,192,0);} }
 
 /* Attendance — grid-area attendance, wide featured */
-.b-attendance{ grid-area:attendance; flex-direction:row; align-items:center; gap:36px; --accent:var(--emerald); --accent-tint:var(--emerald-tint); }
-.b-attendance .b-text{ flex:1; min-width:0; }
+.b-attendance{ grid-area:attendance; --accent:var(--emerald); --accent-tint:var(--emerald-tint); }
+.b-attendance .b-index{ opacity:.042; right:10px; }
 .b-attendance .b-icon{ width:50px; height:50px; }
 .b-attendance .b-title{ font-size:20px; }
-.b-attendance-visual{ flex:0 0 auto; width:140px; background:var(--emerald-tint); border-radius:14px; padding:15px; }
-.bv-label{ display:block; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10px; letter-spacing:.04em; color:var(--emerald); opacity:.85; margin-bottom:10px; }
-.week-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:5px; }
-.week-grid .d{ aspect-ratio:1; border-radius:6px; background:rgba(42,32,36,.06); display:flex; align-items:center; justify-content:center; }
-.week-grid .d.done{ background:var(--emerald); }
-.week-grid .d.done svg{ width:9px; height:9px; stroke:#fff; }
-@media (max-width:900px){ .b-attendance{ flex-direction:column; align-items:flex-start; } .b-attendance-visual{ width:100%; } }
+.b-attendance .b-desc{ flex:none; max-width:36em; }
+
+.b-attendance-preview{ display:grid; grid-template-columns:1fr 1fr; margin-top:24px; padding-top:22px; border-top:1px solid var(--hair); }
+.bap-col{ padding-right:28px; }
+.bap-col + .bap-col{ padding-right:0; padding-left:28px; border-left:1px solid var(--hair); }
+.bap-label{ display:block; font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+.bap-status{ display:flex; align-items:center; gap:7px; margin-bottom:8px; }
+.bap-status-dot{ width:16px; height:16px; border-radius:50%; background:var(--emerald); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.bap-status-dot svg{ width:9px; height:9px; stroke:#fff; }
+.bap-status-text{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:15px; color:var(--emerald); }
+.bap-day{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:15px; color:var(--ink); margin-bottom:8px; }
+.bap-date{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:19px; letter-spacing:-0.01em; color:var(--ink); }
+.bap-time{ font-size:12px; color:var(--muted); margin-top:4px; }
+@media (max-width:480px){
+  .b-attendance-preview{ grid-template-columns:1fr; gap:20px; }
+  .bap-col + .bap-col{ padding-left:0; border-left:none; border-top:1px solid var(--hair); padding-top:18px; }
+}
 
 /* Lookup — grid-area lookup, tall */
 .b-lookup{ grid-area:lookup; --accent:var(--slate); --accent-tint:var(--slate-tint); justify-content:space-between; }
@@ -478,19 +488,26 @@ footer .fmeta{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-siz
 
     <a class="b-card b-attendance" href="attendance.html" data-reveal-item style="--rd:2">
       <span class="b-index" aria-hidden="true">01</span>
-      <div class="b-text">
-        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
-        <div class="b-title">Weekly Attendance</div>
-        <p class="b-desc">Submit your name, student number, date, and subject for the week &mdash; and watch the week's record fill in.</p>
-        <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
-      </div>
-      <div class="b-attendance-visual" aria-hidden="true">
-        <span class="bv-label">This week</span>
-        <div class="week-grid">
-          <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-          <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-          <div class="d done"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
-          <div class="d"></div><div class="d"></div>
+      <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
+      <div class="b-title">Weekly Attendance</div>
+      <p class="b-desc">Every Saturday, submit your name, student number, and subject &mdash; and this week's record fills in automatically.</p>
+      <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
+
+      <div class="b-attendance-preview" aria-hidden="true">
+        <div class="bap-col">
+          <span class="bap-label">Last Attendance</span>
+          <div class="bap-status">
+            <span class="bap-status-dot"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span class="bap-status-text">Submitted</span>
+          </div>
+          <div class="bap-date">July 25</div>
+          <div class="bap-time">8:12 AM</div>
+        </div>
+        <div class="bap-col">
+          <span class="bap-label">Next Session</span>
+          <div class="bap-day">Saturday</div>
+          <div class="bap-date">August 1</div>
+          <div class="bap-time">8:00 AM</div>
         </div>
       </div>
     </a>
