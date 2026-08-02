@@ -6,6 +6,10 @@
 <meta name="theme-color" content="#FAF6F1">
 <meta name="view-transition" content="same-origin">
 <title>Student Lookup &mdash; BSOAOUMN 2-7</title>
+<meta property="og:title" content="Student Lookup — BSOAOUMN 2-7">
+<meta property="og:description" content="Look up grades, enrollment, and activity records for BSOAOUMN 2-7.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23FAF6F1' stroke='%236B1F2E' stroke-width='3.5'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-size='22' font-weight='600' text-anchor='middle' fill='%236B1F2E'%3E2%C2%B77%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,680;1,9..144,300;1,9..144,340;1,9..144,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -197,12 +201,17 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 .record-card{
   background:var(--surface); border-radius:16px; overflow:hidden; box-shadow:var(--shadow-2);
   opacity:0; transform:translateY(16px); animation:cardIn .5s var(--ease) forwards;
+  transition:box-shadow .25s var(--ease), transform .25s var(--ease);
 }
+.record-card:hover{ box-shadow:var(--shadow-3); }
 .record-card .rc-header{
   background:var(--slate-tint); padding:13px 20px; font-family:'Plus Jakarta Sans', sans-serif;
   font-size:12.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--slate-deep);
   cursor:pointer; display:flex; align-items:center; justify-content:space-between; user-select:none;
+  transition:background .15s ease;
 }
+.record-card .rc-header:hover{ background:#DCE6EE; }
+.record-card .rc-header:active{ background:#CFDCE6; }
 .record-card .rc-chevron{
   width:16px; height:16px; display:flex; align-items:center; justify-content:center;
   flex:0 0 auto; transition:transform .25s ease;
@@ -214,6 +223,18 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 .record-card .no-record{ font-size:13.5px; color:var(--muted); font-style:italic; }
 
 .kv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; }
+
+/* ---------- Skeleton loading state ---------- */
+@keyframes shimmer{ 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
+.skel{
+  border-radius:5px; background:linear-gradient(90deg, var(--hair) 25%, rgba(42,32,36,.07) 37%, var(--hair) 63%);
+  background-size:400% 100%; animation:shimmer 1.5s ease-in-out infinite;
+}
+.skel-header{ height:11px; width:120px; border-radius:3px; }
+.skel-line{ height:10px; margin-top:8px; }
+.skel-line.k{ width:55%; height:8px; }
+.skel-line.v{ width:80%; margin-top:5px; }
+@media (prefers-reduced-motion: reduce){ .skel{ animation:none; opacity:.6; } }
 .kv{ display:flex; flex-direction:column; padding:8px 0; border-bottom:1px solid var(--hair); }
 .kv .k{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-family:'IBM Plex Mono', monospace; }
 .kv .v{ font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; font-weight:700; margin-top:3px; color:var(--ink); word-break:break-word; }
@@ -536,9 +557,16 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     searchBtn.textContent = "Searching...";
     statusMsg.textContent = "Looking up record...";
     statusMsg.className = "status loading";
-    resultsArea.innerHTML = `
-      <div class="record-card"><div class="rc-header"><span>Loading&hellip;</span></div><div class="rc-body"><p class="no-record">Fetching records&hellip;</p></div></div>
-    `;
+    resultsArea.innerHTML = Array(3).fill(0).map(function(){
+      return `<div class="record-card" style="opacity:1;">
+        <div class="rc-header" style="cursor:default;"><span class="skel skel-header"></span></div>
+        <div class="rc-body"><div class="kv-grid">` +
+          Array(4).fill(0).map(function(){
+            return `<div class="kv"><span class="skel skel-line k"></span><span class="skel skel-line v"></span></div>`;
+          }).join('') +
+        `</div></div>
+      </div>`;
+    }).join('');
     studentHeader.style.display = 'none';
 
     const url = SCRIPT_URL + "?studentNumber=" + encodeURIComponent(studentNumber);
