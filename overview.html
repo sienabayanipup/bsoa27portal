@@ -6,6 +6,10 @@
 <meta name="theme-color" content="#FAF6F1">
 <meta name="view-transition" content="same-origin">
 <title>Class Overview &mdash; BSOAOUMN 2-7</title>
+<meta property="og:title" content="Class Overview — BSOAOUMN 2-7">
+<meta property="og:description" content="Attendance and activity completion snapshot for BSOAOUMN 2-7.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23FAF6F1' stroke='%236B1F2E' stroke-width='3.5'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-size='22' font-weight='600' text-anchor='middle' fill='%236B1F2E'%3E2%C2%B77%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,680;1,9..144,300;1,9..144,340;1,9..144,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -214,6 +218,16 @@ a{ color:inherit; }
 .status-msg.error{ color:var(--error); font-weight:600; }
 
 .check-summary-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0; }
+
+/* ---------- Skeleton loading state ---------- */
+@keyframes shimmer{ 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
+.skel{
+  border-radius:5px; background:linear-gradient(90deg, var(--hair) 25%, rgba(42,32,36,.07) 37%, var(--hair) 63%);
+  background-size:400% 100%; animation:shimmer 1.5s ease-in-out infinite;
+}
+.skel-box{ height:64px; border-radius:14px; }
+.skel-line{ height:12px; margin:9px 0; }
+@media (prefers-reduced-motion: reduce){ .skel{ animation:none; opacity:.6; } }
 .check-summary-box{ border-radius:14px; padding:16px 16px; text-align:center; }
 .check-summary-box.good{ background:var(--teal-tint); }
 .check-summary-box.bad{ background:var(--error-tint); }
@@ -247,8 +261,9 @@ a{ color:inherit; }
 
 .result-header{
   display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; margin-top:18px;
-  padding-top:14px; border-top:1px solid var(--hair);
+  padding-top:14px; border-top:1px solid var(--hair); transition:opacity .15s ease;
 }
+.result-header:hover{ opacity:.7; }
 .result-header .toggle-label{ font-family:'Plus Jakarta Sans', sans-serif; font-size:12px; font-weight:700; color:var(--bronze-deep); }
 .result-header .chevron{ font-size:11px; color:var(--bronze-text); transition:transform .15s ease; }
 .result-body.collapsed{ display:none; }
@@ -437,10 +452,17 @@ a{ color:inherit; }
 
     attCheckBtn.disabled = true;
     attCheckBtn.textContent = "Checking...";
-    attStatus.textContent = "Checking...";
+    attStatus.textContent = "";
     attStatus.className = "status-msg";
-    attStatus.style.display = 'block';
-    attResult.innerHTML = '';
+    attStatus.style.display = 'none';
+    attResult.innerHTML = `<div class="check-summary-row">
+        <div class="skel skel-box"></div><div class="skel skel-box"></div>
+      </div>
+      <div class="skel skel-line" style="width:35%;margin-top:22px;"></div>
+      <div class="roster-columns" style="margin-top:12px;">
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:90%;"></div>').join('')}</div>
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:85%;"></div>').join('')}</div>
+      </div>`;
 
     const url = SCRIPT_URL
       + "?action=getAttendanceForDate"
@@ -453,6 +475,8 @@ a{ color:inherit; }
         if (data.error){
           attStatus.textContent = data.error;
           attStatus.className = "status-msg error";
+          attStatus.style.display = 'block';
+          attResult.innerHTML = '';
           return;
         }
         attStatus.style.display = 'none';
@@ -507,6 +531,8 @@ a{ color:inherit; }
       .catch(() => {
         attStatus.textContent = "Could not connect. Check your internet and try again.";
         attStatus.className = "status-msg error";
+        attStatus.style.display = 'block';
+        attResult.innerHTML = '';
       })
       .finally(() => {
         attCheckBtn.disabled = false;
@@ -557,10 +583,17 @@ a{ color:inherit; }
 
     actCheckBtn.disabled = true;
     actCheckBtn.textContent = "Checking...";
-    actStatus.textContent = "Checking...";
+    actStatus.textContent = "";
     actStatus.className = "status-msg";
-    actStatus.style.display = 'block';
-    actResult.innerHTML = '';
+    actStatus.style.display = 'none';
+    actResult.innerHTML = `<div class="check-summary-row">
+        <div class="skel skel-box"></div><div class="skel skel-box"></div>
+      </div>
+      <div class="skel skel-line" style="width:35%;margin-top:22px;"></div>
+      <div class="roster-columns" style="margin-top:12px;">
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:90%;"></div>').join('')}</div>
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:85%;"></div>').join('')}</div>
+      </div>`;
 
     const url = SCRIPT_URL
       + "?action=getActivityStatusByDate"
@@ -573,6 +606,8 @@ a{ color:inherit; }
         if (data.error){
           actStatus.textContent = data.error;
           actStatus.className = "status-msg error";
+          actStatus.style.display = 'block';
+          actResult.innerHTML = '';
           return;
         }
         actStatus.style.display = 'none';
@@ -627,6 +662,8 @@ a{ color:inherit; }
       .catch(() => {
         actStatus.textContent = "Could not connect. Check your internet and try again.";
         actStatus.className = "status-msg error";
+        actStatus.style.display = 'block';
+        actResult.innerHTML = '';
       })
       .finally(() => {
         actCheckBtn.disabled = false;
