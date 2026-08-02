@@ -109,7 +109,7 @@ a{ color:inherit; }
 
 /* Office-administration character: a near-invisible filing/document grid,
    index-card rules at binder-tab spacing. Never louder than 4% opacity. */
-.filing-texture{ position:absolute; inset:0; z-index:0; pointer-events:none; opacity:.04;
+.filing-texture{ position:absolute; top:0; bottom:0; left:50%; width:100vw; margin-left:-50vw; z-index:-1; pointer-events:none; opacity:.04;
   background-image:
     repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 96px),
     repeating-linear-gradient(0deg, var(--ink) 0 1px, transparent 1px 40px);
@@ -132,7 +132,6 @@ a{ color:inherit; }
   background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1);
 }
-.top-mark svg{ width:13px; height:13px; color:var(--emerald); }
 .top-clock{
   display:inline-flex; align-items:center; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.06em; color:var(--ink-soft);
   background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
@@ -295,7 +294,7 @@ a{ color:inherit; }
 }
 
 .b-card{
-  position:relative; border-radius:22px; overflow:hidden; padding:30px 30px 26px;
+  position:relative; border-radius:22px; overflow:hidden; padding:27px 28px 24px;
   background:var(--surface); box-shadow:var(--shadow-2);
   opacity:0; transform:translateY(34px) scale(.97); transition:opacity .65s var(--ease), transform .65s var(--spring), box-shadow .3s ease;
 }
@@ -315,7 +314,7 @@ a.b-card:hover .b-index{ opacity:.09; }
 a.b-card:hover .b-icon{ transform:scale(1.08); }
 .b-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:18px; letter-spacing:-0.015em; margin-bottom:10px; }
 .b-desc{ font-size:13.5px; line-height:1.7; letter-spacing:.002em; color:var(--muted); flex:1; }
-.b-footer{ display:flex; align-items:center; gap:7px; margin-top:22px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); }
+.b-footer{ display:flex; align-items:center; gap:7px; margin-top:16px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); }
 .b-footer .arrow{ display:inline-block; transition:transform .25s ease; }
 a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 
@@ -353,27 +352,18 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 
 /* Attendance — grid-area attendance, wide featured */
 .b-attendance{ grid-area:attendance; --accent:var(--emerald); --accent-tint:var(--emerald-tint);
-  padding:38px 38px 34px; box-shadow:var(--shadow-3), 0 46px 110px -34px rgba(78,22,32,.3), inset 0 1px 0 rgba(255,255,255,.7);
+  padding:32px 34px 26px; box-shadow:var(--shadow-3), 0 40px 90px -30px rgba(78,22,32,.26), inset 0 1px 0 rgba(255,255,255,.7);
   background:linear-gradient(158deg, var(--surface) 55%, var(--emerald-tint) 340%); }
-a.b-attendance:hover{ box-shadow:var(--shadow-3), 0 50px 120px -30px rgba(78,22,32,.34), inset 0 1px 0 rgba(255,255,255,.7); }
+a.b-attendance:hover{ box-shadow:var(--shadow-3), 0 44px 100px -28px rgba(78,22,32,.3), inset 0 1px 0 rgba(255,255,255,.7); }
 .b-attendance .b-index{ opacity:.05; right:10px; font-size:150px; }
-.b-attendance .b-icon{ width:56px; height:56px; }
-.b-attendance .b-icon svg{ width:26px; height:26px; }
-.b-kicker{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:12px; }
-.b-attendance .b-title{ font-size:22.5px; margin-bottom:12px; }
+.b-attendance .b-icon{ width:48px; height:48px; margin-bottom:14px; }
+.b-attendance .b-icon svg{ width:22px; height:22px; }
+.b-kicker{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:6px; }
+.b-attendance .b-title{ font-size:21px; margin-bottom:8px; }
 .b-attendance .b-desc{ flex:none; max-width:36em; }
-.bap-week{ margin-top:20px; padding-top:18px; border-top:1px solid var(--hair); }
-.bap-week-label{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
-.bap-week-row{ display:flex; gap:7px; margin-bottom:13px; }
-.bwk{ flex:1; display:flex; align-items:center; justify-content:center; height:30px; border-radius:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; }
-.bwk.present{ background:var(--emerald-tint); color:var(--emerald); }
-.bwk.absent{ background:rgba(181,68,61,.1); color:var(--error); }
-.bwk.pending{ background:var(--paper-secondary); color:var(--muted); border:1px dashed var(--hair); }
-.bap-week-pct{ font-size:12.5px; color:var(--ink-soft); }
-.bap-week-pct-num{ font-family:'Fraunces', serif; font-weight:600; color:var(--emerald); font-size:15px; margin-right:4px; }
-@media (max-width:600px){ .b-attendance{ padding:30px 26px 26px; } .bap-week-row{ flex-wrap:wrap; } .bwk{ flex:1 1 15%; } }
+@media (max-width:600px){ .b-attendance{ padding:26px 24px 22px; } }
 
-.b-attendance-preview{ display:grid; grid-template-columns:1fr 1fr; margin-top:24px; padding-top:22px; border-top:1px solid var(--hair); }
+.b-attendance-preview{ display:grid; grid-template-columns:1fr 1fr; margin-top:16px; padding-top:16px; border-top:1px solid var(--hair); }
 .bap-col{ padding-right:28px; }
 .bap-col + .bap-col{ padding-right:0; padding-left:28px; border-left:1px solid var(--hair); }
 .bap-label{ display:block; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
@@ -690,18 +680,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
         </div>
       </div>
 
-      <div class="bap-week" aria-hidden="true">
-        <span class="bap-week-label">Last 6 Sessions</span>
-        <div class="bap-week-row">
-          <span class="bwk present" title="Jun 20 — Present">J20</span>
-          <span class="bwk present" title="Jun 27 — Present">J27</span>
-          <span class="bwk absent" title="Jul 4 — Absent">JL4</span>
-          <span class="bwk present" title="Jul 11 — Present">J11</span>
-          <span class="bwk present" title="Jul 18 — Present">J18</span>
-          <span class="bwk present" title="Jul 25 — Present">J25</span>
-        </div>
-        <div class="bap-week-pct"><span class="bap-week-pct-num">92%</span>attendance rate this term</div>
-      </div>
+      <div class="console-activity" id="attActivity" aria-hidden="true"><span class="ca-avatar" id="attActivityAvatar">J</span><span id="attActivityText">Jane Doe just submitted attendance</span></div>
     </a>
 
     <a class="b-card b-lookup card-signature" href="lookup.html" data-reveal-item style="--rd:1">
@@ -740,7 +719,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
       <span class="b-index" aria-hidden="true">04</span>
       <div class="ov-head">
         <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
-        <div><div class="b-title">Class Overview</div><p class="b-desc">For leaders &mdash; the full class snapshot, at a glance.</p></div>
+        <div><div class="b-title">Class Overview</div><p class="b-desc">For officers &mdash; the full class snapshot, at a glance.</p></div>
       </div>
       <div class="ov-stats">
         <div><div class="ov-stat-num" data-count-to="92" data-suffix="%">0%</div><div class="ov-stat-label">Attendance</div></div>
@@ -942,6 +921,30 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
         activityEl.classList.remove('fading');
       }, 450);
     }, 5000);
+  }
+
+  /* ---- Attendance card activity ticker — same pattern as the console one above,
+     just scoped to attendance-only events, offset timing so they don't sync up ---- */
+  var attActivityText = document.getElementById('attActivityText');
+  var attActivityAvatar = document.getElementById('attActivityAvatar');
+  var attActivityEl = document.getElementById('attActivity');
+  if (attActivityText && attActivityEl && !reduced){
+    var attMessages = [
+      { initials:'J', text:'Jane Doe just submitted attendance' },
+      { initials:'M', text:'Marco checked in for Saturday' },
+      { initials:'A', text:'Ana submitted for ENGL 017' },
+      { initials:'K', text:'Kyle marked present at 8:04 AM' }
+    ];
+    var attIdx = 0;
+    setInterval(function(){
+      attActivityEl.classList.add('fading');
+      setTimeout(function(){
+        attIdx = (attIdx + 1) % attMessages.length;
+        attActivityText.textContent = attMessages[attIdx].text;
+        if (attActivityAvatar) attActivityAvatar.textContent = attMessages[attIdx].initials;
+        attActivityEl.classList.remove('fading');
+      }, 450);
+    }, 4200);
   }
 
   /* ---- Hero stats count-up (runs once, on load — hero is above the fold) ---- */
