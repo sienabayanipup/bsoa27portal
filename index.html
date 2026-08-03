@@ -1181,5 +1181,51 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 })();
 </script>
 
+<script>
+  /* ---- Welcome chime ----
+     Browsers block audio from playing until the visitor has interacted
+     with the page at least once, so this fires on their very first
+     click/tap/keypress anywhere on the landing page — no separate
+     "enter site" step needed. It's synthesized with the Web Audio API
+     (two soft sine tones, a rising fifth) so no audio file is needed,
+     and it only ever plays once per page load.
+  */
+  (function () {
+    var played = false;
+    function playWelcomeChime() {
+      if (played) return;
+      played = true;
+      try {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        var ctx = new Ctx();
+        var now = ctx.currentTime;
+
+        function tone(freq, startAt, duration, peakGain) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0, now + startAt);
+          gain.gain.linearRampToValueAtTime(peakGain, now + startAt + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + startAt + duration);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(now + startAt);
+          osc.stop(now + startAt + duration + 0.05);
+        }
+
+        // Soft rising two-note "welcome" — C5 into G5, quiet and brief.
+        tone(523.25, 0,    0.9, 0.045);
+        tone(783.99, 0.13, 1.1, 0.04);
+      } catch (e) {
+        // Web Audio unsupported or blocked — fail silently, no error shown to the user.
+      }
+      window.removeEventListener('pointerdown', playWelcomeChime);
+      window.removeEventListener('keydown', playWelcomeChime);
+    }
+    window.addEventListener('pointerdown', playWelcomeChime, { once: true });
+    window.addEventListener('keydown', playWelcomeChime, { once: true });
+  })();
+</script>
+
 </body>
 </html>
