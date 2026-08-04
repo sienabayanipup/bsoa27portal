@@ -1308,6 +1308,16 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   var announceStatus = document.getElementById('announceStatus');
   var announceSubmitBtn = document.getElementById('announceSubmitBtn');
 
+  /* Apps Script can occasionally take a long time to respond (cold
+     starts, quota throttling), and a bare fetch() will just sit there
+     with no way to know it's stuck. This aborts and rejects after a
+     fixed window instead, so the UI always recovers either way. */
+  function fetchWithTimeout(url, ms){
+    var controller = new AbortController();
+    var timer = setTimeout(function(){ controller.abort(); }, ms || 15000);
+    return fetch(url, { signal: controller.signal }).finally(function(){ clearTimeout(timer); });
+  }
+
   function escapeHtml(str){ var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
   function renderAnnouncements(items){
@@ -1332,7 +1342,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   }
 
   function loadAnnouncements(){
-    fetch(ANNOUNCE_SCRIPT_URL + "?action=getAnnouncements")
+    fetchWithTimeout(ANNOUNCE_SCRIPT_URL + "?action=getAnnouncements", 15000)
       .then(function(res){ return res.json(); })
       .then(function(data){ renderAnnouncements(data.announcements || []); })
       .catch(function(){
@@ -1365,7 +1375,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       var postUrl = ANNOUNCE_SCRIPT_URL + "?action=postAnnouncement"
         + "&name=" + encodeURIComponent(name) + "&message=" + encodeURIComponent(msg);
 
-      fetch(postUrl)
+      fetchWithTimeout(postUrl, 15000)
         .then(function(res){ return res.json(); })
         .then(function(result){
           if (result.result === 'success'){
@@ -1378,8 +1388,10 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
             announceStatus.className = 'b-announce-status error';
           }
         })
-        .catch(function(){
-          announceStatus.textContent = 'Could not connect. Check your internet and try again.';
+        .catch(function(err){
+          announceStatus.textContent = (err && err.name === 'AbortError')
+            ? 'This is taking longer than expected. Please try again.'
+            : 'Could not connect. Check your internet and try again.';
           announceStatus.className = 'b-announce-status error';
         })
         .finally(function(){
