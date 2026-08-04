@@ -189,11 +189,11 @@ a{ color:inherit; }
 .hero-eyebrow{
   display:inline-flex; align-items:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px;
   letter-spacing:.34em; text-transform:uppercase; color:var(--bronze-tint); margin:0 0 34px;
-  opacity:0; transform:translateY(-6px); animation:rise .7s var(--ease) forwards; animation-delay:.1s;
+  opacity:0; transform:translateX(-38px); animation:riseX .7s var(--ease) forwards; animation-delay:.1s;
 }
 .hero-eyebrow::before{ content:""; width:22px; height:1px; background:var(--bronze-bright); flex:0 0 auto; }
 .hero h1{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(46px,6vw,84px); line-height:.98; letter-spacing:-0.025em; color:#FDFAF7; }
-.hero h1 .line{ display:block; opacity:0; transform:translateY(28px); animation:rise .85s var(--ease) forwards; }
+.hero h1 .line{ display:block; opacity:0; transform:translateX(-56px); animation:riseX .85s var(--ease) forwards; }
 .hero h1 .line:nth-child(1){
   font-weight:600; font-size:clamp(52px,7.6vw,108px); line-height:.92; letter-spacing:-0.035em;
   animation-delay:.22s;
@@ -203,13 +203,14 @@ a{ color:inherit; }
   letter-spacing:-0.035em; color:var(--bronze-tint); margin-top:.14em; animation-delay:.38s;
 }
 @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
-.hero-rule{ width:38px; height:1px; margin:42px 0 30px; background:var(--bronze-bright); opacity:0; animation:rise .6s var(--ease) forwards; animation-delay:.55s; }
+@keyframes riseX{ to{ opacity:1; transform:translateX(0); } }
+.hero-rule{ width:38px; height:1px; margin:42px 0 30px; background:var(--bronze-bright); opacity:0; transform:translateX(-38px); animation:riseX .6s var(--ease) forwards; animation-delay:.55s; }
 .hero p.lead{ font-family:'Inter', sans-serif; font-size:16.5px; font-weight:400; line-height:1.8; letter-spacing:.001em; color:rgba(253,250,247,.72); max-width:30em;
-  opacity:0; transform:translateY(14px); animation:rise .7s var(--ease) forwards; animation-delay:.62s; }
+  opacity:0; transform:translateX(-32px); animation:riseX .7s var(--ease) forwards; animation-delay:.62s; }
 
 /* -- Hero stat strip (the old full-page stat band, folded into the hero) -- */
 .hero-stats{ display:flex; align-items:center; gap:clamp(20px,3vw,36px); margin-top:44px;
-  opacity:0; transform:translateY(14px); animation:rise .7s var(--ease) forwards; animation-delay:.78s; }
+  opacity:0; transform:translateX(-32px); animation:riseX .7s var(--ease) forwards; animation-delay:.78s; }
 .hstat{ display:flex; flex-direction:column; gap:6px; }
 .hstat-num{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(26px,2.6vw,34px); letter-spacing:-0.02em; color:#FDFAF7; font-variant-numeric:tabular-nums; }
 .hstat-cap{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:rgba(253,250,247,.5); }
@@ -222,9 +223,19 @@ a{ color:inherit; }
 .console-link:active{ transform:translateY(-4px) scale(1.006); }
 .console-link:hover .console{ box-shadow:var(--shadow-3), 0 34px 80px -22px rgba(78,22,32,.32), inset 0 1px 0 rgba(255,255,255,.7); }
 .console-link:focus-visible{ outline:2px solid var(--emerald); outline-offset:8px; border-radius:22px; }
-.console-stage{ position:relative; perspective:1600px; opacity:0; animation:consoleIn 1s var(--ease) forwards; animation-delay:.3s; transition:transform .9s var(--ease); will-change:transform; }
+.console-stage{ position:relative; perspective:1600px; opacity:0; animation:consoleIn 1s var(--ease) forwards; animation-delay:.42s; transition:transform .9s var(--ease); will-change:transform; }
 @media (max-width:900px){ .console-stage{ transition:none !important; transform:none !important; } }
-@keyframes consoleIn{ from{ opacity:0; transform:translateY(30px) scale(.96); } to{ opacity:1; transform:translateY(0) scale(1); } }
+@keyframes consoleIn{ from{ opacity:0; transform:translateX(90px) scale(.96); } to{ opacity:1; transform:translateX(0) scale(1); } }
+
+/* Hold every hero entrance at its starting frame while the gate is up —
+   removing html.gate-locked (see gate JS) lets them all play in together:
+   copy sliding in from the left, the console icon from the right. */
+html.gate-locked .hero-eyebrow,
+html.gate-locked .hero h1 .line,
+html.gate-locked .hero-rule,
+html.gate-locked .hero p.lead,
+html.gate-locked .hero-stats,
+html.gate-locked .console-stage{ animation-play-state:paused !important; }
 .console-glow{ position:absolute; inset:-16% -10%; z-index:-1;
   background:radial-gradient(ellipse 55% 55% at 55% 45%, rgba(107,31,46,.12), transparent 70%); }
 .console{
@@ -638,6 +649,13 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 .gate-cta:hover svg{ transform:translateX(3px); }
 .gate-cta:active{ transform:translateY(-1px) scale(.98); }
 .gate-cta:focus-visible{ outline:2px solid var(--bronze-bright); outline-offset:4px; }
+
+/* Quick, refined compress on click — the button gives just enough for
+   the tap to feel physical, then eases back before the gate is gone. */
+.gate-cta.gate-cta-pressed{ transform:scale(.955); transition:transform .12s cubic-bezier(.4,0,.2,1); box-shadow:0 10px 24px -12px rgba(78,22,32,.5), inset 0 1px 0 rgba(255,255,255,.14); }
+@media (prefers-reduced-motion: reduce){
+  .gate-cta.gate-cta-pressed{ transition:none; }
+}
 .gate-foot{
   margin-top:22px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
   color:rgba(253,250,247,.36);
@@ -976,48 +994,134 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     try{ sessionStorage.setItem(GATE_KEY, '1'); }catch(e){}
   }
 
-  /* Soft ascending chime — synthesized, no audio file needed */
-  function playEnterChime(){
-    if (reduced) return;
-    try{
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      var ctx = new Ctx();
-      var now = ctx.currentTime;
-      var master = ctx.createGain();
-      master.gain.value = 1;
-      master.connect(ctx.destination);
+  /* ---- Entrance sound: soft glass tap + airy whoosh ----
+     Two short, quiet sounds standing in for licensed audio files (this
+     document can't load or host external assets). Both are rendered once,
+     up front, into AudioBuffers via OfflineAudioContext — silent, instant,
+     and not tied to a user gesture — so at click time playback is just
+     "start these buffers now", with none of the synthesis cost happening
+     in the click handler itself. That's the low-latency, no-delay part
+     a real <audio src> + preload="auto" pair would otherwise give us. */
+  var MASTER_VOLUME = 0.2;      // 15–25% target loudness, unobtrusive
+  var WHOOSH_DELAY = 0.1;       // seconds between tap and whoosh
+  var SR = 44100;
 
-      var notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 — bright, resolving
-      notes.forEach(function(freq, i){
-        var start = now + i * 0.085;
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
-        var filt = ctx.createBiquadFilter();
-        filt.type = 'lowpass';
-        filt.frequency.value = 4200;
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, start);
-        gain.gain.linearRampToValueAtTime(i === notes.length - 1 ? 0.16 : 0.11, start + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + (i === notes.length - 1 ? 1.6 : 0.9));
-        osc.connect(filt).connect(gain).connect(master);
-        osc.start(start);
-        osc.stop(start + 1.7);
-      });
+  function makeNoiseBuffer(offlineCtx, dur){
+    var buf = offlineCtx.createBuffer(1, Math.max(1, Math.floor(SR * dur)), SR);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++){ d[i] = Math.random() * 2 - 1; }
+    return buf;
+  }
 
-      var totalDur = now + notes.length * 0.085 + 1.8;
-      setTimeout(function(){ ctx.close(); }, (totalDur - now) * 1000);
-    }catch(e){}
+  /* Glass tap — two clean high sine partials (a soft, bell-like dyad) with
+     a near-instant attack and a fast, smooth decay. No mechanical/click
+     transient — just a brief, refined "tick" of tone. */
+  function renderGlassTap(){
+    var dur = 0.07;
+    var off = new OfflineAudioContext(1, Math.ceil(SR * dur), SR);
+    [1760, 2637].forEach(function(freq, i){
+      var osc = off.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      var g = off.createGain();
+      g.gain.setValueAtTime(0.0001, 0);
+      g.gain.linearRampToValueAtTime(i === 0 ? 0.5 : 0.24, 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, dur - 0.004);
+      osc.connect(g).connect(off.destination);
+      osc.start(0);
+      osc.stop(dur);
+    });
+    return off.startRendering();
+  }
+
+  /* Airy whoosh — filtered noise only (no oscillator body), so it reads
+     as breath/air rather than a sci-fi sweep. A gentle bandpass drifts
+     up and settles, and a lowpass keeps the top end warm, not hissy. */
+  function renderWhoosh(){
+    var dur = 0.32;
+    var off = new OfflineAudioContext(1, Math.ceil(SR * dur), SR);
+    var src = off.createBufferSource();
+    src.buffer = makeNoiseBuffer(off, dur);
+    var band = off.createBiquadFilter();
+    band.type = 'bandpass';
+    band.Q.value = 0.5;
+    band.frequency.setValueAtTime(500, 0);
+    band.frequency.linearRampToValueAtTime(2000, dur * 0.55);
+    band.frequency.linearRampToValueAtTime(1100, dur);
+    var warm = off.createBiquadFilter();
+    warm.type = 'lowpass';
+    warm.frequency.value = 3000;
+    var g = off.createGain();
+    g.gain.setValueAtTime(0.0001, 0);
+    g.gain.linearRampToValueAtTime(0.5, dur * 0.4);
+    g.gain.linearRampToValueAtTime(0.0001, dur);
+    src.connect(band).connect(warm).connect(g).connect(off.destination);
+    src.start(0);
+    return off.startRendering();
+  }
+
+  var glassBuffer = null, whooshBuffer = null, soundsReady = false;
+  Promise.all([renderGlassTap(), renderWhoosh()]).then(function(bufs){
+    glassBuffer = bufs[0]; whooshBuffer = bufs[1]; soundsReady = true;
+  }).catch(function(){ soundsReady = false; });
+
+  var playbackCtx = null;
+  function ensurePlaybackCtx(){
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!playbackCtx){ playbackCtx = new Ctx(); }
+    if (playbackCtx.state === 'suspended'){ playbackCtx.resume(); }
+    return playbackCtx;
+  }
+  function playBuffer(ctx, buffer, when, gainValue){
+    if (!buffer) return;
+    var src = ctx.createBufferSource();
+    src.buffer = buffer;
+    var g = ctx.createGain();
+    g.gain.value = gainValue;
+    src.connect(g).connect(ctx.destination);
+    src.start(when);
+  }
+
+  /* Arm the audio context on the earliest possible signal (pointerdown
+     fires before click) so it's already resumed by the time we actually
+     need to play — shaves a few ms of latency off the real interaction. */
+  if (gateEnter){
+    gateEnter.addEventListener('pointerdown', ensurePlaybackCtx, { once:true });
+  }
+
+  function playEnterSound(){
+    if (reduced){
+      // Reduced motion: a single, quieter tap; skip the whoosh entirely.
+      var ctxR = ensurePlaybackCtx();
+      if (ctxR && soundsReady){ playBuffer(ctxR, glassBuffer, ctxR.currentTime, MASTER_VOLUME * 0.7); }
+      return;
+    }
+    var ctx = ensurePlaybackCtx();
+    if (!ctx || !soundsReady) return;
+    var now = ctx.currentTime;
+    playBuffer(ctx, glassBuffer, now, MASTER_VOLUME);
+    playBuffer(ctx, whooshBuffer, now + WHOOSH_DELAY, MASTER_VOLUME * 0.8);
   }
 
   var alreadyEntered = false;
   try{ alreadyEntered = sessionStorage.getItem(GATE_KEY) === '1'; }catch(e){}
   if (alreadyEntered){ openGate(true); }
   else if (gateEnter){
+    var entering = false;
     gateEnter.addEventListener('click', function(){
-      playEnterChime();
-      openGate(false);
+      if (entering) return;         // ignore repeat clicks — no overlapping sounds
+      entering = true;
+      gateEnter.disabled = true;
+      gateEnter.classList.add('gate-cta-pressed');
+      setTimeout(function(){ gateEnter.classList.remove('gate-cta-pressed'); }, 140);
+
+      playEnterSound();
+
+      /* Whoosh blends into the gate opening; on reduced motion, skip
+         straight to it since there's no whoosh to time against. */
+      var openDelay = reduced ? 0 : WHOOSH_DELAY * 1000;
+      setTimeout(function(){ openGate(false); }, openDelay);
     });
   }
 
