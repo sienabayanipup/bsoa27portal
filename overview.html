@@ -86,6 +86,15 @@ a{ color:inherit; }
 .grain{ position:absolute; inset:-10%; opacity:.035; mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 @media (prefers-reduced-motion: reduce){ .ambient .blob{ animation:none !important; } }
+/* Perf: cheaper blur + no grain on small/low-power screens — the 90px
+   blur over a 50vw+ blob is one of the more expensive things a phone
+   GPU is asked to repaint every frame. */
+@media (max-width:700px){ .ambient .blob{ filter:blur(46px); } .grain{ display:none; } }
+/* Perf: fully pause decorative animation while the tab isn't visible,
+   instead of letting blobs/pulses/tickers keep animating (and the JS
+   tickers keep firing) in a background tab. */
+.tab-hidden .ambient .blob,
+.tab-hidden .top-pill .dot{ animation-play-state:paused !important; }
 
 /* ---------- Top bar ---------- */
 .top-bar{
@@ -297,6 +306,19 @@ a{ color:inherit; }
 </style>
 </head>
 <body>
+<script>
+/* Perf: flip a class on <html> when the tab is hidden so CSS animations
+   above pause, and expose window.__tabHidden so page scripts can skip
+   their own setInterval work (tickers, clock, etc.) while backgrounded. */
+(function(){
+  function sync(){
+    document.documentElement.classList.toggle('tab-hidden', document.hidden);
+    window.__tabHidden = document.hidden;
+  }
+  document.addEventListener('visibilitychange', sync);
+  sync();
+})();
+</script>
 
 <div class="ambient" aria-hidden="true">
   <div class="blob blob-a"></div>
