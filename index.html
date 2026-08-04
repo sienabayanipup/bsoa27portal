@@ -98,6 +98,15 @@ a{ color:inherit; }
 .grain{ position:absolute; inset:-10%; opacity:.035; mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 @media (prefers-reduced-motion: reduce){ .ambient .blob{ animation:none !important; } }
+/* Perf: cheaper blur + no grain on small/low-power screens — the 90px
+   blur over a 50vw+ blob is one of the more expensive things a phone
+   GPU is asked to repaint every frame. */
+@media (max-width:700px){ .ambient .blob{ filter:blur(46px); } .grain{ display:none; } }
+/* Perf: fully pause decorative animation while the tab isn't visible,
+   instead of letting blobs/pulses/tickers keep animating (and the JS
+   tickers keep firing) in a background tab. */
+.tab-hidden .ambient .blob,
+.tab-hidden .top-pill .dot{ animation-play-state:paused !important; }
 
 /* ---------- Identity — the "2·7" seal, a minimal academic monogram used
    consistently in the top bar, console, and footer. Also the signature
@@ -644,6 +653,19 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 </style>
 </head>
 <body>
+<script>
+/* Perf: flip a class on <html> when the tab is hidden so CSS animations
+   above pause, and expose window.__tabHidden so page scripts can skip
+   their own setInterval work (tickers, clock, etc.) while backgrounded. */
+(function(){
+  function sync(){
+    document.documentElement.classList.toggle('tab-hidden', document.hidden);
+    window.__tabHidden = document.hidden;
+  }
+  document.addEventListener('visibilitychange', sync);
+  sync();
+})();
+</script>
 
 <!-- ============================================================
      ENTRANCE GATE — the threshold before the portal proper
@@ -734,7 +756,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
               <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
               <i style="height:92%; animation-delay:.42s"></i>
             </div>
-            <div class="console-activity" id="consoleActivity"><span class="ca-avatar" id="consoleActivityAvatar">M</span><span id="consoleActivityText">Maria just submitted attendance</span></div>
+            <div class="console-activity" id="consoleActivity"><span class="ca-avatar" id="consoleActivityAvatar">&bull;</span><span id="consoleActivityText">Live activity syncs from Sheets</span></div>
           </div>
         </div>
       </div>
@@ -782,7 +804,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
         </div>
       </div>
 
-      <div class="console-activity" id="attActivity" aria-hidden="true"><span class="ca-avatar" id="attActivityAvatar">J</span><span id="attActivityText">Jane Doe just submitted attendance</span></div>
+      <div class="console-activity" id="attActivity" aria-hidden="true"><span class="ca-avatar" id="attActivityAvatar">&bull;</span><span id="attActivityText">Attendance synced to Sheets</span></div>
     </a>
 
     <a class="b-card b-lookup card-signature" href="lookup.html" data-reveal-item style="--rd:1">
@@ -1053,6 +1075,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   if (syncText && !reduced){
     var syncedAt = Date.now();
     setInterval(function(){
+      if (window.__tabHidden) return;
       var secs = Math.round((Date.now() - syncedAt) / 1000);
       if (secs < 30){
         syncText.textContent = secs < 3 ? 'Synced just now' : 'Synced ' + secs + 's ago';
@@ -1063,52 +1086,81 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     }, 1000);
   }
 
-  /* ---- Console activity ticker — one believable line at a time ---- */
+  /* ---- Live activity tickers — real recent attendance submissions,
+     read from the same sheet everything else on this portal reads
+     from (via a new getRecentActivity endpoint). Names are shortened
+     server-side to "First L." — no student numbers, no full names —
+     since this page has no login and anyone with the link can see it.
+     No fabricated names: until real data loads (or if the fetch ever
+     fails), both tickers show a genuinely-true generic line instead
+     of inventing an event. ---- */
+  var ACTIVITY_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
+
   var activityText = document.getElementById('consoleActivityText');
   var activityAvatar = document.getElementById('consoleActivityAvatar');
   var activityEl = document.getElementById('consoleActivity');
-  if (activityText && activityEl && !reduced){
-    var activityMessages = [
-      { initials:'M', text:'Maria just submitted attendance' },
-      { initials:'K', text:'Kyle marked Module 3 complete' },
-      { initials:'#', text:'3 lookups in the last hour' },
-      { initials:'\u2713', text:'Attendance synced to Sheets' },
-      { initials:'J', text:'Jomar checked in at 8:03 AM' }
-    ];
-    var activityIdx = 0;
-    setInterval(function(){
-      activityEl.classList.add('fading');
-      setTimeout(function(){
-        activityIdx = (activityIdx + 1) % activityMessages.length;
-        activityText.textContent = activityMessages[activityIdx].text;
-        if (activityAvatar) activityAvatar.textContent = activityMessages[activityIdx].initials;
-        activityEl.classList.remove('fading');
-      }, 450);
-    }, 5000);
-  }
-
-  /* ---- Attendance card activity ticker — same pattern as the console one above,
-     just scoped to attendance-only events, offset timing so they don't sync up ---- */
   var attActivityText = document.getElementById('attActivityText');
   var attActivityAvatar = document.getElementById('attActivityAvatar');
   var attActivityEl = document.getElementById('attActivity');
-  if (attActivityText && attActivityEl && !reduced){
-    var attMessages = [
-      { initials:'J', text:'Jane Doe just submitted attendance' },
-      { initials:'M', text:'Marco checked in for Saturday' },
-      { initials:'A', text:'Ana submitted for ENGL 017' },
-      { initials:'K', text:'Kyle marked present at 8:04 AM' }
+
+  if ((activityText && activityEl || (attActivityText && attActivityEl)) && !reduced){
+    var FALLBACK_TICKS = [
+      { initials:'\u2713', text:'Attendance synced to Sheets' },
+      { initials:'\u2022', text:'Live activity syncs from Sheets' }
     ];
-    var attIdx = 0;
-    setInterval(function(){
-      attActivityEl.classList.add('fading');
+    var consoleTicks = FALLBACK_TICKS.slice();
+    var attTicks = FALLBACK_TICKS.slice();
+    var consoleIdx = 0, attIdx = 0;
+
+    function tickInitials(label){
+      var c = String(label || '').trim().charAt(0);
+      return c ? c.toUpperCase() : '\u2022';
+    }
+
+    function playTick(el, textEl, avatarEl, item){
+      if (!el || !textEl || !item) return;
+      el.classList.add('fading');
       setTimeout(function(){
-        attIdx = (attIdx + 1) % attMessages.length;
-        attActivityText.textContent = attMessages[attIdx].text;
-        if (attActivityAvatar) attActivityAvatar.textContent = attMessages[attIdx].initials;
-        attActivityEl.classList.remove('fading');
+        textEl.textContent = item.text;
+        if (avatarEl) avatarEl.textContent = item.initials;
+        el.classList.remove('fading');
       }, 450);
-    }, 4200);
+    }
+
+    function loadRecentActivity(){
+      fetch(ACTIVITY_SCRIPT_URL + "?action=getRecentActivity")
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          var events = (data && data.events) || [];
+          if (events.length === 0) return;
+          var real = events.map(function(ev){
+            return { initials: tickInitials(ev.label), text: ev.label + ' submitted attendance for ' + ev.subject };
+          });
+          // Keep one true generic line in the console mix so it doesn't
+          // feel repetitive when there are only one or two submissions.
+          consoleTicks = real.concat([FALLBACK_TICKS[0]]);
+          attTicks = real.slice();
+          consoleIdx = 0; attIdx = 0;
+        })
+        .catch(function(){ /* fetch failed — keep showing the generic fallback lines */ });
+    }
+    loadRecentActivity();
+    setInterval(function(){ if (!window.__tabHidden) loadRecentActivity(); }, 45000);
+
+    if (activityText && activityEl){
+      setInterval(function(){
+        if (window.__tabHidden) return;
+        consoleIdx = (consoleIdx + 1) % consoleTicks.length;
+        playTick(activityEl, activityText, activityAvatar, consoleTicks[consoleIdx]);
+      }, 5000);
+    }
+    if (attActivityText && attActivityEl){
+      setInterval(function(){
+        if (window.__tabHidden) return;
+        attIdx = (attIdx + 1) % attTicks.length;
+        playTick(attActivityEl, attActivityText, attActivityAvatar, attTicks[attIdx]);
+      }, 4200);
+    }
   }
 
   /* ---- Hero stats count-up (runs once, on load — hero is above the fold) ---- */
