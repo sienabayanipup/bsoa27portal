@@ -345,7 +345,12 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 /* Announcements — grid-area announce, corkboard, quiet
    (sized up from the standard bento card — this one stands alone,
    so it needs to read clearly rather than blend in like a tool tile) */
-.b-announce{ grid-area:announce; --accent:var(--bronze); --accent-tint:var(--bronze-tint); padding:34px 38px; border-radius:20px; box-shadow:var(--shadow-1); border:1px solid var(--hair); background:linear-gradient(165deg, var(--surface), var(--bronze-tint) 260%); transform:translateY(10px) scale(1); }
+.b-announce{ grid-area:announce; --accent:var(--emerald); --accent-tint:var(--emerald-tint); padding:34px 38px; border-radius:20px; box-shadow:var(--shadow-2); border:1.5px solid var(--emerald); background:linear-gradient(165deg, var(--surface), var(--emerald-tint) 260%); transform:translateY(10px) scale(1); transition:opacity .65s var(--ease), transform .35s var(--spring), box-shadow .3s ease; }
+.b-announce.revealed:hover{ transform:translateY(-6px) scale(1.008); box-shadow:var(--shadow-3); }
+.b-announce:hover::before{ opacity:1; }
+.b-announce .b-announce-title{ font-size:22px; }
+.b-announce .b-announce-title .b-icon{ background:var(--emerald); color:#fff; transition:transform .35s var(--spring); }
+.b-announce:hover .b-announce-title .b-icon{ transform:scale(1.08) rotate(-4deg); }
 .b-announce.revealed{ transform:translateY(0) scale(1); }
 .b-announce .b-index{ display:none; }
 .b-announce-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:0; flex-wrap:wrap; }
@@ -355,14 +360,14 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 .b-announce-head-right{ display:flex; align-items:center; gap:12px; }
 .b-announce-live{ display:inline-flex; align-items:center; gap:7px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
 .b-announce-live .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); animation:consolePulse 2.4s infinite; }
-.b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13.5px; color:var(--bronze-text); background:var(--bronze-tint); border:none; border-radius:100px; padding:10px 18px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring); white-space:nowrap; }
-.b-announce-toggle:hover{ background:rgba(217,169,168,.22); transform:translateY(-1px); }
+.b-announce-toggle{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13.5px; color:#fff; background:var(--emerald); border:none; border-radius:100px; padding:10px 18px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring); white-space:nowrap; }
+.b-announce-toggle:hover{ background:var(--emerald-hover); transform:translateY(-1px); }
 .b-announce-meta{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:12.5px; color:var(--muted); margin:4px 0 10px 50px; }
 @media (max-width:640px){ .b-announce-meta{ margin-left:0; } }
 .b-announce-list{ max-height:190px; overflow-y:auto; }
 .b-announce-item{ display:flex; align-items:flex-start; gap:13px; padding:13px 0; font-size:16px; line-height:1.6; color:var(--ink); border-bottom:1px solid var(--hair); }
 .b-announce-item:last-child{ border-bottom:none; }
-.b-announce-dot{ flex:0 0 auto; width:6px; height:6px; border-radius:50%; background:var(--bronze); margin-top:8px; }
+.b-announce-dot{ flex:0 0 auto; width:6px; height:6px; border-radius:50%; background:var(--emerald); margin-top:8px; }
 .b-announce-name{ font-weight:700; color:var(--ink); font-size:16px; }
 .b-announce-form{ display:none; grid-template-columns:1fr 2fr auto; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid var(--hair); align-items:center; }
 .b-announce-form.open{ display:grid; }
@@ -783,6 +788,38 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 </section>
 
 <!-- ============================================================
+     ANNOUNCEMENTS — moved up top: first thing after the hero,
+     styled to stand out (emerald accent, stronger border/shadow)
+     rather than blend in as a quiet footnote.
+     ============================================================ -->
+<section class="announce-section band-a" id="announcements">
+  <span class="announce-eyebrow" data-reveal>Board</span>
+  <div class="b-card b-announce card-signature" data-reveal-item style="--rd:0">
+    <span class="b-index" aria-hidden="true">00</span>
+    <div class="b-announce-head">
+      <p class="b-announce-title">
+        <span class="b-icon" style="width:38px;height:38px;margin:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
+        Announcements
+      </p>
+      <div class="b-announce-head-right">
+        <span class="b-announce-live"><span class="cdot-live"></span>Live</span>
+        <button type="button" class="b-announce-toggle" id="announceToggle">+ Post an update</button>
+      </div>
+    </div>
+    <p class="b-announce-meta" id="announceMeta">Loading updates&hellip;</p>
+    <div class="b-announce-list" id="announceList">
+      <div class="b-announce-item"><span class="b-announce-dot"></span>Loading announcements&hellip;</div>
+    </div>
+    <form class="b-announce-form" id="announceForm">
+      <input type="text" id="announceName" placeholder="Your name" required autocomplete="off">
+      <input type="text" id="announceMsg" placeholder="Write an announcement&hellip;" required autocomplete="off">
+      <button type="submit" id="announceSubmitBtn">Post</button>
+      <p class="b-announce-status" id="announceStatus"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================
      WORKSPACE — bento dashboard (the features, front and center)
      ============================================================ -->
 <section class="workspace band-b" id="dashboard">
@@ -918,36 +955,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       <span class="wf-num">4</span>
       <div class="wf-copy"><b>Overview</b><span>Leaders see the full class picture update in real time, no reconciling required.</span></div>
     </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     ANNOUNCEMENTS — compact notification strip, quiet by design
-     ============================================================ -->
-<section class="announce-section band-b" id="announcements">
-  <span class="announce-eyebrow" data-reveal>Board</span>
-  <div class="b-card b-announce card-signature" data-reveal-item style="--rd:0">
-    <span class="b-index" aria-hidden="true">00</span>
-    <div class="b-announce-head">
-      <p class="b-announce-title">
-        <span class="b-icon" style="width:38px;height:38px;margin:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
-        Announcements
-      </p>
-      <div class="b-announce-head-right">
-        <span class="b-announce-live"><span class="cdot-live"></span>Live</span>
-        <button type="button" class="b-announce-toggle" id="announceToggle">+ Post an update</button>
-      </div>
-    </div>
-    <p class="b-announce-meta" id="announceMeta">Loading updates&hellip;</p>
-    <div class="b-announce-list" id="announceList">
-      <div class="b-announce-item"><span class="b-announce-dot"></span>Loading announcements&hellip;</div>
-    </div>
-    <form class="b-announce-form" id="announceForm">
-      <input type="text" id="announceName" placeholder="Your name" required autocomplete="off">
-      <input type="text" id="announceMsg" placeholder="Write an announcement&hellip;" required autocomplete="off">
-      <button type="submit" id="announceSubmitBtn">Post</button>
-      <p class="b-announce-status" id="announceStatus"></p>
-    </form>
   </div>
 </section>
 
@@ -1356,7 +1363,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       card.style.setProperty('--my', (y/rect.height)*100 + '%');
       pending = null;
     }
-    document.querySelectorAll('a.b-card').forEach(function(card){
+    document.querySelectorAll('a.b-card, .b-announce').forEach(function(card){
       var rect = null;
       card.addEventListener('mouseenter', function(){ rect = card.getBoundingClientRect(); });
       card.addEventListener('mousemove', function(e){
