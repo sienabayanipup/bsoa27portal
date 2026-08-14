@@ -328,7 +328,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       <div class="field">
         <label for="fullName">Full name</label>
         <input type="text" id="fullName" name="fullName" placeholder="Last Name, First Name M.I." required autocomplete="off">
-        <p class="field-error" id="fullNameError">Please follow the format shown: Last Name, First Name M.I.</p>
+        <p class="field-error" id="fullNameError">Please follow the format shown: Last Name, First Name M.I. (M.I. optional)</p>
       </div>
 
       <div class="field">
@@ -397,8 +397,8 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   trackedFields.forEach(id => document.getElementById(id).addEventListener('input', updateProgress));
   document.getElementById('subjectGrid').addEventListener('change', updateProgress);
 
-  // Expected format: Last Name, First Name M.I.
-  const namePattern = /^[A-Za-zÑñ.\-']+(\s[A-Za-zÑñ.\-']+)*,\s[A-Za-zÑñ.\-']+(\s[A-Za-zÑñ.\-']+)*\s[A-Za-zÑñ]\.$/;
+  // Expected format: Last Name, First Name M.I. (middle initial is optional)
+  const namePattern = /^[A-Za-zÑñ.\-']+(\s[A-Za-zÑñ.\-']+)*,\s[A-Za-zÑñ.\-']+(\s[A-Za-zÑñ.\-']+)*(\s[A-Za-zÑñ]\.)?$/;
   const fullNameInput = document.getElementById('fullName');
   const fullNameError = document.getElementById('fullNameError');
 
