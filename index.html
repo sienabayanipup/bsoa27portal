@@ -1525,7 +1525,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <style>
   #faqBotWrap{
     position:fixed; right:22px; bottom:22px; z-index:80;
-    width:82px; height:84px;
+    width:112px; height:96px;
   }
   #faqBotWrap .fb-ring{
     position:absolute; left:50%; bottom:2px; transform:translateX(-50%);
@@ -1664,7 +1664,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 
 <div id="faqBotWrap">
   <span class="fb-ring" aria-hidden="true"></span>
-  <div class="fb-greeting" id="faqBotGreeting">Hello, human! 👋</div>
+  <div class="fb-greeting" id="faqBotGreeting">Hello, klasmeyt! 👋</div>
   <button id="faqBotToggle" aria-label="Chat with OFIA" aria-expanded="false">
     <div class="fb-robot-icon" id="fbLottieIcon" aria-hidden="true"></div>
     <svg class="fb-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -1756,7 +1756,8 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       renderer: 'svg',
       loop: true,
       autoplay: !reducedMotion,
-      path: 'Live_chatbot.json'
+      path: 'ai_chat_bot.json',
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
     });
   }
 
