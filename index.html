@@ -105,8 +105,7 @@ a{ color:inherit; }
 /* Perf: fully pause decorative animation while the tab isn't visible,
    instead of letting blobs/pulses/tickers keep animating (and the JS
    tickers keep firing) in a background tab. */
-.tab-hidden .ambient .blob,
-.tab-hidden .top-pill .dot{ animation-play-state:paused !important; }
+.tab-hidden .ambient .blob{ animation-play-state:paused !important; }
 
 /* ---------- Identity — the "2·7" seal, a minimal academic monogram used
    consistently in the top bar, console, and footer. Also the signature
@@ -139,35 +138,23 @@ a{ color:inherit; }
   padding:22px clamp(20px,4vw,44px); pointer-events:none;
 }
 .top-bar > *{ pointer-events:auto; }
-.top-right{ display:flex; align-items:center; gap:10px; }
-.top-mark{
-  display:inline-flex; align-items:center; gap:9px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft);
-  background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1);
+.top-right{ display:flex; align-items:center; gap:10px; margin-left:auto; }
+/* Quiet text-only utility link — deliberately faint until touched so
+   it never competes with the headline or console. A small serif count
+   replaces the icon badge. */
+.top-link{
+  display:inline-flex; align-items:center; gap:7px; text-decoration:none;
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:9.5px; letter-spacing:.28em; text-transform:uppercase;
+  color:var(--bronze-tint); opacity:.55;
+  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease);
 }
-.top-clock{
-  display:inline-flex; align-items:center; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.06em; color:var(--ink-soft);
-  background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1); font-variant-numeric:tabular-nums;
+.top-link:hover{ opacity:.95; letter-spacing:.34em; }
+.top-link .ta-count{
+  font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:11px; letter-spacing:0; text-transform:none;
+  color:var(--bronze-bright);
 }
-.top-pill{
-  display:inline-flex; align-items:center; gap:9px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.06em; color:var(--ink-soft);
-  background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1);
-}
-.top-pill .dot{ width:6px; height:6px; border-radius:50%; background:#4C7657; animation:pulse 2.6s infinite; }
-@keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(76,118,87,.4);} 70%{ box-shadow:0 0 0 5px rgba(76,118,87,0);} 100%{ box-shadow:0 0 0 0 rgba(76,118,87,0);} }
-@media (max-width:560px){ .top-clock{ display:none; } }
+.top-link .ta-count[hidden]{ display:none; }
 
-.top-announce{
-  display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);
-  background:rgba(253,250,247,.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-radius:100px; padding:9px 15px; box-shadow:var(--shadow-1); transition:transform .3s var(--spring), background .2s ease;
-}
-.top-announce:hover{ transform:translateY(-1px); background:rgba(253,250,247,.92); }
-.top-announce svg{ width:13px; height:13px; color:var(--bronze-text); stroke-width:2px; }
-.top-announce .ta-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 5px; border-radius:100px; background:var(--emerald); color:#fff; font-size:9.5px; font-weight:800; line-height:1; letter-spacing:0; }
-@media (max-width:560px){ .top-announce .ta-label{ display:none; } }
 
 /* ==========================================================================
    HERO — single viewport, editorial headline + floating console panel.
@@ -722,18 +709,11 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
 <div class="top-bar">
-  <span class="top-mark">
-    <span class="mono-seal" style="color:var(--emerald)" aria-hidden="true">2&middot;7</span>
-    Office Administration Portal
-  </span>
   <div class="top-right">
-    <a class="top-announce" href="#announcements" id="topAnnounce" aria-label="Jump to announcements">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg>
-      <span class="ta-label">Updates</span>
-      <span class="ta-badge" id="topAnnounceBadge" hidden>0</span>
+    <a class="top-link" href="#announcements" id="topAnnounce" aria-label="Jump to announcements">
+      Updates
+      <span class="ta-count" id="topAnnounceBadge" hidden>0</span>
     </a>
-    <span class="top-clock" id="topClock">--:--:--</span>
-    <span class="top-pill"><span class="dot"></span>System online</span>
   </div>
 </div>
 
@@ -1147,13 +1127,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   var dateStr = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   var consoleDate = document.getElementById('consoleDate');
   if (consoleDate) consoleDate.textContent = dateStr;
-
-  var topClock = document.getElementById('topClock');
-  function tick(){
-    if (!topClock) return;
-    topClock.textContent = new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  }
-  tick(); setInterval(tick, 1000);
 
   /* ---- Signature moment: calm layered parallax on the hero ----
      Copy and console drift in opposite directions as the cursor moves,
@@ -1815,17 +1788,29 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     if (greetingEl) greetingEl.classList.remove('show');
   });
 
+  /* Auto-dismiss: the greeting bubble fades on its own a few seconds
+     after it appears, so it reads as a passing hello rather than a
+     permanent fixture — unless the visitor has since opened the chat. */
+  function scheduleGreetingFade(){
+    if (!greetingEl) return;
+    setTimeout(function(){
+      if (!opened) greetingEl.classList.remove('show');
+    }, 5000);
+  }
+
   /* On page load: OFIA waves and says hello. The greeting stays put
-     until the visitor actually opens the chat. */
+     for a few seconds, then fades — unless the visitor opens the chat. */
   if (!reducedMotion && armEl){
     setTimeout(function(){
       if (opened) return;
       armEl.classList.add('waving');
       if (greetingEl) greetingEl.classList.add('show');
+      scheduleGreetingFade();
       setTimeout(function(){ armEl.classList.remove('waving'); }, 1800);
     }, 800);
   } else if (greetingEl){
     greetingEl.classList.add('show');
+    scheduleGreetingFade();
   }
 })();
 </script>
