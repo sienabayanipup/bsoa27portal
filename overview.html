@@ -345,7 +345,7 @@ a{ color:inherit; }
     <p class="gate-sub">Enter the officer password to view the Class Overview.</p>
     <input type="password" id="gatePassword" placeholder="Password" autocomplete="off">
     <button type="button" id="gateSubmit">Unlock</button>
-    <p class="gate-error" id="gateError">Incorrect password. Please try again.</p>
+    <p class="gate-error" id="gateError" aria-live="polite">Incorrect password. Please try again.</p>
   </div>
 </div>
 
@@ -386,7 +386,7 @@ a{ color:inherit; }
           <input type="date" id="attDate">
           <button id="attCheckBtn" type="button">Check</button>
         </div>
-        <p id="attStatus" class="status-msg" style="display:none;"></p>
+        <p id="attStatus" class="status-msg" style="display:none;" aria-live="polite"></p>
         <div id="attResult"></div>
       </div>
 
@@ -408,7 +408,7 @@ a{ color:inherit; }
           </select>
           <button id="actCheckBtn" type="button">Check</button>
         </div>
-        <p id="actStatus" class="status-msg" style="display:none;"></p>
+        <p id="actStatus" class="status-msg" style="display:none;" aria-live="polite"></p>
         <div id="actResult"></div>
       </div>
 
