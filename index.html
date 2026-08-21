@@ -674,6 +674,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   .gate-seal-glow{ animation:none; }
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 </head>
 <body>
 <script>
@@ -1549,6 +1550,8 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   #faqBotToggle:hover{ animation-play-state:paused; transform:translateY(-3px) scale(1.04); }
   #faqBotToggle.open{ animation:none; }
   #faqBotToggle svg{ width:100%; height:100%; overflow:visible; }
+  #faqBotToggle .fb-robot-icon{ width:100%; height:100%; overflow:visible; }
+  #faqBotToggle .fb-robot-icon svg{ width:100%!important; height:100%!important; overflow:visible; }
   #faqBotToggle .fb-close-icon{ display:none; }
   #faqBotToggle.open .fb-robot-icon{ display:none; }
   #faqBotToggle.open .fb-close-icon{
@@ -1663,64 +1666,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   <span class="fb-ring" aria-hidden="true"></span>
   <div class="fb-greeting" id="faqBotGreeting">Hello, human! 👋</div>
   <button id="faqBotToggle" aria-label="Chat with OFIA" aria-expanded="false">
-    <svg class="fb-robot-icon" viewBox="0 0 120 126" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="fbShellGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="var(--surface-elevated)"/>
-          <stop offset="100%" stop-color="var(--paper-secondary)"/>
-        </linearGradient>
-        <linearGradient id="fbFaceGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="var(--bronze-bright)"/>
-          <stop offset="100%" stop-color="var(--bronze)"/>
-        </linearGradient>
-      </defs>
-
-      <ellipse cx="60" cy="118" rx="27" ry="6" fill="var(--ink)" opacity=".12"/>
-
-      <!-- antennae with pom-pom tips -->
-      <line x1="40" y1="20" x2="28" y2="8" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="26" cy="6" r="6" fill="var(--emerald)"/>
-      <circle cx="24.3" cy="4.3" r="1.6" fill="#fff" opacity=".7"/>
-      <line x1="80" y1="20" x2="92" y2="8" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="94" cy="6" r="6" fill="var(--emerald)"/>
-      <circle cx="92.3" cy="4.3" r="1.6" fill="#fff" opacity=".7"/>
-
-      <!-- chubby round body -->
-      <path d="M32 78 C32 70 40 64 60 64 C80 64 88 70 88 78 L90 100 C90 108 78 114 60 114 C42 114 30 108 30 100 Z" fill="url(#fbShellGrad)"/>
-
-      <!-- big round head -->
-      <rect x="22" y="20" width="76" height="60" rx="28" fill="url(#fbShellGrad)"/>
-      <rect x="34" y="32" width="52" height="38" rx="17" fill="url(#fbFaceGrad)"/>
-      <rect x="52" y="70" width="16" height="10" fill="url(#fbFaceGrad)"/>
-      <ellipse cx="46" cy="40" rx="9" ry="4" fill="#fff" opacity=".2"/>
-
-      <g class="fb-eyes">
-        <circle cx="50" cy="51" r="7.5" fill="#fff"/>
-        <circle cx="51.8" cy="52.8" r="3.6" fill="var(--ink)"/>
-        <circle cx="53.5" cy="49.5" r="1.4" fill="#fff"/>
-        <circle cx="70" cy="51" r="7.5" fill="#fff"/>
-        <circle cx="71.8" cy="52.8" r="3.6" fill="var(--ink)"/>
-        <circle cx="73.5" cy="49.5" r="1.4" fill="#fff"/>
-      </g>
-      <ellipse cx="44" cy="61" rx="6" ry="3.4" fill="var(--emerald)" opacity=".38"/>
-      <ellipse cx="76" cy="61" rx="6" ry="3.4" fill="var(--emerald)" opacity=".38"/>
-      <path d="M52 59 Q60 65 68 59" stroke="var(--ink)" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".85"/>
-
-      <!-- resting left arm -->
-      <path d="M40 84 C34 90 30 95 29 101" fill="none" stroke="url(#fbShellGrad)" stroke-width="11" stroke-linecap="round"/>
-      <circle cx="28.5" cy="102" r="7" fill="var(--surface-elevated)" stroke="var(--muted)" stroke-width="1.2"/>
-
-      <!-- raised / waving right arm -->
-      <g transform="translate(86,80)">
-        <g class="fb-arm-rotate">
-          <path d="M0 0 C4 -9 8 -16 11 -23" fill="none" stroke="url(#fbShellGrad)" stroke-width="11" stroke-linecap="round"/>
-          <circle cx="11.5" cy="-24" r="7.5" fill="var(--surface-elevated)" stroke="var(--muted)" stroke-width="1.2"/>
-          <line x1="11.5" y1="-31" x2="8" y2="-36" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="13.5" y1="-32" x2="13.5" y2="-38" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
-          <line x1="16" y1="-31" x2="19" y2="-36" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
-        </g>
-      </g>
-    </svg>
+    <div class="fb-robot-icon" id="fbLottieIcon" aria-hidden="true"></div>
     <svg class="fb-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
   </button>
 </div>
@@ -1801,6 +1747,18 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   var greetingEl = document.getElementById('faqBotGreeting');
   var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var opened = false;
+
+  /* Lottie chat-bubble icon in place of the old hand-drawn robot SVG. */
+  var lottieAnim = null;
+  if (window.lottie){
+    lottieAnim = lottie.loadAnimation({
+      container: document.getElementById('fbLottieIcon'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: !reducedMotion,
+      path: 'Live_chatbot.json'
+    });
+  }
 
   function addMsg(text, who){
     var el = document.createElement('div');
