@@ -1525,19 +1525,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <style>
   #faqBotWrap{
     position:fixed; right:22px; bottom:22px; z-index:80;
-    width:112px; height:96px;
-  }
-  #faqBotWrap .fb-ring{
-    position:absolute; left:50%; bottom:2px; transform:translateX(-50%);
-    width:66px; height:66px; border-radius:50%; background:var(--emerald);
-    opacity:.35; animation:fbPulse 2.6s ease-out infinite;
-    pointer-events:none;
-  }
-  #faqBotWrap.open .fb-ring{ display:none; }
-  @keyframes fbPulse{
-    0%{ transform:translateX(-50%) scale(.8); opacity:.38; }
-    70%{ transform:translateX(-50%) scale(1.55); opacity:0; }
-    100%{ transform:translateX(-50%) scale(1.55); opacity:0; }
+    width:96px; height:120px;
   }
   #faqBotToggle{
     position:absolute; inset:0; z-index:2;
@@ -1593,17 +1581,17 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     background:var(--surface-elevated); color:var(--ink); font-family:'Plus Jakarta Sans', sans-serif;
     font-weight:600; font-size:12.5px; white-space:nowrap;
     padding:10px 14px; border-radius:14px; box-shadow:var(--shadow-2); border:1px solid var(--hair);
-    opacity:0; transform:translateY(6px) scale(.95); pointer-events:none;
-    transition:opacity .3s var(--ease), transform .3s var(--ease);
+    opacity:0; pointer-events:none;
+    transition:opacity .6s ease;
   }
   .fb-greeting::after{
     content:""; position:absolute; right:24px; top:100%;
     border:7px solid transparent; border-top-color:var(--surface-elevated);
   }
-  .fb-greeting.show{ opacity:1; transform:translateY(0) scale(1); }
+  .fb-greeting.show{ opacity:1; }
 
   @media (prefers-reduced-motion: reduce){
-    #faqBotToggle, #faqBotWrap .fb-ring, .fb-arm-rotate.waving, .fb-robot-icon.reacting, .fb-robot-icon.reacting .fb-eyes{ animation:none !important; }
+    #faqBotToggle, .fb-arm-rotate.waving, .fb-robot-icon.reacting, .fb-robot-icon.reacting .fb-eyes{ animation:none !important; }
   }
 
   #faqBotPanel{
@@ -1663,8 +1651,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 </style>
 
 <div id="faqBotWrap">
-  <span class="fb-ring" aria-hidden="true"></span>
-  <div class="fb-greeting" id="faqBotGreeting">Hello, klasmeyt! 👋</div>
+  <div class="fb-greeting" id="faqBotGreeting">Hello, human! 👋</div>
   <button id="faqBotToggle" aria-label="Chat with OFIA" aria-expanded="false">
     <div class="fb-robot-icon" id="fbLottieIcon" aria-hidden="true"></div>
     <svg class="fb-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -1756,7 +1743,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       renderer: 'svg',
       loop: true,
       autoplay: !reducedMotion,
-      path: 'ai_chat_bot.json',
+      path: 'Ai_Robot_Vector_Art.json',
       rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
     });
   }
