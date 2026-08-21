@@ -1516,5 +1516,366 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 })();
 </script>
 
+<!-- ============================================================
+     FAQ CHATBOT — floating widget, keyword-matched answers.
+     Self-contained: uses the page's existing CSS variables so it
+     inherits the burgundy/paper theme automatically.
+     ============================================================ -->
+<style>
+  #faqBotWrap{
+    position:fixed; right:22px; bottom:22px; z-index:80;
+    width:82px; height:84px;
+  }
+  #faqBotWrap .fb-ring{
+    position:absolute; left:50%; bottom:2px; transform:translateX(-50%);
+    width:66px; height:66px; border-radius:50%; background:var(--emerald);
+    opacity:.35; animation:fbPulse 2.6s ease-out infinite;
+    pointer-events:none;
+  }
+  #faqBotWrap.open .fb-ring{ display:none; }
+  @keyframes fbPulse{
+    0%{ transform:translateX(-50%) scale(.8); opacity:.38; }
+    70%{ transform:translateX(-50%) scale(1.55); opacity:0; }
+    100%{ transform:translateX(-50%) scale(1.55); opacity:0; }
+  }
+  #faqBotToggle{
+    position:absolute; inset:0; z-index:2;
+    border-radius:16px; border:none; cursor:pointer; background:transparent; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .2s var(--ease);
+    animation:fbFloat 3.2s ease-in-out infinite;
+    filter:drop-shadow(0 10px 18px rgba(42,32,36,.24));
+  }
+  #faqBotToggle:hover{ animation-play-state:paused; transform:translateY(-3px) scale(1.04); }
+  #faqBotToggle.open{ animation:none; }
+  #faqBotToggle svg{ width:100%; height:100%; overflow:visible; }
+  #faqBotToggle .fb-close-icon{ display:none; }
+  #faqBotToggle.open .fb-robot-icon{ display:none; }
+  #faqBotToggle.open .fb-close-icon{
+    display:flex; background:var(--emerald); border-radius:50%; padding:16px; color:#fff;
+  }
+  @keyframes fbFloat{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-8px); }
+  }
+
+  /* Right arm rests in a raised "waving" pose; .waving replays a wiggle,
+     e.g. on page load, then settles back to the same resting angle. */
+  .fb-arm-rotate{ transform:rotate(10deg); transform-origin:0 0; }
+  @keyframes fbWave{
+    0%{ transform:rotate(10deg); }
+    15%{ transform:rotate(36deg); }
+    30%{ transform:rotate(4deg); }
+    45%{ transform:rotate(33deg); }
+    60%{ transform:rotate(8deg); }
+    75%{ transform:rotate(28deg); }
+    100%{ transform:rotate(10deg); }
+  }
+  .fb-arm-rotate.waving{ animation:fbWave 1.8s ease-in-out 1; }
+
+  /* Click reaction: a quick surprised squash-and-stretch + wide eyes */
+  @keyframes fbReact{
+    0%{ transform:scale(1,1) rotate(0deg); }
+    25%{ transform:scale(1.1,.88) rotate(-3deg); }
+    50%{ transform:scale(.92,1.1) rotate(3deg); }
+    75%{ transform:scale(1.05,.96) rotate(-1deg); }
+    100%{ transform:scale(1,1) rotate(0deg); }
+  }
+  .fb-robot-icon.reacting{ animation:fbReact .5s ease-out 1; transform-box:fill-box; transform-origin:50% 100%; }
+  @keyframes fbEyesPop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.4); } 100%{ transform:scale(1); } }
+  .fb-robot-icon.reacting .fb-eyes{ animation:fbEyesPop .5s ease-out 1; transform-box:fill-box; transform-origin:center; }
+
+  .fb-greeting{
+    position:absolute; right:2px; bottom:100%; margin-bottom:12px; z-index:3;
+    background:var(--surface-elevated); color:var(--ink); font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:600; font-size:12.5px; white-space:nowrap;
+    padding:10px 14px; border-radius:14px; box-shadow:var(--shadow-2); border:1px solid var(--hair);
+    opacity:0; transform:translateY(6px) scale(.95); pointer-events:none;
+    transition:opacity .3s var(--ease), transform .3s var(--ease);
+  }
+  .fb-greeting::after{
+    content:""; position:absolute; right:24px; top:100%;
+    border:7px solid transparent; border-top-color:var(--surface-elevated);
+  }
+  .fb-greeting.show{ opacity:1; transform:translateY(0) scale(1); }
+
+  @media (prefers-reduced-motion: reduce){
+    #faqBotToggle, #faqBotWrap .fb-ring, .fb-arm-rotate.waving, .fb-robot-icon.reacting, .fb-robot-icon.reacting .fb-eyes{ animation:none !important; }
+  }
+
+  #faqBotPanel{
+    position:fixed; right:22px; bottom:112px; z-index:80;
+    width:340px; max-width:calc(100vw - 44px); height:460px; max-height:calc(100vh - 160px);
+    background:var(--surface-elevated); border-radius:20px; box-shadow:var(--shadow-3);
+    display:flex; flex-direction:column; overflow:hidden;
+    opacity:0; transform:translateY(14px) scale(.97); pointer-events:none;
+    transition:opacity .22s var(--ease), transform .22s var(--ease);
+    border:1px solid var(--hair);
+  }
+  #faqBotPanel.open{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+
+  #faqBotPanel .fb-head{
+    background:var(--emerald); color:#fff; padding:16px 18px; flex:0 0 auto;
+    font-family:'Plus Jakarta Sans', sans-serif;
+  }
+  #faqBotPanel .fb-head .fb-title{ font-weight:700; font-size:14px; }
+  #faqBotPanel .fb-head .fb-sub{ font-size:11px; opacity:.8; margin-top:2px; }
+
+  #faqBotBody{
+    flex:1 1 auto; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px;
+    font-family:'Inter', sans-serif; font-size:13px; line-height:1.5;
+  }
+  #faqBotBody::-webkit-scrollbar{ width:6px; }
+  #faqBotBody::-webkit-scrollbar-thumb{ background:var(--hair); border-radius:10px; }
+
+  .fb-msg{ max-width:86%; padding:9px 12px; border-radius:14px; }
+  .fb-msg.bot{ align-self:flex-start; background:var(--paper-secondary); color:var(--ink); border-bottom-left-radius:4px; }
+  .fb-msg.user{ align-self:flex-end; background:var(--emerald); color:#fff; border-bottom-right-radius:4px; }
+
+  .fb-suggestions{ display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 12px; flex:0 0 auto; }
+  .fb-chip{
+    font-family:'Plus Jakarta Sans', sans-serif; font-size:11px; font-weight:600; color:var(--emerald);
+    background:var(--emerald-tint); border:none; border-radius:100px; padding:7px 11px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .fb-chip:hover{ background:var(--bronze-tint); }
+
+  #faqBotForm{ display:flex; gap:8px; padding:12px; border-top:1px solid var(--hair); flex:0 0 auto; }
+  #faqBotInput{
+    flex:1; border:1px solid var(--hair); border-radius:100px; padding:9px 14px; font-family:'Inter', sans-serif;
+    font-size:13px; background:var(--paper); color:var(--ink); outline:none;
+  }
+  #faqBotInput:focus{ border-color:var(--emerald); }
+  #faqBotSend{
+    width:36px; height:36px; border-radius:50%; border:none; background:var(--emerald); color:#fff;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  #faqBotSend svg{ width:16px; height:16px; }
+  #faqBotSend:hover{ background:var(--emerald-hover); }
+
+  @media (max-width:480px){
+    #faqBotPanel{ right:12px; bottom:102px; }
+    #faqBotToggle{ right:12px; bottom:12px; }
+  }
+</style>
+
+<div id="faqBotWrap">
+  <span class="fb-ring" aria-hidden="true"></span>
+  <div class="fb-greeting" id="faqBotGreeting">Hello, human! 👋</div>
+  <button id="faqBotToggle" aria-label="Chat with OFIA" aria-expanded="false">
+    <svg class="fb-robot-icon" viewBox="0 0 120 122" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fbShellGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--surface-elevated)"/>
+          <stop offset="100%" stop-color="var(--paper-secondary)"/>
+        </linearGradient>
+        <linearGradient id="fbFaceGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--emerald-hover)"/>
+          <stop offset="100%" stop-color="var(--emerald-deep)"/>
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="60" cy="112" rx="26" ry="6" fill="var(--ink)" opacity=".12"/>
+
+      <!-- antennae -->
+      <line x1="42" y1="22" x2="30" y2="7" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="28" cy="5" r="5.5" fill="var(--bronze-bright)" stroke="var(--bronze-text)" stroke-width="1.2"/>
+      <line x1="78" y1="22" x2="90" y2="7" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="92" cy="5" r="5.5" fill="var(--bronze-bright)" stroke="var(--bronze-text)" stroke-width="1.2"/>
+
+      <!-- resting left arm -->
+      <path d="M40 78 C34 84 30 90 28 98" fill="none" stroke="url(#fbShellGrad)" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="27" cy="99" r="6" fill="var(--surface-elevated)" stroke="var(--muted)" stroke-width="1.2"/>
+
+      <!-- body -->
+      <path d="M36 68 C36 58 44 52 60 52 C76 52 84 58 84 68 L86 98 C86 106 74 112 60 112 C46 112 34 106 34 98 Z" fill="url(#fbShellGrad)"/>
+
+      <!-- head -->
+      <rect x="30" y="16" width="60" height="48" rx="20" fill="url(#fbShellGrad)"/>
+      <rect x="39" y="24" width="42" height="32" rx="13" fill="url(#fbFaceGrad)"/>
+      <rect x="52" y="52" width="16" height="10" fill="url(#fbFaceGrad)"/>
+      <ellipse cx="50" cy="31" rx="8" ry="3.6" fill="#fff" opacity=".16"/>
+
+      <g class="fb-eyes">
+        <circle cx="52" cy="39" r="6" fill="#fff"/>
+        <circle cx="53.5" cy="40.5" r="2.9" fill="var(--ink)"/>
+        <circle cx="68" cy="39" r="6" fill="#fff"/>
+        <circle cx="69.5" cy="40.5" r="2.9" fill="var(--ink)"/>
+      </g>
+      <path d="M54 47 Q60 52 66 47" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/>
+
+      <!-- raised / waving right arm -->
+      <g transform="translate(84,66)">
+        <g class="fb-arm-rotate">
+          <path d="M0 0 C4 -10 8 -18 12 -26" fill="none" stroke="url(#fbShellGrad)" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="12.5" cy="-27" r="7" fill="var(--surface-elevated)" stroke="var(--muted)" stroke-width="1.2"/>
+          <line x1="12.5" y1="-33" x2="9" y2="-38" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="14.5" y1="-34" x2="14.5" y2="-40" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="17" y1="-33" x2="20" y2="-38" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </g>
+    </svg>
+    <svg class="fb-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  </button>
+</div>
+
+<div id="faqBotPanel" role="dialog" aria-label="Chat with OFIA">
+  <div class="fb-head">
+    <div class="fb-title">OFIA &middot; BSOAOUMN 2&middot;7 Help Desk</div>
+    <div class="fb-sub">Ask about attendance, records, or activities</div>
+  </div>
+  <div id="faqBotBody"></div>
+  <div class="fb-suggestions" id="faqBotSuggestions"></div>
+  <form id="faqBotForm">
+    <input id="faqBotInput" type="text" placeholder="Type a question..." autocomplete="off">
+    <button id="faqBotSend" type="submit" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+    </button>
+  </form>
+</div>
+
+<script>
+(function(){
+  /* ---- FAQ data: edit this array to add, remove, or reword answers ---- */
+  var FAQS = [
+    {
+      q: "How do I submit weekly attendance?",
+      keywords: ["attendance", "submit attendance", "how to submit", "mark present", "log attendance"],
+      a: "Open the <b>Weekly Attendance</b> tool on the dashboard, then enter your name, student number, and subject. Your record for the week fills in automatically once submitted."
+    },
+    {
+      q: "When is attendance due?",
+      keywords: ["when", "schedule", "saturday", "due", "deadline", "session", "time"],
+      a: "Attendance is taken every <b>Saturday</b>. Check the \u201cNext Session\u201d panel on the Weekly Attendance card for the exact date and time."
+    },
+    {
+      q: "How do I check my grades or records?",
+      keywords: ["grades", "grade", "records", "lookup", "score", "check my", "student number"],
+      a: "Use the <b>Student Lookup</b> tool and search by your student number. It shows your grades, attendance count, and progress instantly."
+    },
+    {
+      q: "How do I mark an activity as done?",
+      keywords: ["activity", "mark activity", "task", "complete", "done", "module", "reflection"],
+      a: "Go to <b>Mark My Activity</b> and confirm the activity you've completed for a subject. Your progress bar updates as tasks get checked off."
+    },
+    {
+      q: "What is the Class Overview for?",
+      keywords: ["overview", "class overview", "officer", "officers", "leaders", "snapshot", "class stats"],
+      a: "The <b>Class Overview</b> is for section officers &mdash; it shows attendance rate, student count, activity completion, and pending items for the whole class at a glance."
+    },
+    {
+      q: "How often does the data update?",
+      keywords: ["update", "sync", "real time", "live", "refresh", "sheets", "google sheets"],
+      a: "Everything reads from the same Google Sheet, so updates are near-instant &mdash; there's no separate save step or delay between tools."
+    },
+    {
+      q: "How do I post an announcement?",
+      keywords: ["announcement", "announce", "post an update", "board", "message"],
+      a: "Scroll to the Announcements board and click <b>\u201c+ Post an update.\u201d</b> Fill in your name and message, then submit &mdash; it appears for everyone right away."
+    },
+    {
+      q: "What is BSOAOUMN 2-7?",
+      keywords: ["bsoaoumn", "what is this", "portal", "about", "class", "section"],
+      a: "This is the Office Administration Portal for <b>BSOAOUMN 2&middot;7</b> &mdash; a shared workspace for attendance, activity tracking, and student records."
+    }
+  ];
+
+  var FALLBACK = "I don't have an answer for that yet, but you can try one of the topics below, or ask your class officer directly.";
+  var GREETING = "Hi, I'm OFIA! I can help with questions about attendance, grades, activities, or the class overview. What do you need?";
+
+  var toggle = document.getElementById('faqBotToggle');
+  var wrap = document.getElementById('faqBotWrap');
+  var panel = document.getElementById('faqBotPanel');
+  var body = document.getElementById('faqBotBody');
+  var form = document.getElementById('faqBotForm');
+  var input = document.getElementById('faqBotInput');
+  var suggestionsEl = document.getElementById('faqBotSuggestions');
+  var armEl = wrap.querySelector('.fb-arm-rotate');
+  var robotIcon = toggle.querySelector('.fb-robot-icon');
+  var greetingEl = document.getElementById('faqBotGreeting');
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var opened = false;
+
+  function addMsg(text, who){
+    var el = document.createElement('div');
+    el.className = 'fb-msg ' + who;
+    el.innerHTML = text;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function renderSuggestions(){
+    suggestionsEl.innerHTML = '';
+    FAQS.slice(0, 4).forEach(function(item){
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'fb-chip';
+      chip.textContent = item.q;
+      chip.addEventListener('click', function(){ handleQuestion(item.q); });
+      suggestionsEl.appendChild(chip);
+    });
+  }
+
+  function findAnswer(text){
+    var q = text.toLowerCase();
+    var best = null, bestScore = 0;
+    FAQS.forEach(function(item){
+      var score = 0;
+      item.keywords.forEach(function(k){ if (q.indexOf(k) !== -1) score += k.split(' ').length; });
+      if (score > bestScore){ bestScore = score; best = item; }
+    });
+    return best ? best.a : FALLBACK;
+  }
+
+  function handleQuestion(text){
+    addMsg(text.replace(/</g,'&lt;'), 'user');
+    setTimeout(function(){ addMsg(findAnswer(text), 'bot'); }, 260);
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var val = input.value.trim();
+    if (!val) return;
+    handleQuestion(val);
+    input.value = '';
+  });
+
+  toggle.addEventListener('click', function(){
+    opened = !opened;
+    toggle.classList.toggle('open', opened);
+    wrap.classList.toggle('open', opened);
+    toggle.setAttribute('aria-expanded', String(opened));
+    panel.classList.toggle('open', opened);
+    if (opened && body.children.length === 0){
+      addMsg(GREETING, 'bot');
+      renderSuggestions();
+    }
+    if (opened) input.focus();
+
+    /* React: quick surprised squash + wide eyes, and dismiss any
+       lingering greeting bubble since the visitor has engaged. */
+    if (robotIcon){
+      robotIcon.classList.remove('reacting');
+      void robotIcon.offsetWidth; /* restart animation */
+      robotIcon.classList.add('reacting');
+      setTimeout(function(){ robotIcon.classList.remove('reacting'); }, 520);
+    }
+    if (greetingEl) greetingEl.classList.remove('show');
+  });
+
+  /* On page load: OFIA waves and says hello, then settles back into
+     its resting raised-arm pose a few seconds later. */
+  if (!reducedMotion && armEl){
+    setTimeout(function(){
+      if (opened) return;
+      armEl.classList.add('waving');
+      if (greetingEl) greetingEl.classList.add('show');
+      setTimeout(function(){ armEl.classList.remove('waving'); }, 1800);
+      setTimeout(function(){ if (greetingEl) greetingEl.classList.remove('show'); }, 5200);
+    }, 800);
+  }
+})();
+</script>
+
 </body>
 </html>
