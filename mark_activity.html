@@ -152,6 +152,59 @@ a{ color:inherit; }
 .page-desc{ margin:0 0 22px; font-size:13.5px; line-height:1.7; color:var(--ink-soft); max-width:34em; }
 .sheet-divider{ height:1px; background:var(--hair); margin:0 30px 6px; }
 
+/* -- Confirmation overlay: ring + checkmark draw-in -- */
+.mark-overlay{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(250,246,241,0.72); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
+  opacity:0; pointer-events:none; z-index:5;
+}
+.mark-overlay.show{ opacity:1; animation:markOverlayFade 2.1s ease forwards; }
+.mark-confirm{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  opacity:0; transform:translateY(6px);
+}
+.mark-overlay.show .mark-confirm{ animation:markRise .5s cubic-bezier(.16,1,.3,1) .05s forwards; }
+.mark-ring{ width:74px; height:74px; }
+.mark-ring circle{ fill:none; stroke:var(--teal); stroke-width:2.5; }
+.mark-ring .ring-track{ stroke:var(--teal); opacity:.14; }
+.mark-ring .ring-draw{
+  stroke-dasharray:198; stroke-dashoffset:198; stroke-linecap:round;
+  transform:rotate(-90deg); transform-origin:50% 50%;
+}
+.mark-overlay.show .ring-draw{ animation:markRingDraw .6s cubic-bezier(.65,0,.35,1) .1s forwards; }
+.mark-ring .check-draw{
+  fill:none; stroke:var(--teal); stroke-width:3; stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:40; stroke-dashoffset:40;
+}
+.mark-overlay.show .check-draw{ animation:markCheckDraw .38s ease-out .55s forwards; }
+.mark-confirm .word{
+  font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-optical-sizing:auto;
+  font-size:17px; color:var(--teal-deep); letter-spacing:.01em; opacity:0;
+}
+.mark-overlay.show .word{ animation:markWordFade .45s ease .8s forwards; }
+.mark-confirm .sub{
+  font-size:10.5px; font-weight:600; letter-spacing:.08em; color:var(--ink-soft);
+  font-family:'IBM Plex Mono', monospace; opacity:0;
+}
+.mark-overlay.show .sub{ animation:markWordFade .45s ease .92s forwards; }
+
+@keyframes markRise{ to{ opacity:1; transform:translateY(0); } }
+@keyframes markRingDraw{ to{ stroke-dashoffset:0; } }
+@keyframes markCheckDraw{ to{ stroke-dashoffset:0; } }
+@keyframes markWordFade{ to{ opacity:1; } }
+@keyframes markOverlayFade{
+  0%{ opacity:0; } 12%{ opacity:1; } 78%{ opacity:1; } 100%{ opacity:0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .mark-overlay.show{ animation:markOverlayFadeReduced 2.1s ease forwards; }
+  .mark-overlay.show .mark-confirm,
+  .mark-overlay.show .ring-draw,
+  .mark-overlay.show .check-draw,
+  .mark-overlay.show .word,
+  .mark-overlay.show .sub{ animation:none !important; opacity:1 !important; transform:none !important; stroke-dashoffset:0 !important; }
+  @keyframes markOverlayFadeReduced{ 0%{ opacity:0; } 12%{ opacity:1; } 78%{ opacity:1; } 100%{ opacity:0; } }
+}
+
 form{ padding:22px 30px 26px; position:relative; z-index:1; }
 
 .field{ margin-bottom:20px; }
@@ -303,6 +356,18 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     </form>
 
     <p class="disclaimer">This form is for the exclusive use of BSOAOUMN 2-7 to confirm your own completed activities.</p>
+
+    <div class="mark-overlay" id="markOverlay">
+      <div class="mark-confirm">
+        <svg class="mark-ring" viewBox="0 0 74 74" aria-hidden="true">
+          <circle class="ring-track" cx="37" cy="37" r="31.5"></circle>
+          <circle class="ring-draw" cx="37" cy="37" r="31.5"></circle>
+          <path class="check-draw" d="M24 38 L33 47 L51 27"></path>
+        </svg>
+        <span class="word">Marked as done</span>
+        <span class="sub" id="markSubject"></span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -316,6 +381,8 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const submitBtn = document.getElementById('submitBtn');
   const studentNumberInput = document.getElementById('studentNumber');
   const studentNumberError = document.getElementById('studentNumberError');
+  const markOverlay = document.getElementById('markOverlay');
+  const markSubject = document.getElementById('markSubject');
 
   // Expected format: 2025-14723-MN-0
   const studentNumberPattern = /^\d{4}-\d{5}-[A-Za-z]{2}-\d$/;
@@ -407,6 +474,10 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         if (result.result === "success"){
           statusMsg.textContent = "Marked as done. Thank you!";
           statusMsg.className = "status success";
+          markSubject.textContent = subject + " \u00b7 " + dateLabel;
+          markOverlay.classList.remove('show');
+          void markOverlay.offsetWidth;
+          markOverlay.classList.add('show');
           form.reset();
           studentNumberInput.value = studentNumber;
           studentNumberInput.classList.remove('invalid');
