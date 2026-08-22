@@ -1551,10 +1551,14 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   #faqBotToggle svg{ width:100%; height:100%; overflow:visible; }
   #faqBotToggle .fb-robot-icon{ width:100%; height:100%; overflow:visible; }
   #faqBotToggle .fb-robot-icon svg{ width:100%!important; height:100%!important; overflow:visible; }
-  #faqBotToggle .fb-close-icon{ display:none; }
+  #faqBotToggle .fb-close-icon{ display:none; width:22px; height:22px; }
   #faqBotToggle.open .fb-robot-icon{ display:none; }
+  #faqBotToggle.open{
+    width:60px; height:60px; inset:auto; right:0; bottom:0;
+    background:var(--emerald); border-radius:50%;
+  }
   #faqBotToggle.open .fb-close-icon{
-    display:flex; background:var(--emerald); border-radius:50%; padding:16px; color:#fff;
+    display:flex; align-items:center; justify-content:center; color:#fff;
   }
   @keyframes fbFloat{
     0%,100%{ transform:translateY(0); }
