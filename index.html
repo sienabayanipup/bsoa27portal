@@ -146,14 +146,29 @@ a{ color:inherit; }
   display:inline-flex; align-items:center; gap:7px; text-decoration:none;
   font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:9.5px; letter-spacing:.28em; text-transform:uppercase;
   color:var(--bronze-tint); opacity:.55;
-  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease);
+  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease), color .3s var(--ease);
 }
 .top-link:hover{ opacity:.95; letter-spacing:.34em; }
 .top-link .ta-count{
   font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:11px; letter-spacing:0; text-transform:none;
   color:var(--bronze-bright);
+  transition:color .3s var(--ease);
 }
 .top-link .ta-count[hidden]{ display:none; }
+
+/* Scrolled state — once the fixed bar drifts off the dark hero photo and
+   onto the light ivory page below, the near-white hero-tuned link color
+   loses all contrast. Swap it for a small frosted chip with ink-toned
+   text so "Updates" stays legible for the rest of the scroll, not just
+   on the hero. Toggled by IntersectionObserver below. */
+.top-bar.is-scrolled .top-right{
+  background:rgba(253,250,247,.82); -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
+  padding:9px 16px; border-radius:999px; box-shadow:var(--shadow-2), inset 0 1px 0 rgba(255,255,255,.6);
+}
+.top-right{ transition:background .35s var(--ease), box-shadow .35s var(--ease); }
+.top-bar.is-scrolled .top-link{ color:var(--bronze-text); opacity:.85; }
+.top-bar.is-scrolled .top-link:hover{ opacity:1; }
+.top-bar.is-scrolled .top-link .ta-count{ color:var(--emerald); }
 
 
 /* ==========================================================================
@@ -249,7 +264,7 @@ html.gate-locked .console-stage{ animation-play-state:paused !important; }
 .console-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
 .ctile{ position:relative; overflow:hidden; border-radius:12px; padding:13px 14px; display:flex; flex-direction:column; gap:8px; }
 .ctile .cdot{ width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; }
-.ctile .cdot svg{ width:11px; height:11px; stroke-width:2.4px; }
+.ctile .cdot svg{ width:11px; height:11px; stroke-width:2px; }
 .ctile span.lbl{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; color:var(--ink); }
 .ctile.t1{ background:var(--emerald-tint); } .ctile.t1 .cdot{ background:var(--emerald); color:#fff; }
 .ctile.t2{ background:var(--slate-tint); } .ctile.t2 .cdot{ background:var(--slate); color:#fff; }
@@ -321,7 +336,7 @@ a.b-card:hover::before{ opacity:1; }
   font-family:'Fraunces', serif; font-weight:600; font-optical-sizing:auto; font-size:130px; line-height:1; color:var(--accent,var(--emerald)); opacity:.05; transition:opacity .3s ease; }
 a.b-card:hover .b-index{ opacity:.09; }
 .b-icon{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; color:var(--accent); background:var(--accent-tint); transition:transform .35s var(--spring); }
-.b-icon svg{ width:21px; height:21px; stroke-width:1.7px; }
+.b-icon svg{ width:21px; height:21px; stroke-width:2px; }
 a.b-card:hover .b-icon{ transform:scale(1.08); }
 .b-title{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:18px; letter-spacing:-0.015em; margin-bottom:10px; }
 .b-desc{ font-size:13.5px; line-height:1.7; letter-spacing:.002em; color:var(--muted); flex:1; }
@@ -636,7 +651,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   transition:transform .4s var(--spring), box-shadow .4s var(--ease), background .3s ease;
   opacity:0; transform:translateY(10px); animation:rise .7s var(--ease) forwards; animation-delay:.7s;
 }
-.gate-cta svg{ width:15px; height:15px; stroke-width:2.4px; transition:transform .35s var(--spring); }
+.gate-cta svg{ width:15px; height:15px; stroke-width:2px; transition:transform .35s var(--spring); }
 .gate-cta:hover{ transform:translateY(-3px); box-shadow:0 22px 48px -14px rgba(78,22,32,.65), inset 0 1px 0 rgba(255,255,255,.2); }
 .gate-cta:hover svg{ transform:translateX(3px); }
 .gate-cta:active{ transform:translateY(-1px) scale(.98); }
@@ -708,7 +723,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 </div>
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
-<div class="top-bar">
+<div class="top-bar" id="topBar">
   <div class="top-right">
     <a class="top-link" href="#announcements" id="topAnnounce" aria-label="Jump to announcements">
       Updates
@@ -716,6 +731,29 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     </a>
   </div>
 </div>
+<script>
+/* The top bar is fixed, so it rides over both the dark hero and the
+   light page below it. Its "Updates" link is styled near-white for
+   the hero photo, which reads as invisible once you scroll onto the
+   ivory background — so watch the hero and flip the bar into a
+   frosted, ink-toned chip as soon as it's mostly scrolled past. */
+(function(){
+  var bar = document.getElementById('topBar');
+  var hero = document.querySelector('.hero');
+  if (!bar || !hero) return;
+  if ('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      var e = entries[0];
+      bar.classList.toggle('is-scrolled', e.intersectionRatio < 0.7);
+    }, { threshold:[0,.7,1] });
+    obs.observe(hero);
+  } else {
+    var onScroll = function(){ bar.classList.toggle('is-scrolled', window.scrollY > hero.offsetHeight * 0.6); };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+  }
+})();
+</script>
 
 <!-- ============================================================
      HERO
@@ -1715,7 +1753,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   var form = document.getElementById('faqBotForm');
   var input = document.getElementById('faqBotInput');
   var suggestionsEl = document.getElementById('faqBotSuggestions');
-  var armEl = wrap.querySelector('.fb-arm-rotate');
   var robotIcon = toggle.querySelector('.fb-robot-icon');
   var greetingEl = document.getElementById('faqBotGreeting');
   var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1826,36 +1863,12 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     toggle.classList.remove('fb-has-greeted');
   });
 
-  /* Auto-dismiss: the greeting bubble fades on its own a few seconds
-     after it appears, so it reads as a passing hello rather than a
-     permanent fixture — unless the visitor has since opened the chat. */
-  function scheduleGreetingFade(){
-    if (!greetingEl) return;
-    setTimeout(function(){
-      if (!opened) greetingEl.classList.remove('show');
-    }, 5000);
-  }
-
-  /* On page load: OFIA waves and says hello. The greeting stays put
-     for a few seconds, then fades — unless the visitor opens the chat.
-     Below 640px the bubble is hidden by CSS (it would cover the hero
-     console), so we mark the toggle instead of animating text no one
-     can safely see. */
-  var narrowViewport = window.matchMedia && window.matchMedia('(max-width:640px)').matches;
-  if (!reducedMotion && armEl){
-    setTimeout(function(){
-      if (opened) return;
-      armEl.classList.add('waving');
-      if (narrowViewport){ toggle.classList.add('fb-has-greeted'); }
-      else if (greetingEl){ greetingEl.classList.add('show'); scheduleGreetingFade(); }
-      setTimeout(function(){ armEl.classList.remove('waving'); }, 1800);
-    }, 800);
-  } else if (narrowViewport){
-    toggle.classList.add('fb-has-greeted');
-  } else if (greetingEl){
-    greetingEl.classList.add('show');
-    scheduleGreetingFade();
-  }
+  /* OFIA no longer interrupts the page on load. The toggle just sits
+     quietly in the corner — a small squash-reaction plays on first
+     click (see the toggle's click handler above) and the greeting
+     message appears inside the panel once it's opened. Keeping the
+     entrance quiet matches the rest of the portal's restrained tone
+     and means nothing pops up over the hero console uninvited. */
 })();
 </script>
 
