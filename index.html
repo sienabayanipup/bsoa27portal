@@ -138,37 +138,35 @@ a{ color:inherit; }
   padding:22px clamp(20px,4vw,44px); pointer-events:none;
 }
 .top-bar > *{ pointer-events:auto; }
-.top-right{ display:flex; align-items:center; gap:10px; margin-left:auto; }
-/* Quiet text-only utility link — deliberately faint until touched so
-   it never competes with the headline or console. A small serif count
-   replaces the icon badge. */
+/* Always a self-contained frosted chip, never bare text on whatever
+   happens to be behind it. This is the fix for "Updates" disappearing
+   mid-scroll: it was near-white text at .55 opacity with no backing
+   surface, readable only on the dark hero photo — a scroll-triggered
+   class was meant to swap it to a light chip past the hero, but that
+   script ran before <section class="hero"> existed in the DOM, so
+   querySelector('.hero') always returned null and the swap never fired
+   (see the removed IntersectionObserver block below the markup). One
+   opaque chip that works everywhere is more robust than a two-state
+   swap that depends on scroll-timed JS, so that's what this is now. */
+.top-right{
+  display:flex; align-items:center; gap:10px; margin-left:auto;
+  padding:9px 16px; border-radius:999px;
+  background:rgba(36,26,29,.86);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 10px 26px -16px rgba(0,0,0,.4);
+}
 .top-link{
   display:inline-flex; align-items:center; gap:7px; text-decoration:none;
-  font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:9.5px; letter-spacing:.28em; text-transform:uppercase;
-  color:var(--bronze-tint); opacity:.55;
-  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease), color .3s var(--ease);
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;
+  color:#FDFAF7; opacity:.92;
+  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease);
 }
-.top-link:hover{ opacity:.95; letter-spacing:.34em; }
+.top-link:hover{ opacity:1; letter-spacing:.26em; }
 .top-link .ta-count{
   font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:11px; letter-spacing:0; text-transform:none;
   color:var(--bronze-bright);
-  transition:color .3s var(--ease);
 }
 .top-link .ta-count[hidden]{ display:none; }
-
-/* Scrolled state — once the fixed bar drifts off the dark hero photo and
-   onto the light ivory page below, the near-white hero-tuned link color
-   loses all contrast. Swap it for a small frosted chip with ink-toned
-   text so "Updates" stays legible for the rest of the scroll, not just
-   on the hero. Toggled by IntersectionObserver below. */
-.top-bar.is-scrolled .top-right{
-  background:rgba(253,250,247,.82); -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
-  padding:9px 16px; border-radius:999px; box-shadow:var(--shadow-2), inset 0 1px 0 rgba(255,255,255,.6);
-}
-.top-right{ transition:background .35s var(--ease), box-shadow .35s var(--ease); }
-.top-bar.is-scrolled .top-link{ color:var(--bronze-text); opacity:.85; }
-.top-bar.is-scrolled .top-link:hover{ opacity:1; }
-.top-bar.is-scrolled .top-link .ta-count{ color:var(--emerald); }
 
 
 /* ==========================================================================
@@ -731,29 +729,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     </a>
   </div>
 </div>
-<script>
-/* The top bar is fixed, so it rides over both the dark hero and the
-   light page below it. Its "Updates" link is styled near-white for
-   the hero photo, which reads as invisible once you scroll onto the
-   ivory background — so watch the hero and flip the bar into a
-   frosted, ink-toned chip as soon as it's mostly scrolled past. */
-(function(){
-  var bar = document.getElementById('topBar');
-  var hero = document.querySelector('.hero');
-  if (!bar || !hero) return;
-  if ('IntersectionObserver' in window){
-    var obs = new IntersectionObserver(function(entries){
-      var e = entries[0];
-      bar.classList.toggle('is-scrolled', e.intersectionRatio < 0.7);
-    }, { threshold:[0,.7,1] });
-    obs.observe(hero);
-  } else {
-    var onScroll = function(){ bar.classList.toggle('is-scrolled', window.scrollY > hero.offsetHeight * 0.6); };
-    window.addEventListener('scroll', onScroll, { passive:true });
-    onScroll();
-  }
-})();
-</script>
 
 <!-- ============================================================
      HERO
