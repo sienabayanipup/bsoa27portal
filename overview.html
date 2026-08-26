@@ -236,6 +236,10 @@ a{ color:inherit; }
   padding:11px 14px; background:var(--teal-tint); border:1px solid rgba(76,118,87,.16); border-radius:10px;
   font-size:13px; font-weight:600; color:var(--teal-deep);
 }
+.empty-state{
+  padding:16px; background:var(--paper-secondary); border:1px dashed var(--hair); border-radius:12px;
+  font-size:12.5px; line-height:1.6; color:var(--ink-soft); text-align:center;
+}
 
 /* ---------- Subject cards with seal rings ---------- */
 .subject-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -257,6 +261,75 @@ a{ color:inherit; }
 .ring-lbl{ text-align:center; font-size:9.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:6px; }
 @media (max-width:520px){ .subject-grid{ grid-template-columns:1fr; } }
 
+/* ---------- Per-date check forms (Attendance / Activity) ---------- */
+.check-form{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.check-form select, .check-form input{
+  flex:1; min-width:140px; padding:12px 14px; font-size:14.5px; font-family:'Inter', sans-serif;
+  border:1.5px solid var(--hair); border-radius:10px; background:var(--paper); color:var(--ink);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.check-form select:focus, .check-form input:focus{
+  outline:none; border-color:var(--bronze-text); box-shadow:0 0 0 3px rgba(139,74,76,.14);
+}
+.check-form select:disabled{ opacity:.55; }
+.check-form button{
+  flex:0 0 auto; padding:12px 22px; background:var(--bronze-text); color:#fff;
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; font-weight:700;
+  border:none; border-radius:10px; cursor:pointer;
+  box-shadow:0 10px 22px -8px rgba(139,74,76,.4);
+  transition:transform .15s var(--spring), box-shadow .2s ease, background .15s ease;
+}
+.check-form button:hover:not(:disabled){ background:var(--bronze-deep); transform:translateY(-2px); box-shadow:0 12px 24px -8px rgba(139,74,76,.45); }
+.check-form button:active:not(:disabled){ transform:translateY(0); }
+.check-form button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+.status-msg{ font-size:13.5px; color:var(--ink-soft); padding:10px 0 0; }
+.status-msg.error{ color:var(--error); font-weight:600; }
+
+.check-summary-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0; }
+.check-summary-box{ border-radius:14px; padding:16px 16px; text-align:center; }
+.check-summary-box.good{ background:var(--teal-tint); }
+.check-summary-box.bad{ background:var(--error-tint); }
+.check-summary-box .num{
+  font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:30px; letter-spacing:-0.01em;
+  font-variant-numeric:tabular-nums;
+}
+.check-summary-box.good .num{ color:var(--teal-deep); }
+.check-summary-box.bad .num{ color:var(--error); }
+.check-summary-box .lbl{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:4px; }
+
+.missing-list{ display:flex; flex-direction:column; gap:6px; }
+.missing-item{
+  padding:10px 14px; background:var(--error-tint); border:1px solid rgba(181,68,61,.16); border-radius:10px;
+  font-size:13px; font-weight:600; color:var(--error);
+}
+.missing-item span{ color:var(--ink-soft); font-weight:400; }
+.present-item{
+  padding:10px 14px; background:var(--teal-tint); border:1px solid rgba(76,118,87,.16); border-radius:10px;
+  font-size:13px; font-weight:600; color:var(--teal-deep);
+}
+.present-item span{ color:var(--ink-soft); font-weight:400; }
+
+.roster-columns{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.roster-col-title{
+  font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.06em; margin-bottom:9px;
+}
+.roster-col-title.good-title{ color:var(--teal-deep); }
+.roster-col-title.bad-title{ color:var(--error); }
+
+.result-header{
+  display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; margin-top:18px;
+  padding-top:14px; border-top:1px solid var(--hair); transition:opacity .15s ease;
+}
+.result-header:hover{ opacity:.7; }
+.result-header .toggle-label{ font-family:'Plus Jakarta Sans', sans-serif; font-size:12px; font-weight:700; color:var(--bronze-deep); }
+.result-header .chevron{ font-size:11px; color:var(--bronze-text); transition:transform .15s ease; }
+.result-body.collapsed{ display:none; }
+.result-header.collapsed .chevron{ transform:rotate(-90deg); }
+
+@media (max-width:520px){ .roster-columns{ grid-template-columns:1fr; } }
+
 /* ---------- Skeleton loading ---------- */
 @keyframes shimmer{ 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
 .skel{
@@ -265,6 +338,8 @@ a{ color:inherit; }
 }
 .skel-strip{ height:78px; border-radius:14px; }
 .skel-block{ height:190px; border-radius:14px; }
+.skel-box{ height:64px; border-radius:14px; }
+.skel-line{ height:12px; margin:9px 0; }
 @media (prefers-reduced-motion: reduce){ .skel{ animation:none; opacity:.6; } }
 
 ::view-transition-old(root){ animation: fadeOut .32s cubic-bezier(.4,0,1,1) forwards; }
@@ -340,14 +415,60 @@ a{ color:inherit; }
           <h1>Class Overview — Insights</h1>
         </div>
       </div>
-      <p class="page-desc">A live snapshot of attendance and activity across every subject — the same numbers the Check tools use, now at a glance.</p>
+      <p class="page-desc">A live snapshot across every subject, plus who's present, absent, or missing an activity on any specific date.</p>
     </div>
     <div class="sheet-divider"></div>
 
-    <div class="sheet-body" id="sheetBody">
-      <div class="skel skel-strip"></div>
-      <div style="height:14px;"></div>
-      <div class="skel skel-block"></div>
+    <div class="sheet-body">
+
+      <div id="insightsContainer">
+        <div class="skel skel-strip"></div>
+        <div style="height:14px;"></div>
+        <div class="skel skel-block"></div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Attendance &mdash; Present / Absent for a date</div>
+        <div class="check-form">
+          <select id="attSubject">
+            <option value="" disabled selected>Select a subject</option>
+            <option value="ENGL 017">ENGL 017</option>
+            <option value="GEED 033">GEED 033</option>
+            <option value="OFAD 201">OFAD 201</option>
+            <option value="PATHFIT 3">PATHFIT 3</option>
+            <option value="GEED 003">GEED 003</option>
+            <option value="OFAD 203">OFAD 203</option>
+            <option value="OFAD 202">OFAD 202</option>
+          </select>
+          <input type="date" id="attDate">
+          <button id="attCheckBtn" type="button">Check</button>
+        </div>
+        <p id="attStatus" class="status-msg" style="display:none;" aria-live="polite"></p>
+        <div id="attResult"></div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Activity &mdash; Submitted / Not Submitted for a date</div>
+        <div class="check-form">
+          <select id="actSubject">
+            <option value="" disabled selected>Select a subject</option>
+            <option value="ENGL 017">ENGL 017</option>
+            <option value="GEED 033">GEED 033</option>
+            <option value="OFAD 201">OFAD 201</option>
+            <option value="PATHFIT 3">PATHFIT 3</option>
+            <option value="GEED 003">GEED 003</option>
+            <option value="OFAD 203">OFAD 203</option>
+            <option value="OFAD 202">OFAD 202</option>
+          </select>
+          <select id="actDate" disabled>
+            <option value="" disabled selected>Select a subject first</option>
+          </select>
+          <button id="actCheckBtn" type="button">Check</button>
+        </div>
+        <p id="actStatus" class="status-msg" style="display:none;" aria-live="polite"></p>
+        <div id="actResult"></div>
+      </div>
+
     </div>
 
     <p class="disclaimer">This tool is for the exclusive use of BSOAOUMN 2-7 officers and is intended for academic monitoring purposes only.</p>
@@ -461,36 +582,45 @@ a{ color:inherit; }
       return scoreA - scoreB;
     });
 
+    const hasSubjectData = subjects.length > 0;
+    const hasTrendData = Array.isArray(data.weeklyTrend) && data.weeklyTrend.length > 0;
+
     let html = '';
     if (isDemo){
       html += `<div class="data-banner">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        Showing sample data for preview — open this from the deployed portal to see live numbers.
+        Couldn't reach the live sheet, so this is sample data — check the browser console for the error, and confirm the web app deployment is up to date.
       </div>`;
     }
 
     html += `<div class="section-block">
       <div class="stat-strip">
         <div class="stat-card"><div class="num">${data.totalStudents}</div><div class="lbl">Students</div></div>
-        <div class="stat-card"><div class="num">${avg(participationRates)}%</div><div class="lbl">Avg. Attendance</div></div>
-        <div class="stat-card"><div class="num">${avg(completionRates)}%</div><div class="lbl">Avg. Activity</div></div>
+        <div class="stat-card"><div class="num">${hasSubjectData ? avg(participationRates) + '%' : '—'}</div><div class="lbl">Avg. Attendance</div></div>
+        <div class="stat-card"><div class="num">${hasSubjectData ? avg(completionRates) + '%' : '—'}</div><div class="lbl">Avg. Activity</div></div>
       </div>
     </div>`;
 
     html += `<div class="section-block">
-      <div class="section-title">6-Week Attendance Trend</div>
-      <div class="trend-wrap">
+      <div class="section-title">6-Week Attendance Trend</div>`;
+    if (hasTrendData){
+      html += `<div class="trend-wrap">
         <div class="trend-legend">
           <span><i style="background:var(--emerald)"></i>Submissions</span>
           <span><i style="background:var(--slate)"></i>Unique students</span>
         </div>
         <div class="trend-canvas-wrap"><canvas id="trendCanvas"></canvas></div>
-      </div>
-    </div>`;
+      </div>`;
+    } else {
+      html += `<div class="empty-state">No attendance submissions logged yet in the attendance sheet. Once students start checking in, this fills in automatically.</div>`;
+    }
+    html += `</div>`;
 
     html += `<div class="section-block">
       <div class="section-title">Needs Attention</div>`;
-    if (needsAttention.length === 0){
+    if (!hasSubjectData){
+      html += `<div class="empty-state">Nothing to flag yet — no attendance or activity dates have been recorded for any subject.</div>`;
+    } else if (needsAttention.length === 0){
       html += `<div class="all-clear">Every subject is at or above ${ATTENTION_THRESHOLD}%. Nice!</div>`;
     } else {
       html += `<div class="attention-list">`;
@@ -507,30 +637,36 @@ a{ color:inherit; }
     html += `</div>`;
 
     html += `<div class="section-block">
-      <div class="section-title">By Subject</div>
-      <div class="subject-grid">`;
-    subjects.forEach(s => {
-      const p = (data.attendanceBySubject[s] || {}).participationRate;
-      const c = (data.activityBySubject[s] || {}).completionRate;
-      html += `<div class="subject-card">
-        <div class="subj-name">${s}</div>
-        <div class="ring-row">
-          <div>
-            <div class="ring">${ringSVG(p ?? 0, 64, 6)}<span class="pct">${p ?? '—'}${p !== undefined ? '%' : ''}</span></div>
-            <div class="ring-lbl">Attendance</div>
+      <div class="section-title">By Subject</div>`;
+    if (!hasSubjectData){
+      html += `<div class="empty-state">No subjects have attendance or activity data yet. Add activity dates to row 4 of Base_Tracker_ACTIVITY, or log an attendance submission, to see them here.</div>`;
+    } else {
+      html += `<div class="subject-grid">`;
+      subjects.forEach(s => {
+        const p = (data.attendanceBySubject[s] || {}).participationRate;
+        const c = (data.activityBySubject[s] || {}).completionRate;
+        html += `<div class="subject-card">
+          <div class="subj-name">${s}</div>
+          <div class="ring-row">
+            <div>
+              <div class="ring">${ringSVG(p ?? 0, 64, 6)}<span class="pct">${p ?? '—'}${p !== undefined ? '%' : ''}</span></div>
+              <div class="ring-lbl">Attendance</div>
+            </div>
+            <div>
+              <div class="ring">${ringSVG(c ?? 0, 64, 6)}<span class="pct">${c ?? '—'}${c !== undefined ? '%' : ''}</span></div>
+              <div class="ring-lbl">Activity</div>
+            </div>
           </div>
-          <div>
-            <div class="ring">${ringSVG(c ?? 0, 64, 6)}<span class="pct">${c ?? '—'}${c !== undefined ? '%' : ''}</span></div>
-            <div class="ring-lbl">Activity</div>
-          </div>
-        </div>
-      </div>`;
-    });
-    html += `</div></div>`;
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
 
-    document.getElementById('sheetBody').innerHTML = html;
+    document.getElementById('insightsContainer').innerHTML = html;
 
-    // ---- Trend chart ----
+    // ---- Trend chart (only when there's data to plot) ----
+    if (!hasTrendData) return;
     const labels = data.weeklyTrend.map(w => formatWeekLabel(w.weekStart));
     const submissions = data.weeklyTrend.map(w => w.submissions);
     const uniqueStudents = data.weeklyTrend.map(w => w.uniqueStudents);
@@ -562,11 +698,256 @@ a{ color:inherit; }
         if (data.error) throw new Error(data.error);
         renderOverview(data, false);
       })
-      .catch(() => renderOverview(DEMO_DATA, true));
+      .catch(err => {
+        // Logged so a real failure (bad deployment, network, etc.) is
+        // distinguishable from genuinely-empty sheets via DevTools →
+        // Console, instead of both silently looking like "demo data".
+        console.error('getOverview failed, showing sample data instead:', err);
+        renderOverview(DEMO_DATA, true);
+      });
   }
 
-  // If someone opens this file directly (gate already visible), loadOverview
-  // fires after a correct password. Nothing else to wire up on page load.
+  // ---- Attendance: Present / Absent for a specific date ----
+  const attSubject = document.getElementById('attSubject');
+  const attDate = document.getElementById('attDate');
+  const attCheckBtn = document.getElementById('attCheckBtn');
+  const attStatus = document.getElementById('attStatus');
+  const attResult = document.getElementById('attResult');
+
+  attDate.valueAsDate = new Date();
+
+  attCheckBtn.addEventListener('click', () => {
+    const subject = attSubject.value;
+    const date = attDate.value;
+
+    if (!subject || !date){
+      attStatus.textContent = "Please choose both a subject and a date.";
+      attStatus.className = "status-msg error";
+      attStatus.style.display = 'block';
+      attResult.innerHTML = '';
+      return;
+    }
+
+    attCheckBtn.disabled = true;
+    attCheckBtn.textContent = "Checking...";
+    attStatus.textContent = "";
+    attStatus.className = "status-msg";
+    attStatus.style.display = 'none';
+    attResult.innerHTML = `<div class="check-summary-row">
+        <div class="skel skel-box"></div><div class="skel skel-box"></div>
+      </div>
+      <div class="skel skel-line" style="width:35%;margin-top:22px;"></div>
+      <div class="roster-columns" style="margin-top:12px;">
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:90%;"></div>').join('')}</div>
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:85%;"></div>').join('')}</div>
+      </div>`;
+
+    const url = SCRIPT_URL
+      + "?action=getAttendanceForDate"
+      + "&subject=" + encodeURIComponent(subject)
+      + "&date=" + encodeURIComponent(date);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          attStatus.textContent = data.error;
+          attStatus.className = "status-msg error";
+          attStatus.style.display = 'block';
+          attResult.innerHTML = '';
+          return;
+        }
+        attStatus.style.display = 'none';
+
+        let html = `<div class="check-summary-row">
+          <div class="check-summary-box good"><div class="num">${data.presentCount}</div><div class="lbl">Present</div></div>
+          <div class="check-summary-box bad"><div class="num">${data.absentCount}</div><div class="lbl">Absent</div></div>
+        </div>`;
+
+        html += `<div class="result-header" id="attResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="attResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Present (${data.presentCount})</div>`;
+        if (data.presentees && data.presentees.length > 0){
+          html += `<div class="missing-list">`;
+          data.presentees.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one checked in yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Absent (${data.absentCount})</div>`;
+        if (data.absentees && data.absentees.length > 0){
+          html += `<div class="missing-list">`;
+          data.absentees.forEach(s => {
+            html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">Everyone was present. Nice!</p>`;
+        }
+        html += `</div>`;
+
+        html += `</div></div>`;
+
+        attResult.innerHTML = html;
+
+        const attHeader = document.getElementById('attResultHeader');
+        const attBody = document.getElementById('attResultBody');
+        attHeader.addEventListener('click', () => {
+          attBody.classList.toggle('collapsed');
+          attHeader.classList.toggle('collapsed');
+        });
+      })
+      .catch(() => {
+        attStatus.textContent = "Could not connect. Check your internet and try again.";
+        attStatus.className = "status-msg error";
+        attStatus.style.display = 'block';
+        attResult.innerHTML = '';
+      })
+      .finally(() => {
+        attCheckBtn.disabled = false;
+        attCheckBtn.textContent = "Check";
+      });
+  });
+
+  // ---- Activity: Submitted / Not Submitted for a specific date ----
+  const actSubject = document.getElementById('actSubject');
+  const actDate = document.getElementById('actDate');
+  const actCheckBtn = document.getElementById('actCheckBtn');
+  const actStatus = document.getElementById('actStatus');
+  const actResult = document.getElementById('actResult');
+
+  actSubject.addEventListener('change', () => {
+    const subject = actSubject.value;
+    actDate.innerHTML = '<option value="" disabled selected>Loading dates...</option>';
+    actDate.disabled = true;
+
+    fetch(SCRIPT_URL + "?action=getActivityDates&subject=" + encodeURIComponent(subject))
+      .then(res => res.json())
+      .then(data => {
+        const dates = data.dates || [];
+        if (dates.length === 0){
+          actDate.innerHTML = '<option value="" disabled selected>No activity dates found</option>';
+          return;
+        }
+        actDate.innerHTML = '<option value="" disabled selected>Select a date</option>' +
+          dates.map(d => `<option value="${d}">${d}</option>`).join('');
+        actDate.disabled = false;
+      })
+      .catch(() => {
+        actDate.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
+      });
+  });
+
+  actCheckBtn.addEventListener('click', () => {
+    const subject = actSubject.value;
+    const dateLabel = actDate.value;
+
+    if (!subject || !dateLabel){
+      actStatus.textContent = "Please choose both a subject and an activity date.";
+      actStatus.className = "status-msg error";
+      actStatus.style.display = 'block';
+      actResult.innerHTML = '';
+      return;
+    }
+
+    actCheckBtn.disabled = true;
+    actCheckBtn.textContent = "Checking...";
+    actStatus.textContent = "";
+    actStatus.className = "status-msg";
+    actStatus.style.display = 'none';
+    actResult.innerHTML = `<div class="check-summary-row">
+        <div class="skel skel-box"></div><div class="skel skel-box"></div>
+      </div>
+      <div class="skel skel-line" style="width:35%;margin-top:22px;"></div>
+      <div class="roster-columns" style="margin-top:12px;">
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:90%;"></div>').join('')}</div>
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:85%;"></div>').join('')}</div>
+      </div>`;
+
+    const url = SCRIPT_URL
+      + "?action=getActivityStatusByDate"
+      + "&subject=" + encodeURIComponent(subject)
+      + "&dateLabel=" + encodeURIComponent(dateLabel);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          actStatus.textContent = data.error;
+          actStatus.className = "status-msg error";
+          actStatus.style.display = 'block';
+          actResult.innerHTML = '';
+          return;
+        }
+        actStatus.style.display = 'none';
+
+        let html = `<div class="check-summary-row">
+          <div class="check-summary-box good"><div class="num">${data.doneCount}</div><div class="lbl">Submitted</div></div>
+          <div class="check-summary-box bad"><div class="num">${data.notDoneCount}</div><div class="lbl">Not Submitted</div></div>
+        </div>`;
+
+        html += `<div class="result-header" id="actResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="actResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Submitted (${data.doneCount})</div>`;
+        if (data.doneStudents && data.doneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.doneStudents.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one has submitted yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Not Submitted (${data.notDoneCount})</div>`;
+        if (data.notDoneStudents && data.notDoneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.notDoneStudents.forEach(s => {
+            html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">Everyone has submitted this activity. Nice!</p>`;
+        }
+        html += `</div>`;
+
+        html += `</div></div>`;
+
+        actResult.innerHTML = html;
+
+        const actHeader = document.getElementById('actResultHeader');
+        const actBody = document.getElementById('actResultBody');
+        actHeader.addEventListener('click', () => {
+          actBody.classList.toggle('collapsed');
+          actHeader.classList.toggle('collapsed');
+        });
+      })
+      .catch(() => {
+        actStatus.textContent = "Could not connect. Check your internet and try again.";
+        actStatus.className = "status-msg error";
+        actStatus.style.display = 'block';
+        actResult.innerHTML = '';
+      })
+      .finally(() => {
+        actCheckBtn.disabled = false;
+        actCheckBtn.textContent = "Check";
+      });
+  });
 </script>
 
 </body>
