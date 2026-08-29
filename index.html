@@ -711,9 +711,31 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 .announce-popup-icon svg{ width:19px; height:19px; }
 .announce-popup-eyebrow{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--bronze-text); margin:2px 0 4px; }
 .announce-popup-card h3{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:20px; letter-spacing:-0.01em; color:var(--ink); line-height:1.25; }
-.announce-popup-list{ overflow-y:auto; margin:18px 0 4px; padding-top:14px; border-top:1px solid var(--hair); flex:1 1 auto; }
-.announce-popup-list .b-announce-item{ font-size:14.5px; }
-.announce-popup-actions{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:18px; padding-top:16px; border-top:1px solid var(--hair); }
+.announce-popup-badge{ display:inline-block; margin-left:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.02em; color:var(--emerald); background:var(--emerald-tint); padding:3px 9px; border-radius:100px; vertical-align:middle; }
+.announce-popup-hint{ font-family:'Inter', sans-serif; font-size:11.5px; color:var(--muted); margin:14px 0 0; }
+.announce-popup-list{ overflow-y:auto; margin:8px 0 4px; flex:1 1 auto; }
+.announce-popup-item{
+  display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--hair);
+  font-size:14.5px; line-height:1.6; color:var(--ink);
+  transition:opacity .3s ease, transform .3s ease, max-height .3s ease, padding .3s ease;
+  max-height:120px;
+}
+.announce-popup-item:last-child{ border-bottom:none; }
+.announce-popup-item.collapsing{ opacity:0; transform:translateX(8px); max-height:0; padding-top:0; padding-bottom:0; overflow:hidden; }
+.announce-popup-check{
+  flex:0 0 auto; width:22px; height:22px; margin-top:1px; border-radius:50%; border:1.5px solid var(--emerald);
+  background:transparent; color:transparent; cursor:pointer; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s var(--spring);
+}
+.announce-popup-check svg{ width:12px; height:12px; }
+.announce-popup-check:hover{ transform:scale(1.1); border-color:var(--emerald-hover); }
+.announce-popup-item.checked .announce-popup-check{ background:var(--emerald); border-color:var(--emerald); color:#fff; }
+.announce-popup-item-text{ flex:1; transition:opacity .2s ease, text-decoration-color .2s ease; }
+.announce-popup-item.checked .announce-popup-item-text{ opacity:.5; text-decoration:line-through; }
+.announce-popup-empty{ padding:26px 4px; text-align:center; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:13.5px; color:var(--muted); display:flex; align-items:center; justify-content:center; gap:8px; }
+.announce-popup-empty svg{ width:16px; height:16px; color:var(--teal); }
+.announce-popup-actions{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:14px; padding-top:16px; border-top:1px solid var(--hair); }
 .announce-popup-view{
   font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12px; letter-spacing:.03em; color:var(--emerald);
   text-decoration:none; display:inline-flex; align-items:center; gap:6px;
@@ -731,8 +753,23 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   .announce-popup-view{ justify-content:center; }
 }
 @media (prefers-reduced-motion: reduce){
-  .announce-popup, .announce-popup-card{ transition:none !important; }
+  .announce-popup, .announce-popup-card, .announce-popup-item{ transition:none !important; }
 }
+
+/* Per-announcement read checkmark on the board itself — shares the same
+   read/unread state (localStorage) as the entrance popup, so ticking one
+   off in either place keeps both in sync. */
+.b-announce-check{
+  flex:0 0 auto; width:20px; height:20px; margin-top:2px; border-radius:50%; border:1.5px solid var(--emerald);
+  background:transparent; color:transparent; cursor:pointer; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s ease, border-color .15s ease, color .15s ease, transform .15s var(--spring);
+}
+.b-announce-check svg{ width:11px; height:11px; }
+.b-announce-check:hover{ transform:scale(1.1); border-color:var(--emerald-hover); }
+.b-announce-item.is-read .b-announce-check{ background:var(--emerald); border-color:var(--emerald); color:#fff; }
+.b-announce-item.is-read{ opacity:.55; }
+.b-announce-item.is-read .b-announce-name{ font-weight:600; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 </head>
@@ -788,13 +825,14 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       <span class="announce-popup-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
       <div>
         <p class="announce-popup-eyebrow">Before you go in</p>
-        <h3 id="announcePopupTitle">Latest from the board</h3>
+        <h3 id="announcePopupTitle">Latest from the board <span class="announce-popup-badge" id="announcePopupCount" hidden></span></h3>
       </div>
     </div>
+    <p class="announce-popup-hint">Tap the circle to mark each one as read.</p>
     <div class="announce-popup-list" id="announcePopupList"></div>
     <div class="announce-popup-actions">
       <a class="announce-popup-view" href="#announcements" id="announcePopupView">View all updates &rarr;</a>
-      <button class="announce-popup-dismiss" id="announcePopupDismiss" type="button">Got it</button>
+      <button class="announce-popup-dismiss" id="announcePopupDismiss" type="button">Mark all read</button>
     </div>
   </div>
 </div>
@@ -1087,38 +1125,127 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 (function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- Entrance announcement popup state ----
-     gateEntered flips true once the gate has opened (either path).
-     loadedAnnouncements is filled in once the board's fetch resolves.
-     The popup only fires once both are true, and only once per browser
-     session (ANNOUNCE_POPUP_KEY) so returning visitors in the same tab
-     aren't nagged on every reload/navigation. */
-  var ANNOUNCE_POPUP_KEY = 'bsoa27_announce_popup_seen';
+  /* ---- Per-announcement read tracking ----
+     Each announcement is identified by a short hash of its own name+message
+     (the sheet doesn't hand back a stable id), and read/unread state is
+     kept in localStorage so it persists across visits — not just this tab
+     session. The entrance popup and the board list both read/write the
+     same store, so ticking an item off in either place updates both. */
+  var ACK_KEY = 'bsoa27_ack_announcements';
   var gateEntered = false;
   var loadedAnnouncements = null;
   var announcePopupShown = false;
 
+  function announceId(item){
+    var s = (item && item.name || '') + '||' + (item && item.message || '');
+    var hash = 0;
+    for (var i = 0; i < s.length; i++){ hash = (hash * 31 + s.charCodeAt(i)) | 0; }
+    return 'a' + (hash >>> 0).toString(36);
+  }
+  function getAckSet(){
+    try{ var raw = localStorage.getItem(ACK_KEY); return raw ? JSON.parse(raw) : {}; }
+    catch(e){ return {}; }
+  }
+  function isAcked(id, ackSet){ return !!((ackSet || getAckSet())[id]); }
+  function ackAnnouncement(id){
+    try{ var set = getAckSet(); set[id] = Date.now(); localStorage.setItem(ACK_KEY, JSON.stringify(set)); }catch(e){}
+  }
+  function unackAnnouncement(id){
+    try{ var set = getAckSet(); delete set[id]; localStorage.setItem(ACK_KEY, JSON.stringify(set)); }catch(e){}
+  }
+
+  /* Keeps the board list and the popup list in sync whenever a checkmark
+     is toggled anywhere, and updates the top-bar unread badge. */
+  function setAnnounceRead(id, acked){
+    if (!id) return;
+    if (acked) ackAnnouncement(id); else unackAnnouncement(id);
+
+    var boardRow = document.querySelector('#announceList .b-announce-item[data-id="' + id + '"]');
+    if (boardRow){
+      boardRow.classList.toggle('is-read', acked);
+      var boardBtn = boardRow.querySelector('.b-announce-check');
+      if (boardBtn) boardBtn.setAttribute('aria-pressed', acked ? 'true' : 'false');
+    }
+
+    var popupRow = document.querySelector('#announcePopupList .announce-popup-item[data-id="' + id + '"]');
+    if (popupRow){
+      if (acked){
+        popupRow.classList.add('checked');
+        var finish = function(){
+          popupRow.classList.add('collapsing');
+          setTimeout(function(){
+            if (popupRow.parentNode) popupRow.parentNode.removeChild(popupRow);
+            updatePopupCount();
+            maybeAutoCloseEmptyPopup();
+          }, reduced ? 0 : 300);
+        };
+        setTimeout(finish, reduced ? 0 : 260);
+      } else {
+        popupRow.classList.remove('checked');
+      }
+    }
+
+    updateUnreadBadge();
+  }
+
+  function updateUnreadBadge(){
+    var badge = document.getElementById('topAnnounceBadge');
+    if (!badge || !loadedAnnouncements) return;
+    var ackSet = getAckSet();
+    var unread = loadedAnnouncements.filter(function(item){ return !isAcked(announceId(item), ackSet); }).length;
+    if (unread > 0){ badge.textContent = unread > 99 ? '99+' : String(unread); badge.hidden = false; }
+    else { badge.hidden = true; }
+  }
+
+  function updatePopupCount(){
+    var el = document.getElementById('announcePopupCount');
+    if (!el) return;
+    var n = document.querySelectorAll('#announcePopupList .announce-popup-item').length;
+    if (n > 0){ el.hidden = false; el.textContent = n === 1 ? '1 new' : (n + ' new'); }
+    else { el.hidden = true; }
+  }
+
+  function maybeAutoCloseEmptyPopup(){
+    var list = document.getElementById('announcePopupList');
+    if (!list || list.querySelector('.announce-popup-item')) return;
+    list.innerHTML = '<div class="announce-popup-empty">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+      + 'You\u2019re all caught up</div>';
+    setTimeout(hideAnnouncePopup, reduced ? 400 : 1100);
+  }
+
   function tryShowAnnouncePopup(){
     if (announcePopupShown) return;
     if (!gateEntered) return;
-    if (!loadedAnnouncements || loadedAnnouncements.length === 0) return;
-    var alreadySeen = false;
-    try{ alreadySeen = sessionStorage.getItem(ANNOUNCE_POPUP_KEY) === '1'; }catch(e){}
-    if (alreadySeen) return;
-    showAnnouncePopup(loadedAnnouncements.slice(0, 3));
+    if (!loadedAnnouncements) return;
+    var ackSet = getAckSet();
+    var unread = loadedAnnouncements.filter(function(item){ return !isAcked(announceId(item), ackSet); }).slice(0, 5);
+    if (unread.length === 0) return; // nothing new — don't interrupt with an empty popup
+    showAnnouncePopup(unread);
     announcePopupShown = true;
-    try{ sessionStorage.setItem(ANNOUNCE_POPUP_KEY, '1'); }catch(e){}
+  }
+
+  function renderPopupList(items){
+    var list = document.getElementById('announcePopupList');
+    if (!list) return;
+    list.innerHTML = items.map(function(item){
+      var id = announceId(item);
+      var name = (item.name || 'Anonymous').replace(/</g, '&lt;');
+      var msg = (item.message || '').replace(/</g, '&lt;');
+      return '<div class="announce-popup-item" data-id="' + id + '">'
+        + '<button type="button" class="announce-popup-check" aria-label="Mark as read" aria-pressed="false">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+        + '</button>'
+        + '<span class="announce-popup-item-text"><span class="b-announce-name">' + name + ':</span> ' + msg + '</span>'
+        + '</div>';
+    }).join('');
+    updatePopupCount();
   }
 
   function showAnnouncePopup(items){
     var popup = document.getElementById('announcePopup');
-    var list = document.getElementById('announcePopupList');
-    if (!popup || !list) return;
-    list.innerHTML = items.map(function(item){
-      var name = (item.name || 'Anonymous').replace(/</g, '&lt;');
-      var msg = (item.message || '').replace(/</g, '&lt;');
-      return '<div class="b-announce-item"><span class="b-announce-dot"></span><span><span class="b-announce-name">' + name + ':</span> ' + msg + '</span></div>';
-    }).join('');
+    if (!popup) return;
+    renderPopupList(items);
     popup.classList.add('show');
     popup.setAttribute('aria-hidden', 'false');
     var closeBtn = document.getElementById('announcePopupClose');
@@ -1137,7 +1264,11 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     var closeBtn = document.getElementById('announcePopupClose');
     var dismissBtn = document.getElementById('announcePopupDismiss');
     var viewLink = document.getElementById('announcePopupView');
-    [backdrop, closeBtn, dismissBtn].forEach(function(el){
+    var list = document.getElementById('announcePopupList');
+
+    // Closing via X / backdrop / Escape just hides the popup — it does NOT
+    // mark anything read, so unread items will resurface next visit.
+    [backdrop, closeBtn].forEach(function(el){
       if (el) el.addEventListener('click', hideAnnouncePopup);
     });
     if (viewLink) viewLink.addEventListener('click', function(){ hideAnnouncePopup(); });
@@ -1147,6 +1278,28 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
         if (popup && popup.classList.contains('show')) hideAnnouncePopup();
       }
     });
+
+    // Tapping an individual circle marks just that one as read.
+    if (list){
+      list.addEventListener('click', function(e){
+        var btn = e.target.closest ? e.target.closest('.announce-popup-check') : null;
+        if (!btn) return;
+        var row = btn.closest('.announce-popup-item');
+        if (!row) return;
+        setAnnounceRead(row.getAttribute('data-id'), true);
+      });
+    }
+
+    // "Mark all read" ticks every item currently shown, one after another.
+    if (dismissBtn){
+      dismissBtn.addEventListener('click', function(){
+        var rows = Array.prototype.slice.call(document.querySelectorAll('#announcePopupList .announce-popup-item'));
+        if (rows.length === 0){ hideAnnouncePopup(); return; }
+        rows.forEach(function(row, i){
+          setTimeout(function(){ setAnnounceRead(row.getAttribute('data-id'), true); }, i * (reduced ? 0 : 90));
+        });
+      });
+    }
   })();
 
   /* ---- Entrance gate ---- */
@@ -1593,25 +1746,41 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   function renderAnnouncements(items){
     loadedAnnouncements = items || [];
     tryShowAnnouncePopup();
+    updateUnreadBadge();
     var meta = document.getElementById('announceMeta');
-    var badge = document.getElementById('topAnnounceBadge');
-    var count = items ? items.length : 0;
-    if (badge){
-      if (count > 0){ badge.textContent = count > 99 ? '99+' : String(count); badge.hidden = false; }
-      else { badge.hidden = true; }
-    }
     if (!items || items.length === 0){
       announceList.innerHTML = '<div class="b-announce-item"><span class="b-announce-dot"></span>No announcements posted yet &mdash; be the first to post an update.</div>';
       if (meta) meta.textContent = 'No updates yet';
       return;
     }
     if (meta) meta.textContent = items.length + (items.length === 1 ? ' update posted' : ' updates posted');
+    var ackSet = getAckSet();
     announceList.innerHTML = items.map(function(item){
+      var id = announceId(item);
+      var acked = isAcked(id, ackSet);
       var name = escapeHtml(item.name || 'Anonymous');
       var msg = escapeHtml(item.message || '');
-      return '<div class="b-announce-item"><span class="b-announce-dot"></span><span><span class="b-announce-name">' + name + ':</span> ' + msg + '</span></div>';
+      return '<div class="b-announce-item' + (acked ? ' is-read' : '') + '" data-id="' + id + '">'
+        + '<button type="button" class="b-announce-check" aria-label="' + (acked ? 'Marked as read' : 'Mark as read') + '" aria-pressed="' + (acked ? 'true' : 'false') + '">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+        + '</button>'
+        + '<span><span class="b-announce-name">' + name + ':</span> ' + msg + '</span>'
+        + '</div>';
     }).join('');
   }
+
+  if (announceList){
+    announceList.addEventListener('click', function(e){
+      var btn = e.target.closest ? e.target.closest('.b-announce-check') : null;
+      if (!btn) return;
+      var row = btn.closest('.b-announce-item');
+      if (!row) return;
+      var id = row.getAttribute('data-id');
+      if (!id) return;
+      setAnnounceRead(id, !row.classList.contains('is-read'));
+    });
+  }
+
 
   function loadAnnouncements(){
     fetchWithTimeout(ANNOUNCE_SCRIPT_URL + "?action=getAnnouncements", 15000)
