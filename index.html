@@ -138,35 +138,37 @@ a{ color:inherit; }
   padding:22px clamp(20px,4vw,44px); pointer-events:none;
 }
 .top-bar > *{ pointer-events:auto; }
-/* Always a self-contained frosted chip, never bare text on whatever
-   happens to be behind it. This is the fix for "Updates" disappearing
-   mid-scroll: it was near-white text at .55 opacity with no backing
-   surface, readable only on the dark hero photo — a scroll-triggered
-   class was meant to swap it to a light chip past the hero, but that
-   script ran before <section class="hero"> existed in the DOM, so
-   querySelector('.hero') always returned null and the swap never fired
-   (see the removed IntersectionObserver block below the markup). One
-   opaque chip that works everywhere is more robust than a two-state
-   swap that depends on scroll-timed JS, so that's what this is now. */
-.top-right{
-  display:flex; align-items:center; gap:10px; margin-left:auto;
-  padding:9px 16px; border-radius:999px;
-  background:rgba(36,26,29,.86);
-  -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 10px 26px -16px rgba(0,0,0,.4);
-}
+.top-right{ display:flex; align-items:center; gap:10px; margin-left:auto; }
+/* Quiet text-only utility link — deliberately faint until touched so
+   it never competes with the headline or console. A small serif count
+   replaces the icon badge. */
 .top-link{
   display:inline-flex; align-items:center; gap:7px; text-decoration:none;
-  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;
-  color:#FDFAF7; opacity:.92;
-  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease);
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:9.5px; letter-spacing:.28em; text-transform:uppercase;
+  color:var(--bronze-tint); opacity:.55;
+  transition:opacity .3s var(--ease), letter-spacing .3s var(--ease), color .3s var(--ease);
 }
-.top-link:hover{ opacity:1; letter-spacing:.26em; }
+.top-link:hover{ opacity:.95; letter-spacing:.34em; }
 .top-link .ta-count{
   font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:11px; letter-spacing:0; text-transform:none;
   color:var(--bronze-bright);
+  transition:color .3s var(--ease);
 }
 .top-link .ta-count[hidden]{ display:none; }
+
+/* Scrolled state — once the fixed bar drifts off the dark hero photo and
+   onto the light ivory page below, the near-white hero-tuned link color
+   loses all contrast. Swap it for a small frosted chip with ink-toned
+   text so "Updates" stays legible for the rest of the scroll, not just
+   on the hero. Toggled by IntersectionObserver below. */
+.top-bar.is-scrolled .top-right{
+  background:rgba(253,250,247,.82); -webkit-backdrop-filter:blur(14px) saturate(1.4); backdrop-filter:blur(14px) saturate(1.4);
+  padding:9px 16px; border-radius:999px; box-shadow:var(--shadow-2), inset 0 1px 0 rgba(255,255,255,.6);
+}
+.top-right{ transition:background .35s var(--ease), box-shadow .35s var(--ease); }
+.top-bar.is-scrolled .top-link{ color:var(--bronze-text); opacity:.85; }
+.top-bar.is-scrolled .top-link:hover{ opacity:1; }
+.top-bar.is-scrolled .top-link .ta-count{ color:var(--emerald); }
 
 
 /* ==========================================================================
@@ -673,6 +675,64 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 @media (prefers-reduced-motion: reduce){
   .gate-seal-glow{ animation:none; }
 }
+
+/* ==========================================================================
+   ENTRANCE ANNOUNCEMENT POPUP — surfaces the latest board post right after
+   the gate opens, so it can't be missed the way a scroll-down board can.
+   ========================================================================== */
+.announce-popup{
+  position:fixed; inset:0; z-index:970; display:flex; align-items:center; justify-content:center;
+  padding:24px; opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .35s var(--ease), visibility 0s linear .35s;
+}
+.announce-popup.show{ opacity:1; visibility:visible; pointer-events:auto; transition:opacity .35s var(--ease); }
+.announce-popup-backdrop{
+  position:absolute; inset:0; background:rgba(36,26,29,.5); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+.announce-popup-card{
+  position:relative; z-index:1; width:100%; max-width:440px; max-height:min(78vh, 620px); overflow:hidden;
+  display:flex; flex-direction:column;
+  background:var(--surface-elevated); border-radius:22px; box-shadow:var(--shadow-3);
+  padding:30px 30px 26px; transform:translateY(18px) scale(.97); transition:transform .4s var(--spring);
+}
+.announce-popup.show .announce-popup-card{ transform:translateY(0) scale(1); }
+.announce-popup-close{
+  position:absolute; top:16px; right:16px; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer;
+  background:var(--paper-secondary); color:var(--ink-soft); display:flex; align-items:center; justify-content:center;
+  transition:background .15s ease, color .15s ease;
+}
+.announce-popup-close:hover{ background:var(--emerald-tint); color:var(--emerald); }
+.announce-popup-close svg{ width:14px; height:14px; }
+.announce-popup-head{ display:flex; align-items:flex-start; gap:14px; padding-right:26px; margin-bottom:4px; }
+.announce-popup-icon{
+  flex:0 0 auto; width:40px; height:40px; border-radius:12px; background:var(--emerald); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.announce-popup-icon svg{ width:19px; height:19px; }
+.announce-popup-eyebrow{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--bronze-text); margin:2px 0 4px; }
+.announce-popup-card h3{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:20px; letter-spacing:-0.01em; color:var(--ink); line-height:1.25; }
+.announce-popup-list{ overflow-y:auto; margin:18px 0 4px; padding-top:14px; border-top:1px solid var(--hair); flex:1 1 auto; }
+.announce-popup-list .b-announce-item{ font-size:14.5px; }
+.announce-popup-actions{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:18px; padding-top:16px; border-top:1px solid var(--hair); }
+.announce-popup-view{
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12px; letter-spacing:.03em; color:var(--emerald);
+  text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+}
+.announce-popup-view:hover{ text-decoration:underline; }
+.announce-popup-dismiss{
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13px; color:#fff; background:var(--emerald);
+  border:none; border-radius:100px; padding:11px 22px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring);
+}
+.announce-popup-dismiss:hover{ background:var(--emerald-hover); transform:translateY(-1px); }
+@media (max-width:480px){
+  .announce-popup-card{ padding:24px 22px 22px; }
+  .announce-popup-actions{ flex-direction:column-reverse; align-items:stretch; gap:12px; }
+  .announce-popup-dismiss{ width:100%; }
+  .announce-popup-view{ justify-content:center; }
+}
+@media (prefers-reduced-motion: reduce){
+  .announce-popup, .announce-popup-card{ transition:none !important; }
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 </head>
@@ -713,6 +773,32 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   </div>
 </div>
 
+<!-- ============================================================
+     ENTRANCE ANNOUNCEMENT POPUP — shown right after the gate opens
+     so the latest board post isn't missed by anyone who doesn't
+     scroll down to the Announcements section.
+     ============================================================ -->
+<div class="announce-popup" id="announcePopup" role="dialog" aria-modal="true" aria-labelledby="announcePopupTitle" aria-hidden="true">
+  <div class="announce-popup-backdrop" id="announcePopupBackdrop"></div>
+  <div class="announce-popup-card">
+    <button class="announce-popup-close" id="announcePopupClose" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <div class="announce-popup-head">
+      <span class="announce-popup-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
+      <div>
+        <p class="announce-popup-eyebrow">Before you go in</p>
+        <h3 id="announcePopupTitle">Latest from the board</h3>
+      </div>
+    </div>
+    <div class="announce-popup-list" id="announcePopupList"></div>
+    <div class="announce-popup-actions">
+      <a class="announce-popup-view" href="#announcements" id="announcePopupView">View all updates &rarr;</a>
+      <button class="announce-popup-dismiss" id="announcePopupDismiss" type="button">Got it</button>
+    </div>
+  </div>
+</div>
+
 <div class="ambient" aria-hidden="true">
   <div class="blob blob-a"></div>
   <div class="blob blob-b"></div>
@@ -729,6 +815,29 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     </a>
   </div>
 </div>
+<script>
+/* The top bar is fixed, so it rides over both the dark hero and the
+   light page below it. Its "Updates" link is styled near-white for
+   the hero photo, which reads as invisible once you scroll onto the
+   ivory background — so watch the hero and flip the bar into a
+   frosted, ink-toned chip as soon as it's mostly scrolled past. */
+(function(){
+  var bar = document.getElementById('topBar');
+  var hero = document.querySelector('.hero');
+  if (!bar || !hero) return;
+  if ('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      var e = entries[0];
+      bar.classList.toggle('is-scrolled', e.intersectionRatio < 0.7);
+    }, { threshold:[0,.7,1] });
+    obs.observe(hero);
+  } else {
+    var onScroll = function(){ bar.classList.toggle('is-scrolled', window.scrollY > hero.offsetHeight * 0.6); };
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+  }
+})();
+</script>
 
 <!-- ============================================================
      HERO
@@ -978,6 +1087,68 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 (function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ---- Entrance announcement popup state ----
+     gateEntered flips true once the gate has opened (either path).
+     loadedAnnouncements is filled in once the board's fetch resolves.
+     The popup only fires once both are true, and only once per browser
+     session (ANNOUNCE_POPUP_KEY) so returning visitors in the same tab
+     aren't nagged on every reload/navigation. */
+  var ANNOUNCE_POPUP_KEY = 'bsoa27_announce_popup_seen';
+  var gateEntered = false;
+  var loadedAnnouncements = null;
+  var announcePopupShown = false;
+
+  function tryShowAnnouncePopup(){
+    if (announcePopupShown) return;
+    if (!gateEntered) return;
+    if (!loadedAnnouncements || loadedAnnouncements.length === 0) return;
+    var alreadySeen = false;
+    try{ alreadySeen = sessionStorage.getItem(ANNOUNCE_POPUP_KEY) === '1'; }catch(e){}
+    if (alreadySeen) return;
+    showAnnouncePopup(loadedAnnouncements.slice(0, 3));
+    announcePopupShown = true;
+    try{ sessionStorage.setItem(ANNOUNCE_POPUP_KEY, '1'); }catch(e){}
+  }
+
+  function showAnnouncePopup(items){
+    var popup = document.getElementById('announcePopup');
+    var list = document.getElementById('announcePopupList');
+    if (!popup || !list) return;
+    list.innerHTML = items.map(function(item){
+      var name = (item.name || 'Anonymous').replace(/</g, '&lt;');
+      var msg = (item.message || '').replace(/</g, '&lt;');
+      return '<div class="b-announce-item"><span class="b-announce-dot"></span><span><span class="b-announce-name">' + name + ':</span> ' + msg + '</span></div>';
+    }).join('');
+    popup.classList.add('show');
+    popup.setAttribute('aria-hidden', 'false');
+    var closeBtn = document.getElementById('announcePopupClose');
+    if (closeBtn) setTimeout(function(){ closeBtn.focus(); }, 50);
+  }
+
+  function hideAnnouncePopup(){
+    var popup = document.getElementById('announcePopup');
+    if (!popup) return;
+    popup.classList.remove('show');
+    popup.setAttribute('aria-hidden', 'true');
+  }
+
+  (function wireAnnouncePopupControls(){
+    var backdrop = document.getElementById('announcePopupBackdrop');
+    var closeBtn = document.getElementById('announcePopupClose');
+    var dismissBtn = document.getElementById('announcePopupDismiss');
+    var viewLink = document.getElementById('announcePopupView');
+    [backdrop, closeBtn, dismissBtn].forEach(function(el){
+      if (el) el.addEventListener('click', hideAnnouncePopup);
+    });
+    if (viewLink) viewLink.addEventListener('click', function(){ hideAnnouncePopup(); });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape'){
+        var popup = document.getElementById('announcePopup');
+        if (popup && popup.classList.contains('show')) hideAnnouncePopup();
+      }
+    });
+  })();
+
   /* ---- Entrance gate ---- */
   var GATE_KEY = 'bsoa27_gate_entered';
   var gate = document.getElementById('portalGate');
@@ -993,6 +1164,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     if (skipAnim || reduced){ cleanup(); }
     else { gate.addEventListener('transitionend', cleanup, { once:true }); }
     try{ sessionStorage.setItem(GATE_KEY, '1'); }catch(e){}
+    setTimeout(function(){ gateEntered = true; tryShowAnnouncePopup(); }, (skipAnim || reduced) ? 200 : 550);
   }
 
   /* ---- Entrance sound: soft glass tap + airy whoosh ----
@@ -1419,6 +1591,8 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   function escapeHtml(str){ var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 
   function renderAnnouncements(items){
+    loadedAnnouncements = items || [];
+    tryShowAnnouncePopup();
     var meta = document.getElementById('announceMeta');
     var badge = document.getElementById('topAnnounceBadge');
     var count = items ? items.length : 0;
