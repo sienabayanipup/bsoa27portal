@@ -742,14 +742,14 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 }
 .announce-popup-view:hover{ text-decoration:underline; }
 .announce-popup-dismiss{
-  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13px; color:#fff; background:var(--emerald);
-  border:none; border-radius:100px; padding:11px 22px; cursor:pointer; transition:background .15s ease, transform .2s var(--spring);
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12.5px; letter-spacing:.02em; color:var(--ink-soft);
+  background:transparent; border:none; padding:9px 6px; cursor:pointer; transition:color .15s ease;
 }
-.announce-popup-dismiss:hover{ background:var(--emerald-hover); transform:translateY(-1px); }
+.announce-popup-dismiss:hover{ color:var(--ink); }
 @media (max-width:480px){
   .announce-popup-card{ padding:24px 22px 22px; }
   .announce-popup-actions{ flex-direction:column-reverse; align-items:stretch; gap:12px; }
-  .announce-popup-dismiss{ width:100%; }
+  .announce-popup-dismiss{ width:100%; text-align:center; }
   .announce-popup-view{ justify-content:center; }
 }
 @media (prefers-reduced-motion: reduce){
@@ -832,7 +832,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     <div class="announce-popup-list" id="announcePopupList"></div>
     <div class="announce-popup-actions">
       <a class="announce-popup-view" href="#announcements" id="announcePopupView">View all updates &rarr;</a>
-      <button class="announce-popup-dismiss" id="announcePopupDismiss" type="button">Mark all read</button>
+      <button class="announce-popup-dismiss" id="announcePopupDismiss" type="button">Close</button>
     </div>
   </div>
 </div>
@@ -1266,9 +1266,10 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     var viewLink = document.getElementById('announcePopupView');
     var list = document.getElementById('announcePopupList');
 
-    // Closing via X / backdrop / Escape just hides the popup — it does NOT
-    // mark anything read, so unread items will resurface next visit.
-    [backdrop, closeBtn].forEach(function(el){
+    // Closing via X / backdrop / "Close" / Escape just hides the popup —
+    // none of these mark anything read, so unread items resurface next
+    // visit. The only way to actually clear an item is to tap its circle.
+    [backdrop, closeBtn, dismissBtn].forEach(function(el){
       if (el) el.addEventListener('click', hideAnnouncePopup);
     });
     if (viewLink) viewLink.addEventListener('click', function(){ hideAnnouncePopup(); });
@@ -1287,17 +1288,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
         var row = btn.closest('.announce-popup-item');
         if (!row) return;
         setAnnounceRead(row.getAttribute('data-id'), true);
-      });
-    }
-
-    // "Mark all read" ticks every item currently shown, one after another.
-    if (dismissBtn){
-      dismissBtn.addEventListener('click', function(){
-        var rows = Array.prototype.slice.call(document.querySelectorAll('#announcePopupList .announce-popup-item'));
-        if (rows.length === 0){ hideAnnouncePopup(); return; }
-        rows.forEach(function(row, i){
-          setTimeout(function(){ setAnnounceRead(row.getAttribute('data-id'), true); }, i * (reduced ? 0 : 90));
-        });
       });
     }
   })();
