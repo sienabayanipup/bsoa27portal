@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FAF6F1">
+<title>Class Schedule &mdash; BSOAOUMN 2-7</title>
+<meta property="og:title" content="Class Schedule — BSOAOUMN 2-7">
+<meta property="og:description" content="Weekend class schedule, Cycle 1 and Cycle 2, for BSOAOUMN 2-7.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23FAF6F1' stroke='%236B1F2E' stroke-width='3.5'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-size='22' font-weight='600' text-anchor='middle' fill='%236B1F2E'%3E2%C2%B77%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,680;1,9..144,300;1,9..144,340;1,9..144,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2A2024; --ink-soft:#6B5B60; --muted:#8F8286;
+  --paper:#FAF6F1; --paper-secondary:#F3E9E4; --surface:#FFFFFF; --surface-elevated:#FDFAF7;
+  --emerald:#6B1F2E; --emerald-deep:#4E1620; --emerald-hover:#7F2938; --emerald-tint:#F1DEDC;
+  --bronze:#D9A9A8; --bronze-bright:#E8C4C0; --bronze-text:#8B4A4C; --bronze-tint:#F8ECEA;
+  --slate:#4F6D86; --slate-tint:#E8EEF3;
+  --teal:#4C7657; --teal-tint:#E7F0E9;
+  --hair:rgba(42,32,36,.08);
+  --shadow-1:0 1px 2px rgba(42,32,36,.04);
+  --shadow-2:0 18px 40px -18px rgba(42,32,36,.14);
+  --shadow-3:0 40px 90px -30px rgba(28,20,23,.22);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; color:var(--ink); background:var(--paper); font-family:'Inter', Arial, sans-serif;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+a{ color:inherit; }
+
+/* Top bar */
+.top-bar{ position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+  padding:18px 24px; background:rgba(250,246,241,.86); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--hair); }
+.back-link{ display:inline-flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13px; color:var(--emerald); text-decoration:none; }
+.back-link:hover{ text-decoration:underline; }
+.back-link svg{ width:15px; height:15px; }
+.top-badge{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.08em; color:var(--muted); }
+
+/* Hero */
+.sch-hero{ max-width:900px; margin:0 auto; padding:56px 24px 8px; text-align:center; }
+.sch-eyebrow{ display:inline-flex; align-items:center; gap:10px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--bronze-text); margin-bottom:16px; }
+.sch-eyebrow::before, .sch-eyebrow::after{ content:""; width:20px; height:1px; background:var(--bronze); }
+.sch-hero h1{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(32px,5vw,50px); letter-spacing:-0.02em; line-height:1.08; margin:0 0 14px; }
+.sch-hero p{ font-size:15.5px; color:var(--ink-soft); max-width:44ch; margin:0 auto; line-height:1.65; }
+
+/* Status banner */
+.sch-status{ max-width:640px; margin:32px auto 0; padding:20px 26px; border-radius:18px; background:var(--surface);
+  box-shadow:var(--shadow-2); display:flex; align-items:center; gap:16px; border:1.5px solid transparent; }
+.sch-status.is-today{ border-color:var(--emerald); background:linear-gradient(165deg, var(--surface), var(--emerald-tint) 260%); }
+.sch-status-dot{ flex:0 0 auto; width:14px; height:14px; border-radius:50%; background:var(--muted); position:relative; }
+.sch-status.is-today .sch-status-dot{ background:var(--emerald); }
+.sch-status.is-today .sch-status-dot::after{ content:""; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid var(--emerald); opacity:.5; animation:schPulse 2s infinite; }
+@keyframes schPulse{ 0%{ transform:scale(.7); opacity:.6; } 100%{ transform:scale(1.6); opacity:0; } }
+.sch-status-text{ font-family:'Plus Jakarta Sans', sans-serif; }
+.sch-status-main{ font-weight:700; font-size:15px; color:var(--ink); }
+.sch-status-sub{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+
+/* Cycle sections */
+.sch-cycle{ max-width:1100px; margin:0 auto; padding:56px 24px 8px; }
+.sch-cycle-head{ text-align:center; margin-bottom:8px; }
+.sch-cycle-head h2{ display:inline-flex; align-items:center; gap:12px; font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(24px,3vw,32px); letter-spacing:-0.01em; margin:0; }
+.sch-today-badge{ display:none; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:#fff; background:var(--emerald); padding:5px 12px; border-radius:100px; vertical-align:middle; }
+.sch-cycle.is-today .sch-today-badge{ display:inline-block; }
+.sch-dates{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:18px 0 0; padding:0; list-style:none; }
+.sch-date-chip{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:12px; color:var(--ink-soft); background:var(--paper-secondary); padding:7px 14px; border-radius:100px; border:1.5px solid transparent; }
+.sch-date-chip.is-today{ color:#fff; background:var(--emerald); font-weight:700; }
+.sch-date-chip.is-next{ color:var(--emerald); border-color:var(--emerald); background:var(--emerald-tint); }
+
+.sch-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; margin-top:32px; }
+@media (max-width:700px){ .sch-grid{ grid-template-columns:1fr; } }
+.sch-card{ position:relative; border-radius:18px; background:var(--surface); box-shadow:var(--shadow-2);
+  padding:24px 26px 22px; border-top:4px solid var(--accent); transition:transform .3s var(--ease), box-shadow .3s ease; }
+.sch-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-3); }
+.sch-cycle[data-cycle="cycle1"] .sch-card{ --accent:var(--emerald); }
+.sch-cycle[data-cycle="cycle2"] .sch-card{ --accent:var(--bronze-text); }
+.sch-card-code{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:17px; letter-spacing:.01em; margin-bottom:10px; }
+.sch-card-time{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:20px; letter-spacing:-0.01em; color:var(--ink); margin-bottom:6px; }
+.sch-card-instr{ font-size:13px; color:var(--muted); }
+
+.sch-foot{ max-width:900px; margin:64px auto 90px; padding:0 24px; text-align:center; }
+.sch-foot a{ display:inline-flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:13.5px; color:var(--emerald); text-decoration:none; padding:13px 26px; border-radius:100px; background:var(--emerald-tint); transition:background .15s ease, transform .2s ease; }
+.sch-foot a:hover{ background:var(--bronze-bright); transform:translateY(-1px); }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+    Back to Portal
+  </a>
+  <span class="top-badge">BSOAOUMN 2&ndash;7</span>
+</div>
+
+<section class="sch-hero">
+  <span class="sch-eyebrow">Weekend Class &middot; Saturday</span>
+  <h1>Class Schedule</h1>
+  <p>Two weekend cycles running through the term &mdash; find your subject, time slot, and instructor below. Today's session, if there is one, is highlighted automatically.</p>
+
+  <div class="sch-status" id="schStatus">
+    <span class="sch-status-dot" id="schStatusDot"></span>
+    <span class="sch-status-text">
+      <span class="sch-status-main" id="schStatusMain">Loading schedule&hellip;</span>
+      <span class="sch-status-sub" id="schStatusSub">&nbsp;</span>
+    </span>
+  </div>
+</section>
+
+<section class="sch-cycle" id="cycle1Section" data-cycle="cycle1">
+  <div class="sch-cycle-head">
+    <h2>Cycle 1 <span class="sch-today-badge">Today</span></h2>
+  </div>
+  <ul class="sch-dates" id="cycle1Dates"></ul>
+  <div class="sch-grid">
+    <div class="sch-card">
+      <div class="sch-card-code">GEED 033</div>
+      <div class="sch-card-time">7:30 AM &ndash; 9:00 AM</div>
+      <div class="sch-card-instr">Sir Alvin Ortiz</div>
+    </div>
+    <div class="sch-card">
+      <div class="sch-card-code">GEED 003</div>
+      <div class="sch-card-time">9:00 AM &ndash; 10:30 AM</div>
+      <div class="sch-card-instr">Sir Joringer Rangpas</div>
+    </div>
+    <div class="sch-card">
+      <div class="sch-card-code">ENGL 017</div>
+      <div class="sch-card-time">10:30 AM &ndash; 12:00 NN</div>
+      <div class="sch-card-instr">Ma&rsquo;am Helen Oris</div>
+    </div>
+    <div class="sch-card">
+      <div class="sch-card-code">OFAD 202</div>
+      <div class="sch-card-time">12:00 NN &ndash; 1:30 PM</div>
+      <div class="sch-card-instr">Ma&rsquo;am Arlene Garcia</div>
+    </div>
+  </div>
+</section>
+
+<section class="sch-cycle" id="cycle2Section" data-cycle="cycle2">
+  <div class="sch-cycle-head">
+    <h2>Cycle 2 <span class="sch-today-badge">Today</span></h2>
+  </div>
+  <ul class="sch-dates" id="cycle2Dates"></ul>
+  <div class="sch-grid">
+    <div class="sch-card">
+      <div class="sch-card-code">OFAD 201</div>
+      <div class="sch-card-time">1:30 PM &ndash; 3:00 PM</div>
+      <div class="sch-card-instr">Sir Lambert Louise Loleng</div>
+    </div>
+    <div class="sch-card">
+      <div class="sch-card-code">OFAD 203</div>
+      <div class="sch-card-time">3:00 PM &ndash; 4:30 PM</div>
+      <div class="sch-card-instr">Sir Jonathan Florida</div>
+    </div>
+    <div class="sch-card">
+      <div class="sch-card-code">PATHFIT 3</div>
+      <div class="sch-card-time">6:00 PM &ndash; 7:30 PM</div>
+      <div class="sch-card-instr">Sir Mark Villarba</div>
+    </div>
+  </div>
+</section>
+
+<div class="sch-foot">
+  <a href="index.html#dashboard">&larr; Back to your tools</a>
+</div>
+
+<script>
+(function(){
+  /* Same schedule data as the homepage teaser card on index.html. There's
+     no shared JS file between pages in this project, so if the term's
+     dates or subjects change, update both copies. */
+  var SCHEDULE = {
+    cycle1: {
+      label: 'Cycle 1',
+      dates: ['2026-09-12','2026-09-26','2026-10-10','2026-11-07','2026-11-21','2026-12-05']
+    },
+    cycle2: {
+      label: 'Cycle 2',
+      dates: ['2026-09-05','2026-09-19','2026-10-03','2026-10-24','2026-11-14','2026-12-12']
+    }
+  };
+
+  function todayISO(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function parseISO(iso){
+    var p = iso.split('-');
+    return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+  function formatPretty(iso){
+    return parseISO(iso).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  }
+  function formatShort(iso){
+    return parseISO(iso).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  }
+
+  function getStatus(){
+    var today = todayISO();
+    if (SCHEDULE.cycle1.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle1', date:today };
+    if (SCHEDULE.cycle2.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle2', date:today };
+    var upcoming = [];
+    ['cycle1', 'cycle2'].forEach(function(key){
+      SCHEDULE[key].dates.forEach(function(dt){ if (dt >= today) upcoming.push({ cycleKey:key, date:dt }); });
+    });
+    upcoming.sort(function(a, b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+    if (upcoming.length) return { when:'upcoming', cycleKey:upcoming[0].cycleKey, date:upcoming[0].date, nextDate:upcoming[0].date };
+    return { when:'none' };
+  }
+
+  // Render the date chips for each cycle, marking today / the next upcoming date.
+  function renderDateChips(cycleKey, status){
+    var listEl = document.getElementById(cycleKey + 'Dates');
+    if (!listEl) return;
+    var today = todayISO();
+    listEl.innerHTML = SCHEDULE[cycleKey].dates.map(function(dt){
+      var cls = 'sch-date-chip';
+      if (dt === today) cls += ' is-today';
+      else if (status.when === 'upcoming' && status.cycleKey === cycleKey && dt === status.nextDate) cls += ' is-next';
+      return '<li class="' + cls + '">' + formatShort(dt) + '</li>';
+    }).join('');
+  }
+
+  var status = getStatus();
+  renderDateChips('cycle1', status);
+  renderDateChips('cycle2', status);
+
+  var statusEl = document.getElementById('schStatus');
+  var mainEl = document.getElementById('schStatusMain');
+  var subEl = document.getElementById('schStatusSub');
+  var cycle1Section = document.getElementById('cycle1Section');
+  var cycle2Section = document.getElementById('cycle2Section');
+
+  if (status.when === 'today'){
+    var cyc = SCHEDULE[status.cycleKey];
+    statusEl.classList.add('is-today');
+    mainEl.textContent = 'Today is a class day \u2014 ' + cyc.label;
+    subEl.textContent = formatPretty(status.date);
+    (status.cycleKey === 'cycle1' ? cycle1Section : cycle2Section).classList.add('is-today');
+  } else if (status.when === 'upcoming'){
+    var cyc2 = SCHEDULE[status.cycleKey];
+    var days = Math.round((parseISO(status.date) - parseISO(todayISO())) / 86400000);
+    mainEl.textContent = 'Next session: ' + cyc2.label;
+    subEl.textContent = formatPretty(status.date) + ' \u2014 in ' + days + (days === 1 ? ' day' : ' days');
+  } else {
+    mainEl.textContent = 'No more sessions scheduled this term';
+    subEl.textContent = '\u2014';
+  }
+})();
+</script>
+</body>
+</html>
