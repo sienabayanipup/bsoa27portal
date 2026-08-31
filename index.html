@@ -314,9 +314,11 @@ html.gate-locked .console-stage{ animation-play-state:paused !important; }
 .bento{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
   grid-template-areas:
     "attendance attendance lookup"
-    "activity overview overview"; }
+    "activity overview overview"
+    "schedule schedule schedule"
+    "contacts contacts contacts"; }
 @media (max-width:900px){
-  .bento{ grid-template-columns:1fr; grid-template-areas:"attendance" "lookup" "activity" "overview"; }
+  .bento{ grid-template-columns:1fr; grid-template-areas:"attendance" "lookup" "activity" "overview" "schedule" "contacts"; }
 }
 
 .b-card{
@@ -447,6 +449,39 @@ a.b-attendance:hover{ box-shadow:var(--shadow-3), 0 44px 100px -28px rgba(78,22,
 .ov-updated{ display:flex; align-items:center; gap:7px; margin-top:14px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); }
 .ov-updated .cdot-live{ width:5px; height:5px; border-radius:50%; background:var(--teal); flex:0 0 auto; animation:consolePulse 2.4s infinite; }
 @media (max-width:640px){ .ov-stats{ grid-template-columns:repeat(2,1fr); } }
+
+/* Schedule — grid-area schedule, wide featured (mirrors Attendance's
+   treatment since both are essential for every student, not just officers) */
+.b-schedule{ grid-area:schedule; --accent:var(--emerald); --accent-tint:var(--emerald-tint);
+  padding:32px 34px 26px; box-shadow:var(--shadow-2);
+  background:linear-gradient(158deg, var(--surface) 60%, var(--bronze-tint) 340%); }
+a.b-schedule:hover{ box-shadow:var(--shadow-3); }
+.b-schedule .b-index{ opacity:.05; right:10px; font-size:150px; }
+.b-schedule .b-title{ font-size:21px; margin-bottom:8px; }
+.b-schedule .b-desc{ flex:none; max-width:40em; }
+@media (max-width:600px){ .b-schedule{ padding:26px 24px 22px; } }
+
+/* Contacts — grid-area contacts, wide featured, mirrors the Lookup card's
+   slate accent since both are "find the right info/person" tools */
+.b-contacts{ grid-area:contacts; --accent:var(--slate); --accent-tint:var(--slate-tint);
+  padding:32px 34px 26px; box-shadow:var(--shadow-2);
+  background:linear-gradient(158deg, var(--surface) 60%, var(--slate-tint) 340%); }
+a.b-contacts:hover{ box-shadow:var(--shadow-3); }
+.b-contacts .b-index{ opacity:.05; right:10px; font-size:150px; }
+.b-contacts .b-title{ font-size:21px; margin-bottom:8px; }
+.b-contacts .b-desc{ flex:none; max-width:40em; }
+@media (max-width:600px){ .b-contacts{ padding:26px 24px 22px; } }
+.contacts-preview{ margin-top:18px; padding-top:16px; border-top:1px solid var(--hair); }
+.cp-row{ display:flex; align-items:baseline; gap:12px; font-size:13px; padding:6px 0; }
+.cp-row .cp-name{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; color:var(--ink); white-space:nowrap; }
+.cp-row .cp-subj{ color:var(--muted); font-size:11.5px; margin-left:auto; text-align:right; white-space:nowrap; }
+
+.sch-preview{ display:grid; grid-template-columns:1fr 1.3fr; margin-top:18px; padding-top:16px; border-top:1px solid var(--hair); }
+.sch-preview-classes{ margin-top:4px; }
+.sch-preview-row{ display:flex; align-items:baseline; gap:10px; font-size:12px; padding:4px 0; }
+.sch-preview-row .sch-code{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; color:var(--ink); white-space:nowrap; }
+.sch-preview-row .sch-time{ color:var(--muted); font-size:11px; margin-left:auto; white-space:nowrap; }
+@media (max-width:480px){ .sch-preview{ grid-template-columns:1fr; gap:20px; } }
 
 /* ==========================================================================
    WORKFLOW — short "how it works" step list
@@ -968,7 +1003,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   <div class="ws-head" data-reveal>
     <div>
       <p class="ws-eyebrow">Your tools</p>
-      <h2>Three tools for every student in the section, and one for the leaders overseeing it.</h2>
+      <h2>Five tools for every student in the section, and one for the leaders overseeing it.</h2>
     </div>
   </div>
 
@@ -985,18 +1020,18 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       <div class="b-attendance-preview" aria-hidden="true">
         <div class="bap-col">
           <span class="bap-label">Last Attendance</span>
-          <div class="bap-status">
+          <div class="bap-status" id="attLastStatusRow">
             <span class="bap-status-dot"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-            <span class="bap-status-text">Submitted</span>
+            <span class="bap-status-text">Loading&hellip;</span>
           </div>
-          <div class="bap-date">July 25</div>
-          <div class="bap-time">8:12 AM</div>
+          <div class="bap-date" id="attLastDate">&nbsp;</div>
+          <div class="bap-time" id="attLastTime">&nbsp;</div>
         </div>
         <div class="bap-col">
           <span class="bap-label">Next Session</span>
-          <div class="bap-day">Saturday</div>
-          <div class="bap-date">August 1</div>
-          <div class="bap-time">8:00 AM</div>
+          <div class="bap-day" id="attNextDay">&nbsp;</div>
+          <div class="bap-date" id="attNextDate">&nbsp;</div>
+          <div class="bap-time" id="attNextTime">&nbsp;</div>
         </div>
       </div>
 
@@ -1053,6 +1088,46 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       </div>
       <div class="ov-updated"><span class="cdot-live"></span>Updated 4 minutes ago &middot; 5-week attendance trend</div>
       <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
+    </a>
+
+    <a class="b-card b-schedule card-signature" href="schedule.html" data-reveal-item style="--rd:4">
+      <span class="b-index" aria-hidden="true">05</span>
+      <span class="b-kicker">Weekend class &middot; Saturday</span>
+      <div class="b-title">Class Schedule</div>
+      <p class="b-desc">Both weekend cycles &mdash; every subject, time slot, and instructor for Cycle 1 and Cycle 2.</p>
+
+      <div class="sch-preview" aria-hidden="true">
+        <div class="bap-col">
+          <span class="bap-label" id="schPreviewLabel">Next Session</span>
+          <div class="bap-day" id="schPreviewCycle">Loading&hellip;</div>
+          <div class="bap-date" id="schPreviewDate">&nbsp;</div>
+          <div class="bap-time" id="schPreviewRel">&nbsp;</div>
+        </div>
+        <div class="bap-col">
+          <span class="bap-label">Subjects that day</span>
+          <div class="sch-preview-classes" id="schPreviewClasses"></div>
+        </div>
+      </div>
+
+      <div class="b-footer">View full schedule <span class="arrow">&rarr;</span></div>
+    </a>
+
+    <a class="b-card b-contacts card-signature" href="contacts.html" data-reveal-item style="--rd:5">
+      <span class="b-index" aria-hidden="true">06</span>
+      <span class="b-kicker">Who to message</span>
+      <div class="b-title">Officers &amp; Contacts</div>
+      <p class="b-desc">Subject leaders for every class, with a direct link to each one's Messenger group chat.</p>
+
+      <div class="contacts-preview" aria-hidden="true">
+        <div class="cp-row"><span class="cp-name">Ann Margarette Colima</span><span class="cp-subj">GEED 003 &middot; OFAD 201</span></div>
+        <div class="cp-row"><span class="cp-name">Siena Bayani</span><span class="cp-subj">OFAD 202 &amp; 203</span></div>
+        <div class="cp-row"><span class="cp-name">Ma. Colin Padua</span><span class="cp-subj">ENGL 017</span></div>
+        <div class="cp-row"><span class="cp-name">Fred Papa</span><span class="cp-subj">PATHFIT 3</span></div>
+        <div class="cp-row"><span class="cp-name">Pauline Sunggahead</span><span class="cp-subj">GEED 033</span></div>
+        <div class="cp-row"><span class="cp-name">Ivan Soria</span><span class="cp-subj">MARK001</span></div>
+      </div>
+
+      <div class="b-footer">View directory <span class="arrow">&rarr;</span></div>
     </a>
 
   </div>
@@ -1289,6 +1364,134 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
         if (!row) return;
         setAnnounceRead(row.getAttribute('data-id'), true);
       });
+    }
+  })();
+
+  /* ---- Weekend class schedule (Cycle 1 / Cycle 2) ----
+     Static term data mirroring the printed schedule. Dates are compared
+     as plain ISO strings against the visitor's own local date, so this
+     needs no server clock. To reuse next term, just edit SCHEDULE below
+     (the same object is duplicated in schedule.html — there's no shared
+     JS file between pages in this project, so both copies need updating
+     together). */
+  var SCHEDULE = {
+    cycle1: {
+      label: 'Cycle 1',
+      startsAt: '7:30 AM',
+      dates: ['2026-09-12','2026-09-26','2026-10-10','2026-11-07','2026-11-21','2026-12-05'],
+      classes: [
+        { code:'GEED 033', time:'7:30\u201309:00 AM', instructor:'Sir Alvin Ortiz' },
+        { code:'GEED 003', time:'9:00\u201310:30 AM', instructor:'Sir Joringer Rangpas' },
+        { code:'ENGL 017', time:'10:30 AM\u201312:00 NN', instructor:'Ma\u2019am Helen Oris' },
+        { code:'OFAD 202', time:'12:00 NN\u20131:30 PM', instructor:'Ma\u2019am Arlene Garcia' }
+      ]
+    },
+    cycle2: {
+      label: 'Cycle 2',
+      startsAt: '1:30 PM',
+      dates: ['2026-09-05','2026-09-19','2026-10-03','2026-10-24','2026-11-14','2026-12-12'],
+      classes: [
+        { code:'OFAD 201', time:'1:30\u20133:00 PM', instructor:'Sir Lambert Louise Loleng' },
+        { code:'OFAD 203', time:'3:00\u20134:30 PM', instructor:'Sir Jonathan Florida' },
+        { code:'PATHFIT 3', time:'6:00\u20137:30 PM', instructor:'Sir Mark Villarba' }
+      ]
+    }
+  };
+  function scheduleTodayISO(){
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function scheduleParseISO(iso){
+    var p = iso.split('-');
+    return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+  function scheduleFormatPretty(iso){
+    return scheduleParseISO(iso).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  }
+  function scheduleGetStatus(){
+    var today = scheduleTodayISO();
+    if (SCHEDULE.cycle1.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle1', date:today };
+    if (SCHEDULE.cycle2.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle2', date:today };
+    var upcoming = [];
+    ['cycle1', 'cycle2'].forEach(function(key){
+      SCHEDULE[key].dates.forEach(function(dt){ if (dt >= today) upcoming.push({ cycleKey:key, date:dt }); });
+    });
+    upcoming.sort(function(a, b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+    if (upcoming.length) return { when:'upcoming', cycleKey:upcoming[0].cycleKey, date:upcoming[0].date };
+    return { when:'none' };
+  }
+
+  (function renderSchedulePreview(){
+    var labelEl = document.getElementById('schPreviewLabel');
+    var cycleEl = document.getElementById('schPreviewCycle');
+    var dateEl = document.getElementById('schPreviewDate');
+    var relEl = document.getElementById('schPreviewRel');
+    var classesEl = document.getElementById('schPreviewClasses');
+    if (!cycleEl) return; // teaser card not present on this page
+
+    var status = scheduleGetStatus();
+    if (status.when === 'none'){
+      labelEl.textContent = 'Schedule';
+      cycleEl.textContent = 'Term complete';
+      dateEl.textContent = '\u2014';
+      relEl.textContent = '';
+      classesEl.innerHTML = '';
+      return;
+    }
+    var cyc = SCHEDULE[status.cycleKey];
+    labelEl.textContent = status.when === 'today' ? 'Today' : 'Next Session';
+    cycleEl.textContent = cyc.label;
+    dateEl.textContent = scheduleFormatPretty(status.date);
+    if (status.when === 'today'){
+      relEl.textContent = 'Happening today';
+    } else {
+      var days = Math.round((scheduleParseISO(status.date) - scheduleParseISO(scheduleTodayISO())) / 86400000);
+      relEl.textContent = 'In ' + days + (days === 1 ? ' day' : ' days');
+    }
+    classesEl.innerHTML = cyc.classes.map(function(c){
+      return '<div class="sch-preview-row"><span class="sch-code">' + c.code + '</span><span class="sch-time">' + c.time + '</span></div>';
+    }).join('');
+  })();
+
+  /* ---- Attendance card preview: same schedule data, honest about the
+     term not having started yet rather than showing a fake submission. ---- */
+  (function renderAttendancePreview(){
+    var statusRow = document.getElementById('attLastStatusRow');
+    var lastDate = document.getElementById('attLastDate');
+    var lastTime = document.getElementById('attLastTime');
+    var nextDay = document.getElementById('attNextDay');
+    var nextDate = document.getElementById('attNextDate');
+    var nextTime = document.getElementById('attNextTime');
+    if (!statusRow) return; // card not present on this page
+
+    var allDates = SCHEDULE.cycle1.dates.concat(SCHEDULE.cycle2.dates).slice().sort();
+    var termStart = allDates[0];
+    var today = scheduleTodayISO();
+    var status = scheduleGetStatus();
+
+    if (status.when === 'none'){
+      nextDay.textContent = '\u2014';
+      nextDate.textContent = 'Term complete';
+      nextTime.textContent = '';
+    } else {
+      var cyc = SCHEDULE[status.cycleKey];
+      nextDay.textContent = scheduleParseISO(status.date).toLocaleDateString('en-US', { weekday:'long' });
+      nextDate.textContent = scheduleParseISO(status.date).toLocaleDateString('en-US', { month:'long', day:'numeric' });
+      nextTime.textContent = cyc.startsAt + ' start \u00b7 ' + cyc.label;
+    }
+
+    if (today < termStart){
+      statusRow.innerHTML = '<span class="bap-status-dot" style="background:var(--muted)">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4l2.5 1.5"/></svg></span>'
+        + '<span class="bap-status-text" style="color:var(--muted)">Not started yet</span>';
+      lastDate.textContent = 'Classes begin';
+      lastTime.textContent = scheduleParseISO(termStart).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    } else {
+      statusRow.innerHTML = '<span class="bap-status-dot" style="background:var(--slate)">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>'
+        + '<span class="bap-status-text" style="color:var(--slate)">Check your record</span>';
+      lastDate.textContent = 'This term';
+      lastTime.textContent = 'See the Attendance tool';
     }
   })();
 
