@@ -262,6 +262,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600; color:#fff;
   background:var(--slate); padding:3px 10px; border-radius:100px; letter-spacing:.02em;
 }
+.attendance-count-badge.absent-badge{ background:var(--error); }
 .activity-chip-row{ display:flex; flex-wrap:wrap; gap:7px; }
 .activity-chip{
   font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:500; padding:6px 12px;
@@ -437,8 +438,10 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   }
 
   function renderAttendanceGroups(body, entries){
-    // entries look like ["ENGL 017", "3 time(s) — 07/20/2026, 07/21/2026, 07/22/2026"]
+    // entries look like ["ENGL 017", { count: 3, present: ["07/20/2026", ...], absent: ["07/27/2026"] }]
     entries.forEach(([subject, value]) => {
+      const info = (value && typeof value === 'object') ? value : { count: 0, present: [], absent: [] };
+
       const groupWrap = document.createElement('div');
       groupWrap.className = 'activity-group';
 
@@ -450,26 +453,37 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       title.textContent = subject;
       titleRow.appendChild(title);
 
-      const dashIdx = String(value).indexOf('\u2014');
-      const countPart = dashIdx === -1 ? String(value).trim() : String(value).slice(0, dashIdx).trim();
-      const datesPart = dashIdx === -1 ? '' : String(value).slice(dashIdx + 1).trim();
-
       const countBadge = document.createElement('span');
       countBadge.className = 'attendance-count-badge';
-      countBadge.textContent = countPart;
+      countBadge.textContent = info.count + ' time(s)';
       titleRow.appendChild(countBadge);
+
+      if (info.absent && info.absent.length){
+        const absentBadge = document.createElement('span');
+        absentBadge.className = 'attendance-count-badge absent-badge';
+        absentBadge.textContent = info.absent.length + ' absent';
+        titleRow.appendChild(absentBadge);
+      }
 
       groupWrap.appendChild(titleRow);
 
       const chipRow = document.createElement('div');
       chipRow.className = 'activity-chip-row';
-      const dates = datesPart ? datesPart.split(',').map(d => d.trim()).filter(Boolean) : [];
-      dates.forEach(dateLabel => {
+
+      (info.present || []).forEach(dateLabel => {
         const chip = document.createElement('span');
         chip.className = 'activity-chip done';
         chip.textContent = dateLabel;
         chipRow.appendChild(chip);
       });
+      (info.absent || []).forEach(dateLabel => {
+        const chip = document.createElement('span');
+        chip.className = 'activity-chip not-done';
+        chip.textContent = dateLabel;
+        chip.title = 'Absent';
+        chipRow.appendChild(chip);
+      });
+
       groupWrap.appendChild(chipRow);
       body.appendChild(groupWrap);
     });
