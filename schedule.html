@@ -79,6 +79,8 @@ a{ color:inherit; }
 .sch-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-3); }
 .sch-cycle[data-cycle="cycle1"] .sch-card{ --accent:var(--emerald); }
 .sch-cycle[data-cycle="cycle2"] .sch-card{ --accent:var(--bronze-text); }
+.sch-cycle[data-cycle="tba"] .sch-card{ --accent:var(--muted); }
+.sch-cycle[data-cycle="tba"] .sch-card-time{ color:var(--muted); font-style:italic; }
 .sch-card-code{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:800; font-size:17px; letter-spacing:.01em; margin-bottom:10px; }
 .sch-card-time{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:20px; letter-spacing:-0.01em; color:var(--ink); margin-bottom:6px; }
 .sch-card-instr{ font-size:13px; color:var(--muted); }
@@ -117,28 +119,7 @@ a{ color:inherit; }
     <h2>Cycle 1 <span class="sch-today-badge">Today</span></h2>
   </div>
   <ul class="sch-dates" id="cycle1Dates"></ul>
-  <div class="sch-grid">
-    <div class="sch-card">
-      <div class="sch-card-code">GEED 033</div>
-      <div class="sch-card-time">7:30 AM &ndash; 9:00 AM</div>
-      <div class="sch-card-instr">Sir Alvin Ortiz</div>
-    </div>
-    <div class="sch-card">
-      <div class="sch-card-code">GEED 003</div>
-      <div class="sch-card-time">9:00 AM &ndash; 10:30 AM</div>
-      <div class="sch-card-instr">Sir Joringer Rangpas</div>
-    </div>
-    <div class="sch-card">
-      <div class="sch-card-code">ENGL 017</div>
-      <div class="sch-card-time">10:30 AM &ndash; 12:00 NN</div>
-      <div class="sch-card-instr">Ma&rsquo;am Helen Oris</div>
-    </div>
-    <div class="sch-card">
-      <div class="sch-card-code">OFAD 202</div>
-      <div class="sch-card-time">12:00 NN &ndash; 1:30 PM</div>
-      <div class="sch-card-instr">Ma&rsquo;am Arlene Garcia</div>
-    </div>
-  </div>
+  <div class="sch-grid" id="cycle1Grid"></div>
 </section>
 
 <section class="sch-cycle" id="cycle2Section" data-cycle="cycle2">
@@ -146,89 +127,56 @@ a{ color:inherit; }
     <h2>Cycle 2 <span class="sch-today-badge">Today</span></h2>
   </div>
   <ul class="sch-dates" id="cycle2Dates"></ul>
-  <div class="sch-grid">
-    <div class="sch-card">
-      <div class="sch-card-code">OFAD 201</div>
-      <div class="sch-card-time">1:30 PM &ndash; 3:00 PM</div>
-      <div class="sch-card-instr">Sir Lambert Louise Loleng</div>
-    </div>
-    <div class="sch-card">
-      <div class="sch-card-code">OFAD 203</div>
-      <div class="sch-card-time">3:00 PM &ndash; 4:30 PM</div>
-      <div class="sch-card-instr">Sir Jonathan Florida</div>
-    </div>
-    <div class="sch-card">
-      <div class="sch-card-code">PATHFIT 3</div>
-      <div class="sch-card-time">6:00 PM &ndash; 7:30 PM</div>
-      <div class="sch-card-instr">Sir Mark Villarba</div>
-    </div>
+  <div class="sch-grid" id="cycle2Grid"></div>
+</section>
+
+<section class="sch-cycle" id="tbaSection" data-cycle="tba">
+  <div class="sch-cycle-head">
+    <h2>To Be Announced</h2>
   </div>
+  <div class="sch-grid" id="tbaGrid"></div>
 </section>
 
 <div class="sch-foot">
   <a href="index.html#dashboard">&larr; Back to your tools</a>
 </div>
 
+<script src="schedule-data.js"></script>
 <script>
 (function(){
-  /* Same schedule data as the homepage teaser card on index.html. There's
-     no shared JS file between pages in this project, so if the term's
-     dates or subjects change, update both copies. */
-  var SCHEDULE = {
-    cycle1: {
-      label: 'Cycle 1',
-      dates: ['2026-09-12','2026-09-26','2026-10-10','2026-11-07','2026-11-21','2026-12-05']
-    },
-    cycle2: {
-      label: 'Cycle 2',
-      dates: ['2026-09-05','2026-09-19','2026-10-03','2026-10-24','2026-11-14','2026-12-12']
-    }
-  };
-
-  function todayISO(){
-    var d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
-  function parseISO(iso){
-    var p = iso.split('-');
-    return new Date(+p[0], +p[1] - 1, +p[2]);
-  }
-  function formatPretty(iso){
-    return parseISO(iso).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
-  }
-  function formatShort(iso){
-    return parseISO(iso).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-  }
-
-  function getStatus(){
-    var today = todayISO();
-    if (SCHEDULE.cycle1.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle1', date:today };
-    if (SCHEDULE.cycle2.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle2', date:today };
-    var upcoming = [];
-    ['cycle1', 'cycle2'].forEach(function(key){
-      SCHEDULE[key].dates.forEach(function(dt){ if (dt >= today) upcoming.push({ cycleKey:key, date:dt }); });
-    });
-    upcoming.sort(function(a, b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
-    if (upcoming.length) return { when:'upcoming', cycleKey:upcoming[0].cycleKey, date:upcoming[0].date, nextDate:upcoming[0].date };
-    return { when:'none' };
-  }
-
   // Render the date chips for each cycle, marking today / the next upcoming date.
   function renderDateChips(cycleKey, status){
     var listEl = document.getElementById(cycleKey + 'Dates');
     if (!listEl) return;
-    var today = todayISO();
+    var today = scheduleTodayISO();
     listEl.innerHTML = SCHEDULE[cycleKey].dates.map(function(dt){
       var cls = 'sch-date-chip';
       if (dt === today) cls += ' is-today';
       else if (status.when === 'upcoming' && status.cycleKey === cycleKey && dt === status.nextDate) cls += ' is-next';
-      return '<li class="' + cls + '">' + formatShort(dt) + '</li>';
+      return '<li class="' + cls + '">' + scheduleFormatShort(dt) + '</li>';
     }).join('');
   }
 
-  var status = getStatus();
+  // Render the subject cards for a cycle straight from SCHEDULE, so the
+  // cards can never drift out of sync with the dates/instructors above.
+  function renderCards(cycleKey){
+    var gridEl = document.getElementById(cycleKey + 'Grid');
+    if (!gridEl) return;
+    gridEl.innerHTML = SCHEDULE[cycleKey].classes.map(function(c){
+      return '<div class="sch-card">'
+        + '<div class="sch-card-code">' + c.code + '</div>'
+        + '<div class="sch-card-time">' + c.time + '</div>'
+        + '<div class="sch-card-instr">' + c.instructor + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  var status = scheduleGetStatus();
   renderDateChips('cycle1', status);
   renderDateChips('cycle2', status);
+  renderCards('cycle1');
+  renderCards('cycle2');
+  renderCards('tba');
 
   var statusEl = document.getElementById('schStatus');
   var mainEl = document.getElementById('schStatusMain');
@@ -240,13 +188,13 @@ a{ color:inherit; }
     var cyc = SCHEDULE[status.cycleKey];
     statusEl.classList.add('is-today');
     mainEl.textContent = 'Today is a class day \u2014 ' + cyc.label;
-    subEl.textContent = formatPretty(status.date);
+    subEl.textContent = scheduleFormatPretty(status.date);
     (status.cycleKey === 'cycle1' ? cycle1Section : cycle2Section).classList.add('is-today');
   } else if (status.when === 'upcoming'){
     var cyc2 = SCHEDULE[status.cycleKey];
-    var days = Math.round((parseISO(status.date) - parseISO(todayISO())) / 86400000);
+    var days = Math.round((scheduleParseISO(status.date) - scheduleParseISO(scheduleTodayISO())) / 86400000);
     mainEl.textContent = 'Next session: ' + cyc2.label;
-    subEl.textContent = formatPretty(status.date) + ' \u2014 in ' + days + (days === 1 ? ' day' : ' days');
+    subEl.textContent = scheduleFormatPretty(status.date) + ' \u2014 in ' + days + (days === 1 ? ' day' : ' days');
   } else {
     mainEl.textContent = 'No more sessions scheduled this term';
     subEl.textContent = '\u2014';
