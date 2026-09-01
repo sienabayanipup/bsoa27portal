@@ -1209,6 +1209,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   </div>
 </footer>
 
+<script src="schedule-data.js"></script>
 <script>
 (function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1381,59 +1382,10 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   })();
 
   /* ---- Weekend class schedule (Cycle 1 / Cycle 2) ----
-     Static term data mirroring the printed schedule. Dates are compared
-     as plain ISO strings against the visitor's own local date, so this
-     needs no server clock. To reuse next term, just edit SCHEDULE below
-     (the same object is duplicated in schedule.html — there's no shared
-     JS file between pages in this project, so both copies need updating
-     together). */
-  var SCHEDULE = {
-    cycle1: {
-      label: 'Cycle 1',
-      startsAt: '7:30 AM',
-      dates: ['2026-09-12','2026-09-26','2026-10-10','2026-11-07','2026-11-21','2026-12-05'],
-      classes: [
-        { code:'GEED 033', time:'7:30\u201309:00 AM', instructor:'Sir Alvin Ortiz' },
-        { code:'GEED 003', time:'9:00\u201310:30 AM', instructor:'Sir Joringer Rangpas' },
-        { code:'ENGL 017', time:'10:30 AM\u201312:00 NN', instructor:'Ma\u2019am Helen Oris' },
-        { code:'OFAD 202', time:'12:00 NN\u20131:30 PM', instructor:'Ma\u2019am Arlene Garcia' }
-      ]
-    },
-    cycle2: {
-      label: 'Cycle 2',
-      startsAt: '1:30 PM',
-      dates: ['2026-09-05','2026-09-19','2026-10-03','2026-10-24','2026-11-14','2026-12-12'],
-      classes: [
-        { code:'OFAD 201', time:'1:30\u20133:00 PM', instructor:'Sir Lambert Louise Loleng' },
-        { code:'OFAD 203', time:'3:00\u20134:30 PM', instructor:'Sir Jonathan Florida' },
-        { code:'PATHFIT 3', time:'6:00\u20137:30 PM', instructor:'Sir Mark Villarba' }
-      ]
-    }
-  };
-  function scheduleTodayISO(){
-    var d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
-  function scheduleParseISO(iso){
-    var p = iso.split('-');
-    return new Date(+p[0], +p[1] - 1, +p[2]);
-  }
-  function scheduleFormatPretty(iso){
-    return scheduleParseISO(iso).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-  }
-  function scheduleGetStatus(){
-    var today = scheduleTodayISO();
-    if (SCHEDULE.cycle1.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle1', date:today };
-    if (SCHEDULE.cycle2.dates.indexOf(today) !== -1) return { when:'today', cycleKey:'cycle2', date:today };
-    var upcoming = [];
-    ['cycle1', 'cycle2'].forEach(function(key){
-      SCHEDULE[key].dates.forEach(function(dt){ if (dt >= today) upcoming.push({ cycleKey:key, date:dt }); });
-    });
-    upcoming.sort(function(a, b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
-    if (upcoming.length) return { when:'upcoming', cycleKey:upcoming[0].cycleKey, date:upcoming[0].date };
-    return { when:'none' };
-  }
-
+     Term data now lives in schedule-data.js, shared with schedule.html
+     (loaded via <script src="schedule-data.js"> above), so this page
+     just calls the shared scheduleFormatShort()/scheduleGetStatus() and
+     reads SCHEDULE from there — nothing to keep in sync by hand. */
   (function renderSchedulePreview(){
     var labelEl = document.getElementById('schPreviewLabel');
     var cycleEl = document.getElementById('schPreviewCycle');
@@ -1454,7 +1406,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     var cyc = SCHEDULE[status.cycleKey];
     labelEl.textContent = status.when === 'today' ? 'Today' : 'Next Session';
     cycleEl.textContent = cyc.label;
-    dateEl.textContent = scheduleFormatPretty(status.date);
+    dateEl.textContent = scheduleFormatShort(status.date);
     if (status.when === 'today'){
       relEl.textContent = 'Happening today';
     } else {
