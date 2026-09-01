@@ -270,6 +270,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 }
 .activity-chip.done{ background:var(--teal-tint); color:var(--teal-deep); box-shadow:inset 0 0 0 1px rgba(76,118,87,.18); }
 .activity-chip.not-done{ background:var(--error-tint); color:var(--error); box-shadow:inset 0 0 0 1px rgba(181,68,61,.16); }
+.activity-chip.credited{ background:var(--slate-tint); color:var(--slate-deep); box-shadow:inset 0 0 0 1px rgba(79,109,134,.18); }
 
 @media (max-width:520px){
   body{ padding-top:88px; }
@@ -481,6 +482,13 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         chip.className = 'activity-chip not-done';
         chip.textContent = dateLabel;
         chip.title = 'Absent';
+        chipRow.appendChild(chip);
+      });
+      (info.credited || []).forEach(dateLabel => {
+        const chip = document.createElement('span');
+        chip.className = 'activity-chip credited';
+        chip.textContent = dateLabel;
+        chip.title = 'Credited';
         chipRow.appendChild(chip);
       });
 
