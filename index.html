@@ -805,6 +805,20 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 .b-announce-item.is-read .b-announce-check{ background:var(--emerald); border-color:var(--emerald); color:#fff; }
 .b-announce-item.is-read{ opacity:.55; }
 .b-announce-item.is-read .b-announce-name{ font-weight:600; }
+
+/* Delete button — sits at the end of each announcement row, quiet until
+   hovered so the board doesn't read as "delete-first" to regular students. */
+.b-announce-item{ position:relative; }
+.b-announce-row-text{ flex:1; }
+.b-announce-delete{
+  flex:0 0 auto; width:20px; height:20px; margin-top:2px; margin-left:auto; border-radius:50%; border:1.5px solid transparent;
+  background:transparent; color:var(--muted); cursor:pointer; padding:0; opacity:.45;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s ease, border-color .15s ease, color .15s ease, opacity .15s ease, transform .15s var(--spring);
+}
+.b-announce-delete svg{ width:12px; height:12px; }
+.b-announce-delete:hover{ opacity:1; color:#fff; background:#B4423C; border-color:#B4423C; transform:scale(1.08); }
+.b-announce-delete[disabled]{ opacity:.25; cursor:default; transform:none; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 </head>
@@ -1953,25 +1967,62 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       var acked = isAcked(id, ackSet);
       var name = escapeHtml(item.name || 'Anonymous');
       var msg = escapeHtml(item.message || '');
-      return '<div class="b-announce-item' + (acked ? ' is-read' : '') + '" data-id="' + id + '">'
+      var announceIdAttr = (item && item.id != null) ? ' data-announce-id="' + item.id + '"' : '';
+      return '<div class="b-announce-item' + (acked ? ' is-read' : '') + '" data-id="' + id + '"' + announceIdAttr + '>'
         + '<button type="button" class="b-announce-check" aria-label="' + (acked ? 'Marked as read' : 'Mark as read') + '" aria-pressed="' + (acked ? 'true' : 'false') + '">'
         + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
         + '</button>'
-        + '<span><span class="b-announce-name">' + name + ':</span> ' + msg + '</span>'
+        + '<span class="b-announce-row-text"><span class="b-announce-name">' + name + ':</span> ' + msg + '</span>'
+        + '<button type="button" class="b-announce-delete" aria-label="Delete announcement" title="Delete">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
+        + '</button>'
         + '</div>';
     }).join('');
   }
 
   if (announceList){
     announceList.addEventListener('click', function(e){
-      var btn = e.target.closest ? e.target.closest('.b-announce-check') : null;
-      if (!btn) return;
-      var row = btn.closest('.b-announce-item');
-      if (!row) return;
-      var id = row.getAttribute('data-id');
-      if (!id) return;
-      setAnnounceRead(id, !row.classList.contains('is-read'));
+      var checkBtn = e.target.closest ? e.target.closest('.b-announce-check') : null;
+      if (checkBtn){
+        var row = checkBtn.closest('.b-announce-item');
+        if (!row) return;
+        var id = row.getAttribute('data-id');
+        if (!id) return;
+        setAnnounceRead(id, !row.classList.contains('is-read'));
+        return;
+      }
+
+      var deleteBtn = e.target.closest ? e.target.closest('.b-announce-delete') : null;
+      if (deleteBtn) handleDeleteClick(deleteBtn);
     });
+  }
+
+  function handleDeleteClick(btn){
+    var row = btn.closest('.b-announce-item');
+    var announceId = row && row.getAttribute('data-announce-id');
+    if (!announceId){
+      alert("Can't delete this one — it hasn't finished loading yet. Try refreshing.");
+      return;
+    }
+    if (!confirm('Delete this announcement? This cannot be undone.')) return;
+
+    btn.disabled = true;
+    var deleteUrl = ANNOUNCE_SCRIPT_URL + "?action=deleteAnnouncement&id=" + encodeURIComponent(announceId);
+
+    fetchWithTimeout(deleteUrl, 15000)
+      .then(function(res){ return res.json(); })
+      .then(function(result){
+        if (result.result === 'success'){
+          loadAnnouncements();
+        } else {
+          alert(result.message || 'Could not delete that announcement.');
+          btn.disabled = false;
+        }
+      })
+      .catch(function(){
+        alert('Could not connect. Check your internet and try again.');
+        btn.disabled = false;
+      });
   }
 
 
