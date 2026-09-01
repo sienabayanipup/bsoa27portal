@@ -1945,7 +1945,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   function fetchWithTimeout(url, ms){
     var controller = new AbortController();
     var timer = setTimeout(function(){ controller.abort(); }, ms || 15000);
-    return fetch(url, { signal: controller.signal }).finally(function(){ clearTimeout(timer); });
+    return fetch(url, { signal: controller.signal, cache: 'no-store' }).finally(function(){ clearTimeout(timer); });
   }
 
   function escapeHtml(str){ var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
@@ -2027,7 +2027,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 
 
   function loadAnnouncements(){
-    fetchWithTimeout(ANNOUNCE_SCRIPT_URL + "?action=getAnnouncements", 15000)
+    fetchWithTimeout(ANNOUNCE_SCRIPT_URL + "?action=getAnnouncements&_=" + Date.now(), 15000)
       .then(function(res){ return res.json(); })
       .then(function(data){ renderAnnouncements(data.announcements || []); })
       .catch(function(){
