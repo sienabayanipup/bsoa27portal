@@ -263,6 +263,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   background:var(--slate); padding:3px 10px; border-radius:100px; letter-spacing:.02em;
 }
 .attendance-count-badge.absent-badge{ background:var(--error); }
+.attendance-count-badge.present-badge{ background:var(--teal); }
 .activity-chip-row{ display:flex; flex-wrap:wrap; gap:7px; }
 .activity-chip{
   font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:500; padding:6px 12px;
@@ -477,8 +478,8 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       titleRow.appendChild(title);
 
       const countBadge = document.createElement('span');
-      countBadge.className = 'attendance-count-badge';
-      countBadge.textContent = info.count + ' time(s)';
+      countBadge.className = 'attendance-count-badge present-badge';
+      countBadge.textContent = info.count + ' Present';
       titleRow.appendChild(countBadge);
 
       const pastAbsent = (info.absent || []).filter(d => !isFutureDate(d));
