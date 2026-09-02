@@ -439,14 +439,16 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     });
   }
 
-  // Parses date labels like "2026/07/27" (YYYY/MM/DD). Returns null if it
-  // doesn't look like a date, so callers can safely fall back to treating
-  // it as a normal (non-future) label.
+  // Parses date labels like "09/05/2026" (MM/DD/YYYY) — this matches
+  // Code.gs's Utilities.formatDate(dRaw, tz, "MM/dd/yyyy"), which is what
+  // actually builds these labels server-side (see lookupBaseTrackerAttendance).
+  // Returns null if it doesn't look like a date, so callers can safely fall
+  // back to treating it as a normal (non-future) label.
   function parseDateLabel(label){
     if (!label) return null;
-    const m = String(label).trim().match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+    const m = String(label).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     if (!m) return null;
-    const year = parseInt(m[1], 10), month = parseInt(m[2], 10), day = parseInt(m[3], 10);
+    const month = parseInt(m[1], 10), day = parseInt(m[2], 10), year = parseInt(m[3], 10);
     const d = new Date(year, month - 1, day);
     if (isNaN(d.getTime())) return null;
     return d;
