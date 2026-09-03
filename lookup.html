@@ -49,6 +49,8 @@
   --teal-tint:#E7F0E9;
 
   --warning:#C99A4B;
+  --warning-deep:#8A6A2F;
+  --warning-tint:#FBF1DF;
   --error:#B5443D;
   --error-tint:#FBECEA;
 
@@ -264,6 +266,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 }
 .attendance-count-badge.absent-badge{ background:var(--error); }
 .attendance-count-badge.present-badge{ background:var(--teal); }
+.attendance-count-badge.credited-badge{ background:var(--warning); }
 .activity-chip-row{ display:flex; flex-wrap:wrap; gap:7px; }
 .activity-chip{
   font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:500; padding:6px 12px;
@@ -271,7 +274,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 }
 .activity-chip.done{ background:var(--teal-tint); color:var(--teal-deep); box-shadow:inset 0 0 0 1px rgba(76,118,87,.18); }
 .activity-chip.not-done{ background:var(--error-tint); color:var(--error); box-shadow:inset 0 0 0 1px rgba(181,68,61,.16); }
-.activity-chip.credited{ background:var(--slate-tint); color:var(--slate-deep); box-shadow:inset 0 0 0 1px rgba(79,109,134,.18); }
+.activity-chip.credited{ background:var(--warning-tint); color:var(--warning-deep); box-shadow:inset 0 0 0 1px rgba(201,154,75,.28); }
 
 @media (max-width:520px){
   body{ padding-top:88px; }
@@ -479,12 +482,24 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       title.textContent = subject;
       titleRow.appendChild(title);
 
-      const countBadge = document.createElement('span');
-      countBadge.className = 'attendance-count-badge present-badge';
-      countBadge.textContent = info.count + ' Present';
-      titleRow.appendChild(countBadge);
-
+      const pastPresent = (info.present || []).filter(d => !isFutureDate(d));
       const pastAbsent = (info.absent || []).filter(d => !isFutureDate(d));
+      const pastCredited = (info.credited || []).filter(d => !isFutureDate(d));
+
+      const isCredited = pastCredited.length > 0;
+
+      if (isCredited){
+        const creditedBadge = document.createElement('span');
+        creditedBadge.className = 'attendance-count-badge credited-badge';
+        creditedBadge.textContent = 'Credited';
+        titleRow.appendChild(creditedBadge);
+      } else if (pastPresent.length > 0){
+        const countBadge = document.createElement('span');
+        countBadge.className = 'attendance-count-badge present-badge';
+        countBadge.textContent = pastPresent.length + ' Present';
+        titleRow.appendChild(countBadge);
+      }
+
       if (pastAbsent.length){
         const absentBadge = document.createElement('span');
         absentBadge.className = 'attendance-count-badge absent-badge';
@@ -497,21 +512,20 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       const chipRow = document.createElement('div');
       chipRow.className = 'activity-chip-row';
 
-      (info.present || []).forEach(dateLabel => {
+      pastPresent.forEach(dateLabel => {
         const chip = document.createElement('span');
         chip.className = 'activity-chip done';
         chip.textContent = dateLabel;
         chipRow.appendChild(chip);
       });
-      (info.absent || []).forEach(dateLabel => {
-        if (isFutureDate(dateLabel)) return; // not due yet — don't show at all
+      pastAbsent.forEach(dateLabel => {
         const chip = document.createElement('span');
         chip.className = 'activity-chip not-done';
         chip.title = 'Absent';
         chip.textContent = dateLabel;
         chipRow.appendChild(chip);
       });
-      (info.credited || []).forEach(dateLabel => {
+      pastCredited.forEach(dateLabel => {
         const chip = document.createElement('span');
         chip.className = 'activity-chip credited';
         chip.textContent = dateLabel;
