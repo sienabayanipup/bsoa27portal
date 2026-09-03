@@ -13,7 +13,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,680;1,9..144,300;1,9..144,340;1,9..144,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
 /* ==========================================================================
    TOKENS — identical to overview.html so this drops into the same portal
@@ -188,34 +187,22 @@ a{ color:inherit; }
 }
 .data-banner svg{ width:15px; height:15px; flex:0 0 auto; stroke-width:2px; }
 
-/* ---------- Stat strip ---------- */
-.stat-strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-.stat-card{
-  background:var(--surface-elevated); border:1px solid var(--hair); border-radius:14px;
-  padding:16px 14px; text-align:center;
+/* ---------- Needs Follow-Up roster ---------- */
+.followup-list{ display:flex; flex-direction:column; gap:10px; }
+.followup-card{
+  background:var(--surface-elevated); border:1px solid var(--hair); border-radius:14px; padding:14px 16px;
 }
-.stat-card .num{
-  font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:28px; letter-spacing:-0.01em;
-  color:var(--emerald); font-variant-numeric:tabular-nums; line-height:1;
+.followup-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.followup-name{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:15px; color:var(--ink); }
+.followup-num{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted); }
+.followup-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.chip{
+  display:inline-flex; align-items:center; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;
 }
-.stat-card .lbl{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:6px; }
-@media (max-width:480px){ .stat-strip{ grid-template-columns:1fr 1fr; } .stat-card:last-child{ grid-column:1 / -1; } }
-
-/* ---------- Trend chart ---------- */
-.trend-wrap{ background:var(--surface-elevated); border:1px solid var(--hair); border-radius:16px; padding:18px 18px 10px; }
-.trend-legend{ display:flex; gap:18px; margin-bottom:4px; }
-.trend-legend span{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-soft); font-weight:600; }
-.trend-legend i{ width:9px; height:9px; border-radius:50%; display:inline-block; }
-.trend-canvas-wrap{ height:190px; }
-
-/* ---------- Needs attention ---------- */
-.attention-list{ display:flex; flex-direction:column; gap:8px; }
-.attention-item{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding:11px 14px; background:var(--error-tint); border:1px solid rgba(181,68,61,.16); border-radius:10px;
-}
-.attention-item .subj{ font-size:13px; font-weight:700; color:var(--error); }
-.attention-item .why{ font-size:12px; color:var(--ink-soft); text-align:right; }
+.chip.bad{ background:var(--error-tint); color:var(--error); }
+.chip.warn{ background:var(--bronze-tint); color:var(--bronze-text); }
+.followup-subjects{ margin-top:8px; font-size:11.5px; color:var(--ink-soft); }
+.followup-subjects b{ color:var(--ink); font-weight:600; }
 .all-clear{
   padding:11px 14px; background:var(--teal-tint); border:1px solid rgba(76,118,87,.16); border-radius:10px;
   font-size:13px; font-weight:600; color:var(--teal-deep);
@@ -225,25 +212,6 @@ a{ color:inherit; }
   font-size:12.5px; line-height:1.6; color:var(--ink-soft); text-align:center;
 }
 
-/* ---------- Subject cards with seal rings ---------- */
-.subject-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.subject-card{
-  background:var(--surface-elevated); border:1px solid var(--hair); border-radius:16px; padding:16px 14px 14px;
-}
-.subject-card .subj-name{
-  font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; letter-spacing:.05em;
-  color:var(--ink); margin-bottom:12px;
-}
-.ring-row{ display:flex; justify-content:space-around; gap:8px; }
-.ring{ position:relative; width:64px; height:64px; }
-.ring svg{ transform:rotate(-90deg); }
-.ring .pct{
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:14.5px; color:var(--ink);
-  font-variant-numeric:tabular-nums;
-}
-.ring-lbl{ text-align:center; font-size:9.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:6px; }
-@media (max-width:520px){ .subject-grid{ grid-template-columns:1fr; } }
 
 /* ---------- Per-date check forms (Attendance / Activity) ---------- */
 .check-form{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
@@ -462,8 +430,6 @@ a{ color:inherit; }
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
   const OFFICER_PASSWORD = "bsoaoumn27";
-  const SUBJECT_ORDER = ["ENGL 017","GEED 033","OFAD 201","PATHFIT 3","GEED 003","OFAD 203","OFAD 202"];
-  const ATTENTION_THRESHOLD = 70; // % below which a subject shows up in "Needs attention"
 
   // ---- Password gate (same behavior as overview.html) ----
   const gateOverlay = document.getElementById('gateOverlay');
@@ -489,85 +455,25 @@ a{ color:inherit; }
 
   // ---- Demo data, shown only if the live endpoint can't be reached
   // (e.g. this file is being previewed outside the deployed Apps Script
-  // domain). Shape matches getOverview() in Code.gs exactly. ----
+  // domain). Shape matches getFollowUpList() in Code.gs — see note below. ----
   const DEMO_DATA = {
-    totalStudents: 42,
-    weeklyTrend: [
-      {weekStart:"2026-07-06", submissions:118, uniqueStudents:39},
-      {weekStart:"2026-07-13", submissions:121, uniqueStudents:40},
-      {weekStart:"2026-07-20", submissions:109, uniqueStudents:37},
-      {weekStart:"2026-07-27", submissions:126, uniqueStudents:41},
-      {weekStart:"2026-08-03", submissions:98,  uniqueStudents:34},
-      {weekStart:"2026-08-10", submissions:130, uniqueStudents:42}
-    ],
-    attendanceBySubject: {
-      "ENGL 017":  {participationRate:92},
-      "GEED 033":  {participationRate:88},
-      "OFAD 201":  {participationRate:95},
-      "PATHFIT 3": {participationRate:64},
-      "GEED 003":  {participationRate:90},
-      "OFAD 203":  {participationRate:81},
-      "OFAD 202":  {participationRate:97}
-    },
-    activityBySubject: {
-      "ENGL 017":  {completionRate:87},
-      "GEED 033":  {completionRate:79},
-      "OFAD 201":  {completionRate:91},
-      "PATHFIT 3": {completionRate:58},
-      "GEED 003":  {completionRate:84},
-      "OFAD 203":  {completionRate:69},
-      "OFAD 202":  {completionRate:96}
-    }
+    followUp: [
+      { name:"Miguel Santos",  studentNumber:"2023-01452", absences:5, missedActivities:4, subjects:["PATHFIT 3","OFAD 203"] },
+      { name:"Andrea Reyes",   studentNumber:"2023-00981", absences:3, missedActivities:2, subjects:["GEED 033"] },
+      { name:"Jerome Cruz",    studentNumber:"2023-01120", absences:2, missedActivities:3, subjects:["OFAD 203","GEED 003"] },
+      { name:"Bea Villanueva", studentNumber:"2023-00764", absences:4, missedActivities:0, subjects:["PATHFIT 3"] },
+      { name:"Carlos Mendez",  studentNumber:"2023-01309", absences:0, missedActivities:3, subjects:["OFAD 203"] }
+    ]
   };
 
-  function ringColor(pct){
-    if (pct >= 85) return getCss('--teal-deep');
-    if (pct >= ATTENTION_THRESHOLD) return getCss('--bronze-text');
-    return getCss('--error');
-  }
   function getCss(varName){ return getComputedStyle(document.documentElement).getPropertyValue(varName).trim(); }
 
-  function ringSVG(pct, size, stroke){
-    pct = Math.max(0, Math.min(100, pct));
-    const r = (size - stroke) / 2;
-    const c = 2 * Math.PI * r;
-    const offset = c * (1 - pct / 100);
-    const color = ringColor(pct);
-    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--hair)" stroke-width="${stroke}"/>
-      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
-        stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/>
-    </svg>`;
-  }
-
-  function formatWeekLabel(iso){
-    const d = new Date(iso + "T00:00:00");
-    if (isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-  }
-
-  function avg(nums){
-    if (!nums.length) return 0;
-    return Math.round(nums.reduce((a,b) => a+b, 0) / nums.length);
-  }
-
   function renderOverview(data, isDemo){
-    const subjects = SUBJECT_ORDER.filter(s => data.attendanceBySubject[s] || data.activityBySubject[s]);
-    const participationRates = subjects.map(s => (data.attendanceBySubject[s] || {}).participationRate || 0);
-    const completionRates = subjects.map(s => (data.activityBySubject[s] || {}).completionRate || 0);
-
-    const needsAttention = subjects.filter(s => {
-      const p = (data.attendanceBySubject[s] || {}).participationRate;
-      const c = (data.activityBySubject[s] || {}).completionRate;
-      return (p !== undefined && p < ATTENTION_THRESHOLD) || (c !== undefined && c < ATTENTION_THRESHOLD);
-    }).sort((a,b) => {
-      const scoreA = Math.min((data.attendanceBySubject[a]||{}).participationRate ?? 100, (data.activityBySubject[a]||{}).completionRate ?? 100);
-      const scoreB = Math.min((data.attendanceBySubject[b]||{}).participationRate ?? 100, (data.activityBySubject[b]||{}).completionRate ?? 100);
-      return scoreA - scoreB;
+    const roster = (data.followUp || []).slice().sort((a, b) => {
+      const scoreA = (a.absences || 0) + (a.missedActivities || 0);
+      const scoreB = (b.absences || 0) + (b.missedActivities || 0);
+      return scoreB - scoreA;
     });
-
-    const hasSubjectData = subjects.length > 0;
-    const hasTrendData = Array.isArray(data.weeklyTrend) && data.weeklyTrend.length > 0;
 
     let html = '';
     if (isDemo){
@@ -578,69 +484,22 @@ a{ color:inherit; }
     }
 
     html += `<div class="section-block">
-      <div class="stat-strip">
-        <div class="stat-card"><div class="num">${data.totalStudents}</div><div class="lbl">Students</div></div>
-        <div class="stat-card"><div class="num">${hasSubjectData ? avg(participationRates) + '%' : '—'}</div><div class="lbl">Avg. Attendance</div></div>
-        <div class="stat-card"><div class="num">${hasSubjectData ? avg(completionRates) + '%' : '—'}</div><div class="lbl">Avg. Activity</div></div>
-      </div>
-    </div>`;
-
-    html += `<div class="section-block">
-      <div class="section-title">6-Week Attendance Trend</div>`;
-    if (hasTrendData){
-      html += `<div class="trend-wrap">
-        <div class="trend-legend">
-          <span><i style="background:var(--emerald)"></i>Submissions</span>
-          <span><i style="background:var(--slate)"></i>Unique students</span>
-        </div>
-        <div class="trend-canvas-wrap"><canvas id="trendCanvas"></canvas></div>
-      </div>`;
+      <div class="section-title">Needs Follow-Up</div>`;
+    if (roster.length === 0){
+      html += `<div class="all-clear">No one is flagged right now. Nice!</div>`;
     } else {
-      html += `<div class="empty-state">No attendance submissions logged yet in the attendance sheet. Once students start checking in, this fills in automatically.</div>`;
-    }
-    html += `</div>`;
-
-    html += `<div class="section-block">
-      <div class="section-title">Needs Attention</div>`;
-    if (!hasSubjectData){
-      html += `<div class="empty-state">Nothing to flag yet — no attendance or activity dates have been recorded for any subject.</div>`;
-    } else if (needsAttention.length === 0){
-      html += `<div class="all-clear">Every subject is at or above ${ATTENTION_THRESHOLD}%. Nice!</div>`;
-    } else {
-      html += `<div class="attention-list">`;
-      needsAttention.forEach(s => {
-        const p = (data.attendanceBySubject[s] || {}).participationRate;
-        const c = (data.activityBySubject[s] || {}).completionRate;
-        const parts = [];
-        if (p !== undefined && p < ATTENTION_THRESHOLD) parts.push(`${p}% attendance`);
-        if (c !== undefined && c < ATTENTION_THRESHOLD) parts.push(`${c}% activity`);
-        html += `<div class="attention-item"><span class="subj">${s}</span><span class="why">${parts.join(' &middot; ')}</span></div>`;
-      });
-      html += `</div>`;
-    }
-    html += `</div>`;
-
-    html += `<div class="section-block">
-      <div class="section-title">By Subject</div>`;
-    if (!hasSubjectData){
-      html += `<div class="empty-state">No subjects have attendance or activity data yet. Add activity dates to row 4 of Base_Tracker_ACTIVITY, or log an attendance submission, to see them here.</div>`;
-    } else {
-      html += `<div class="subject-grid">`;
-      subjects.forEach(s => {
-        const p = (data.attendanceBySubject[s] || {}).participationRate;
-        const c = (data.activityBySubject[s] || {}).completionRate;
-        html += `<div class="subject-card">
-          <div class="subj-name">${s}</div>
-          <div class="ring-row">
-            <div>
-              <div class="ring">${ringSVG(p ?? 0, 64, 6)}<span class="pct">${p ?? '—'}${p !== undefined ? '%' : ''}</span></div>
-              <div class="ring-lbl">Attendance</div>
-            </div>
-            <div>
-              <div class="ring">${ringSVG(c ?? 0, 64, 6)}<span class="pct">${c ?? '—'}${c !== undefined ? '%' : ''}</span></div>
-              <div class="ring-lbl">Activity</div>
-            </div>
+      html += `<div class="followup-list">`;
+      roster.forEach(s => {
+        const chips = [];
+        if (s.absences) chips.push(`<span class="chip bad">${s.absences} absence${s.absences === 1 ? '' : 's'}</span>`);
+        if (s.missedActivities) chips.push(`<span class="chip warn">${s.missedActivities} missed activit${s.missedActivities === 1 ? 'y' : 'ies'}</span>`);
+        html += `<div class="followup-card">
+          <div class="followup-head">
+            <span class="followup-name">${s.name}</span>
+            <span class="followup-num">${s.studentNumber}</span>
           </div>
+          <div class="followup-chips">${chips.join('')}</div>
+          ${s.subjects && s.subjects.length ? `<div class="followup-subjects"><b>Subjects:</b> ${s.subjects.join(' · ')}</div>` : ''}
         </div>`;
       });
       html += `</div>`;
@@ -648,35 +507,14 @@ a{ color:inherit; }
     html += `</div>`;
 
     document.getElementById('insightsContainer').innerHTML = html;
-
-    // ---- Trend chart (only when there's data to plot) ----
-    if (!hasTrendData) return;
-    const labels = data.weeklyTrend.map(w => formatWeekLabel(w.weekStart));
-    const submissions = data.weeklyTrend.map(w => w.submissions);
-    const uniqueStudents = data.weeklyTrend.map(w => w.uniqueStudents);
-    const ctx = document.getElementById('trendCanvas').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          { label:'Submissions', data:submissions, borderColor:getCss('--emerald'), backgroundColor:'rgba(107,31,46,.08)', fill:true, tension:.35, pointRadius:3, pointBackgroundColor:getCss('--emerald'), borderWidth:2 },
-          { label:'Unique students', data:uniqueStudents, borderColor:getCss('--slate'), backgroundColor:'rgba(79,109,134,.06)', fill:true, tension:.35, pointRadius:3, pointBackgroundColor:getCss('--slate'), borderWidth:2 }
-        ]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:getCss('--graphite'), titleFont:{family:'IBM Plex Mono'}, bodyFont:{family:'Inter'}, padding:10, cornerRadius:8 } },
-        scales:{
-          x:{ grid:{ display:false }, ticks:{ font:{ family:'IBM Plex Mono', size:10 }, color:getCss('--muted') } },
-          y:{ beginAtZero:true, grid:{ color:'rgba(42,32,36,.06)' }, ticks:{ font:{ family:'IBM Plex Mono', size:10 }, color:getCss('--muted'), precision:0 } }
-        }
-      }
-    });
   }
 
   function loadOverview(){
-    fetch(SCRIPT_URL + "?action=getOverview")
+    // NOTE: this expects a new Code.gs action, e.g.:
+    //   action=getFollowUpList → { followUp: [{ name, studentNumber, absences, missedActivities, subjects }] }
+    // tallying, per student, absences and missed activity submissions across
+    // all subjects. Swap in the real endpoint name once that function exists.
+    fetch(SCRIPT_URL + "?action=getFollowUpList")
       .then(res => res.json())
       .then(data => {
         if (data.error) throw new Error(data.error);
@@ -686,7 +524,7 @@ a{ color:inherit; }
         // Logged so a real failure (bad deployment, network, etc.) is
         // distinguishable from genuinely-empty sheets via DevTools →
         // Console, instead of both silently looking like "demo data".
-        console.error('getOverview failed, showing sample data instead:', err);
+        console.error('getFollowUpList failed, showing sample data instead:', err);
         renderOverview(DEMO_DATA, true);
       });
   }
