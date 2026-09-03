@@ -484,7 +484,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
       const pastPresent = (info.present || []).filter(d => !isFutureDate(d));
       const pastAbsent = (info.absent || []).filter(d => !isFutureDate(d));
-      const pastCredited = (info.credited || []).filter(d => !isFutureDate(d));
+      const pastCredited = info.credited || []; // Credited is an intentional excusal, not attendance data — always show it regardless of date
 
       const isCredited = pastCredited.length > 0;
 
