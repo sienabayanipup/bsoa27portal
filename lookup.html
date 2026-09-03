@@ -525,13 +525,8 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         chip.textContent = dateLabel;
         chipRow.appendChild(chip);
       });
-      pastCredited.forEach(dateLabel => {
-        const chip = document.createElement('span');
-        chip.className = 'activity-chip credited';
-        chip.textContent = dateLabel;
-        chip.title = 'Credited';
-        chipRow.appendChild(chip);
-      });
+      // Credited subjects only show the badge — no per-date chip, since
+      // the specific date isn't meaningful once the subject is credited.
 
       groupWrap.appendChild(chipRow);
       body.appendChild(groupWrap);
