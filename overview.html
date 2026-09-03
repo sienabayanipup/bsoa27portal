@@ -172,44 +172,11 @@ a{ color:inherit; }
   text-transform:uppercase; letter-spacing:.06em; color:var(--bronze-deep); margin:0 0 14px;
   display:flex; align-items:center; justify-content:space-between; gap:10px;
 }
-.section-title .as-of{ font-family:'IBM Plex Mono', monospace; font-weight:500; font-size:10px; letter-spacing:.02em; text-transform:none; color:var(--muted); }
 .section-block{ margin-bottom:34px; }
 .section-block:last-child{ margin-bottom:14px; }
 .disclaimer{
   font-size:11.5px; line-height:1.6; color:var(--muted); text-align:center;
   padding:14px 30px 26px; margin:0; position:relative; z-index:1;
-}
-
-/* ---------- Demo-data banner ---------- */
-.data-banner{
-  display:flex; align-items:center; gap:9px; font-size:12px; color:var(--bronze-deep);
-  background:var(--bronze-tint); border-radius:10px; padding:10px 14px; margin:0 0 22px;
-}
-.data-banner svg{ width:15px; height:15px; flex:0 0 auto; stroke-width:2px; }
-
-/* ---------- Needs Follow-Up roster ---------- */
-.followup-list{ display:flex; flex-direction:column; gap:10px; }
-.followup-card{
-  background:var(--surface-elevated); border:1px solid var(--hair); border-radius:14px; padding:14px 16px;
-}
-.followup-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-.followup-name{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:15px; color:var(--ink); }
-.followup-num{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted); }
-.followup-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-.chip{
-  display:inline-flex; align-items:center; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;
-}
-.chip.bad{ background:var(--error-tint); color:var(--error); }
-.chip.warn{ background:var(--bronze-tint); color:var(--bronze-text); }
-.followup-subjects{ margin-top:8px; font-size:11.5px; color:var(--ink-soft); }
-.followup-subjects b{ color:var(--ink); font-weight:600; }
-.all-clear{
-  padding:11px 14px; background:var(--teal-tint); border:1px solid rgba(76,118,87,.16); border-radius:10px;
-  font-size:13px; font-weight:600; color:var(--teal-deep);
-}
-.empty-state{
-  padding:16px; background:var(--paper-secondary); border:1px dashed var(--hair); border-radius:12px;
-  font-size:12.5px; line-height:1.6; color:var(--ink-soft); text-align:center;
 }
 
 
@@ -288,8 +255,6 @@ a{ color:inherit; }
   border-radius:5px; background:linear-gradient(90deg, var(--hair) 25%, rgba(42,32,36,.07) 37%, var(--hair) 63%);
   background-size:400% 100%; animation:shimmer 1.5s ease-in-out infinite;
 }
-.skel-strip{ height:78px; border-radius:14px; }
-.skel-block{ height:190px; border-radius:14px; }
 .skel-box{ height:64px; border-radius:14px; }
 .skel-line{ height:12px; margin:9px 0; }
 @media (prefers-reduced-motion: reduce){ .skel{ animation:none; opacity:.6; } }
@@ -367,17 +332,11 @@ a{ color:inherit; }
           <h1>Class Overview — Insights</h1>
         </div>
       </div>
-      <p class="page-desc">A live snapshot across every subject, plus who's present, absent, or missing an activity on any specific date.</p>
+      <p class="page-desc">Who's present, absent, or missing an activity — checked by subject and date.</p>
     </div>
     <div class="sheet-divider"></div>
 
     <div class="sheet-body">
-
-      <div id="insightsContainer">
-        <div class="skel skel-strip"></div>
-        <div style="height:14px;"></div>
-        <div class="skel skel-block"></div>
-      </div>
 
       <div class="section-block">
         <div class="section-title">Attendance &mdash; Present / Absent for a date</div>
@@ -440,7 +399,7 @@ a{ color:inherit; }
   function tryUnlock(){
     if (gatePassword.value === OFFICER_PASSWORD){
       gateOverlay.classList.add('gate-exit');
-      setTimeout(() => { gateOverlay.style.display = 'none'; loadOverview(); }, 600);
+      setTimeout(() => { gateOverlay.style.display = 'none'; }, 600);
     } else {
       gateError.style.display = 'block';
       gatePassword.focus();
@@ -452,82 +411,6 @@ a{ color:inherit; }
   gateOverlay.style.opacity = 0;
   gateOverlay.style.transition = 'opacity .6s ease';
   requestAnimationFrame(() => { gateOverlay.style.opacity = 1; gatePassword.focus(); });
-
-  // ---- Demo data, shown only if the live endpoint can't be reached
-  // (e.g. this file is being previewed outside the deployed Apps Script
-  // domain). Shape matches getFollowUpList() in Code.gs — see note below. ----
-  const DEMO_DATA = {
-    followUp: [
-      { name:"Miguel Santos",  studentNumber:"2023-01452", absences:5, missedActivities:4, subjects:["PATHFIT 3","OFAD 203"] },
-      { name:"Andrea Reyes",   studentNumber:"2023-00981", absences:3, missedActivities:2, subjects:["GEED 033"] },
-      { name:"Jerome Cruz",    studentNumber:"2023-01120", absences:2, missedActivities:3, subjects:["OFAD 203","GEED 003"] },
-      { name:"Bea Villanueva", studentNumber:"2023-00764", absences:4, missedActivities:0, subjects:["PATHFIT 3"] },
-      { name:"Carlos Mendez",  studentNumber:"2023-01309", absences:0, missedActivities:3, subjects:["OFAD 203"] }
-    ]
-  };
-
-  function getCss(varName){ return getComputedStyle(document.documentElement).getPropertyValue(varName).trim(); }
-
-  function renderOverview(data, isDemo){
-    const roster = (data.followUp || []).slice().sort((a, b) => {
-      const scoreA = (a.absences || 0) + (a.missedActivities || 0);
-      const scoreB = (b.absences || 0) + (b.missedActivities || 0);
-      return scoreB - scoreA;
-    });
-
-    let html = '';
-    if (isDemo){
-      html += `<div class="data-banner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        Couldn't reach the live sheet, so this is sample data — check the browser console for the error, and confirm the web app deployment is up to date.
-      </div>`;
-    }
-
-    html += `<div class="section-block">
-      <div class="section-title">Needs Follow-Up</div>`;
-    if (roster.length === 0){
-      html += `<div class="all-clear">No one is flagged right now. Nice!</div>`;
-    } else {
-      html += `<div class="followup-list">`;
-      roster.forEach(s => {
-        const chips = [];
-        if (s.absences) chips.push(`<span class="chip bad">${s.absences} absence${s.absences === 1 ? '' : 's'}</span>`);
-        if (s.missedActivities) chips.push(`<span class="chip warn">${s.missedActivities} missed activit${s.missedActivities === 1 ? 'y' : 'ies'}</span>`);
-        html += `<div class="followup-card">
-          <div class="followup-head">
-            <span class="followup-name">${s.name}</span>
-            <span class="followup-num">${s.studentNumber}</span>
-          </div>
-          <div class="followup-chips">${chips.join('')}</div>
-          ${s.subjects && s.subjects.length ? `<div class="followup-subjects"><b>Subjects:</b> ${s.subjects.join(' · ')}</div>` : ''}
-        </div>`;
-      });
-      html += `</div>`;
-    }
-    html += `</div>`;
-
-    document.getElementById('insightsContainer').innerHTML = html;
-  }
-
-  function loadOverview(){
-    // NOTE: this expects a new Code.gs action, e.g.:
-    //   action=getFollowUpList → { followUp: [{ name, studentNumber, absences, missedActivities, subjects }] }
-    // tallying, per student, absences and missed activity submissions across
-    // all subjects. Swap in the real endpoint name once that function exists.
-    fetch(SCRIPT_URL + "?action=getFollowUpList")
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) throw new Error(data.error);
-        renderOverview(data, false);
-      })
-      .catch(err => {
-        // Logged so a real failure (bad deployment, network, etc.) is
-        // distinguishable from genuinely-empty sheets via DevTools →
-        // Console, instead of both silently looking like "demo data".
-        console.error('getFollowUpList failed, showing sample data instead:', err);
-        renderOverview(DEMO_DATA, true);
-      });
-  }
 
   // ---- Attendance: Present / Absent for a specific date ----
   const attSubject = document.getElementById('attSubject');
