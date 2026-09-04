@@ -556,7 +556,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           return;
         }
         if (result.result === "success"){
-          statusMsg.textContent = "Attendance recorded. Thank you!";
+          statusMsg.textContent = "Attendance recorded for " + subjectVal + ". Thank you!";
           statusMsg.className = "status success";
 
           const now = new Date();
