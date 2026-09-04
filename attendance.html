@@ -524,8 +524,31 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       + "&attendanceDate=" + encodeURIComponent(dateVal)
       + "&subject=" + encodeURIComponent(subjectVal);
 
-    fetch(submitUrl)
-      .then(res => res.json())
+    // When the whole class submits within the same minute, a request can
+    // occasionally land right when the server-side write lock is briefly
+    // busy with someone else's submission and come back with
+    // result:"error" + a "Server is busy" message. Rather than making the
+    // student notice that and tap the button again, retry a couple of
+    // times on our own with a short, randomized delay (spreads retries
+    // out so they don't all collide again) before giving up and showing
+    // an error.
+    function submitWithRetry(attemptsLeft){
+      return fetch(submitUrl)
+        .then(res => res.json())
+        .then(result => {
+          const isBusy = result.result === "error" && /busy/i.test(result.message || "");
+          if (isBusy && attemptsLeft > 0){
+            statusMsg.textContent = "Server is busy — retrying...";
+            statusMsg.className = "status loading";
+            const delay = 400 + Math.random() * 900;
+            return new Promise(resolve => setTimeout(resolve, delay))
+              .then(() => submitWithRetry(attemptsLeft - 1));
+          }
+          return result;
+        });
+    }
+
+    submitWithRetry(3)
       .then(result => {
         if (result.result === "duplicate"){
           statusMsg.textContent = "You already submitted your attendance for " + (result.subject || subjectVal) + ".";
