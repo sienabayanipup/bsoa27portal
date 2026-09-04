@@ -343,7 +343,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         <input type="text" id="searchInput" placeholder="e.g. 202x-xxxxx-MN-0" autocomplete="off">
         <button id="searchBtn">Search</button>
       </div>
-      <p class="hint">Pulls from the 1st Sem Summary, Base Tracker, 2nd Sem Grades, and 1st Sem Enrollment sheets.</p>
+      <p class="hint">Pulls from the Base Tracker, Activity Tracker, 2nd Sem Grades, and 1st Sem Enrollment sheets.</p>
       <p class="status" id="statusMsg" aria-live="polite"></p>
     </div>
   </div>
@@ -368,7 +368,6 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfJd5swbGgfrGDgy_22suW9T0t_XEKC894fWgctgQ1rClw0sZfA_g9-bBf3kRGC-5n/exec";
 
   const SHEET_LABELS = {
-    "1ST SEM SUMMARY": "1st Sem Summary",
     "Base_Tracker": "Base Tracker (Attendance)",
     "Base_Tracker_ACTIVITY": "Activity Tracker",
     "2ND SEM GRADES": "2nd Sem Grades",
