@@ -334,6 +334,12 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         </select>
       </div>
 
+      <div class="field" id="videoLinkField" style="display:none;">
+        <label for="videoLink">Google Drive video link</label>
+        <input type="url" id="videoLink" placeholder="https://drive.google.com/...">
+        <p class="field-error" id="videoLinkError" aria-live="polite">Please paste your Google Drive video link.</p>
+      </div>
+
       <button type="submit" id="submitBtn">Mark as done</button>
       <p class="status" id="statusMsg" aria-live="polite"></p>
     </form>
@@ -366,6 +372,20 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const studentNumberError = document.getElementById('studentNumberError');
   const markOverlay = document.getElementById('markOverlay');
   const markSubject = document.getElementById('markSubject');
+  const videoLinkField = document.getElementById('videoLinkField');
+  const videoLinkInput = document.getElementById('videoLink');
+  const videoLinkError = document.getElementById('videoLinkError');
+
+  // Populated after each getActivityDates call with the dates (for the
+  // currently selected subject) that require a Google Drive link.
+  let linkRequiredDates = [];
+
+  function hideVideoLinkField(){
+    videoLinkField.style.display = 'none';
+    videoLinkInput.required = false;
+    videoLinkInput.value = '';
+    videoLinkError.classList.remove('show');
+  }
 
   // Expected format: 2025-14723-MN-0
   const studentNumberPattern = /^\d{4}-\d{5}-[A-Za-z]{2}-\d$/;
@@ -388,6 +408,8 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     const subject = subjectSelect.value;
     dateSelect.innerHTML = '<option value="" disabled selected>Loading dates...</option>';
     dateSelect.disabled = true;
+    linkRequiredDates = [];
+    hideVideoLinkField();
 
     if (SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
       dateSelect.innerHTML = '<option value="" disabled selected>Setup needed: add Script URL</option>';
@@ -398,6 +420,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       .then(res => res.json())
       .then(data => {
         const dates = data.dates || [];
+        linkRequiredDates = data.linkRequiredDates || [];
         if (dates.length === 0){
           dateSelect.innerHTML = '<option value="" disabled selected>No activity dates found for this subject</option>';
           return;
@@ -409,6 +432,18 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       .catch(() => {
         dateSelect.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
       });
+  });
+
+  // Show the Google Drive link field only when the picked subject+date
+  // combo is one that requires it (currently OFAD 203 · 09/12/2026).
+  dateSelect.addEventListener('change', function(){
+    const needsLink = linkRequiredDates.includes(dateSelect.value);
+    if (needsLink){
+      videoLinkField.style.display = 'block';
+      videoLinkInput.required = true;
+    } else {
+      hideVideoLinkField();
+    }
   });
 
   form.addEventListener('submit', function(e){
@@ -437,6 +472,17 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       return;
     }
 
+    const needsLink = linkRequiredDates.includes(dateLabel);
+    const videoLink = videoLinkInput.value.trim();
+    if (needsLink && !videoLink){
+      videoLinkError.classList.add('show');
+      statusMsg.textContent = "Please paste your Google Drive video link before submitting.";
+      statusMsg.className = "status error";
+      videoLinkInput.focus();
+      return;
+    }
+    videoLinkError.classList.remove('show');
+
     submitBtn.disabled = true;
     submitBtn.textContent = "Saving...";
     statusMsg.textContent = "";
@@ -449,7 +495,8 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       + "&studentNumber=" + encodeURIComponent(studentNumber)
       + "&subject=" + encodeURIComponent(subject)
       + "&dateLabel=" + encodeURIComponent(dateLabel)
-      + "&done=true";
+      + "&done=true"
+      + (needsLink ? "&videoLink=" + encodeURIComponent(videoLink) : "");
 
     fetch(markUrl)
       .then(res => res.json())
@@ -468,6 +515,8 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           studentNumberError.classList.remove('show');
           dateSelect.innerHTML = '<option value="" disabled selected>Select a subject first</option>';
           dateSelect.disabled = true;
+          linkRequiredDates = [];
+          hideVideoLinkField();
         } else if (result.result === "duplicate"){
           statusMsg.textContent = "You have already marked this activity as done.";
           statusMsg.className = "status error";
