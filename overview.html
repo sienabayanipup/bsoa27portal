@@ -391,10 +391,30 @@ a{ color:inherit; }
         <div id="actResult"></div>
       </div>
 
+      <div class="section-block">
+        <div class="section-title">Class Summary &mdash; full Attendance + Activity table</div>
+        <p class="status-msg" style="padding:0 0 12px;">Pick a subject and download every enrolled student's full attendance and activity history in one file.</p>
+        <div class="check-form">
+          <select id="summarySubject">
+            <option value="" disabled selected>Select a subject</option>
+            <option value="ENGL 017">ENGL 017</option>
+            <option value="GEED 033">GEED 033</option>
+            <option value="OFAD 201">OFAD 201</option>
+            <option value="PATHFIT 3">PATHFIT 3</option>
+            <option value="GEED 003">GEED 003</option>
+            <option value="OFAD 203">OFAD 203</option>
+            <option value="OFAD 202">OFAD 202</option>
+          </select>
+          <button id="summaryDownloadBtn" type="button">Download CSV</button>
+        </div>
+        <p id="summaryStatus" class="status-msg" style="display:none;" aria-live="polite"></p>
+      </div>
+
     </div>
 
     <p class="disclaimer">This tool is for the exclusive use of BSOAOUMN 2-7 officers and is intended for academic monitoring purposes only.</p>
   </div>
+
 </div>
 
 <script>
@@ -724,6 +744,83 @@ a{ color:inherit; }
       .finally(() => {
         actCheckBtn.disabled = false;
         actCheckBtn.textContent = "Check";
+      });
+  });
+  // ---- Class Summary: full Attendance + Activity table for one subject ----
+  const summarySubject = document.getElementById('summarySubject');
+  const summaryDownloadBtn = document.getElementById('summaryDownloadBtn');
+  const summaryStatus = document.getElementById('summaryStatus');
+
+  summaryDownloadBtn.addEventListener('click', () => {
+    const subject = summarySubject.value;
+    if (!subject){
+      summaryStatus.textContent = "Please choose a subject.";
+      summaryStatus.className = "status-msg error";
+      summaryStatus.style.display = 'block';
+      return;
+    }
+
+    summaryDownloadBtn.disabled = true;
+    summaryDownloadBtn.textContent = "Preparing...";
+    summaryStatus.textContent = "";
+    summaryStatus.className = "status-msg";
+    summaryStatus.style.display = 'none';
+
+    fetch(SCRIPT_URL + "?action=getClassSummary&subject=" + encodeURIComponent(subject))
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          summaryStatus.textContent = data.error;
+          summaryStatus.className = "status-msg error";
+          summaryStatus.style.display = 'block';
+          return;
+        }
+
+        const attendanceDates = data.attendanceDates || [];
+        const activityDates = data.activityDates || [];
+        const students = data.students || [];
+
+        if (students.length === 0){
+          summaryStatus.textContent = "No enrolled students found for this subject.";
+          summaryStatus.className = "status-msg error";
+          summaryStatus.style.display = 'block';
+          return;
+        }
+
+        // One flat table: Name, Student Number, then every attendance date
+        // (P/A/C), Attendance Total, then every activity date (Done/blank
+        // /Credited), Activity Total — Attendance and Activity side by
+        // side in the same row, same as the sheet layout.
+        const headers = ['Name', 'Student Number'];
+        attendanceDates.forEach(d => headers.push('Att ' + d));
+        headers.push('Attendance Total');
+        activityDates.forEach(d => headers.push('Act ' + d));
+        headers.push('Activity Total');
+
+        const rows = students.map(s => {
+          const row = [s.name, s.studentNumber];
+          attendanceDates.forEach(d => row.push(s.attendance[d] || ''));
+          row.push(s.attendanceTotal);
+          activityDates.forEach(d => {
+            const v = s.activity[d];
+            row.push(v === null ? 'Credited' : (v ? 'Done' : ''));
+          });
+          row.push(s.activityTotal === null ? 'Credited' : s.activityTotal);
+          return row;
+        });
+
+        downloadCSV(`Class Summary - ${subject}.csv`, headers, rows);
+
+        summaryStatus.style.display = 'none';
+      })
+      .catch(() => {
+        summaryStatus.textContent = "Could not connect. Check your internet and try again.";
+        summaryStatus.className = "status-msg error";
+        summaryStatus.style.display = 'block';
+      })
+      .finally(() => {
+        summaryDownloadBtn.disabled = false;
+        summaryDownloadBtn.textContent = "Download CSV";
       });
   });
 </script>
