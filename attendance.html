@@ -398,12 +398,28 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const stampOverlay = document.getElementById('stampOverlay');
   const stampDate = document.getElementById('stampDate');
 
-  // Restrict the date picker itself to today only
-  const todayStr = new Date().toISOString().split('T')[0];
+  // Restrict the date picker itself to today only.
+  //
+  // IMPORTANT: this deliberately does NOT use `new Date().toISOString()`.
+  // toISOString() returns the UTC date, not the local one — for a
+  // Philippines user (UTC+8), any time before ~8:00 AM local, UTC is
+  // still on the previous calendar day, so the picker would lock itself
+  // to "yesterday" every morning. getLocalISODate() reads the browser's
+  // local year/month/day directly, so it always matches the student's
+  // actual calendar day. Likewise, setting the field via `.value` (a
+  // literal "YYYY-MM-DD" string) instead of `.valueAsDate = new Date()`
+  // avoids the same UTC conversion happening again on the input itself.
+  function getLocalISODate(d) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return year + '-' + month + '-' + day;
+  }
+  const todayStr = getLocalISODate(new Date());
   const attendanceDateInput = document.getElementById('attendanceDate');
   attendanceDateInput.min = todayStr;
   attendanceDateInput.max = todayStr;
-  attendanceDateInput.valueAsDate = new Date();
+  attendanceDateInput.value = todayStr;
 
   const trackedFields = ['fullName','studentNumber','attendanceDate'];
   function updateProgress(){
@@ -576,7 +592,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           studentNumberError.classList.remove('show');
           attendanceDateInput.classList.remove('invalid');
           attendanceDateError.classList.remove('show');
-          attendanceDateInput.valueAsDate = new Date();
+          attendanceDateInput.value = getLocalISODate(new Date());
           updateProgress();
           return;
         }
