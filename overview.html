@@ -472,6 +472,87 @@ a{ color:inherit; }
     URL.revokeObjectURL(url);
   }
 
+  // ---- Attendance image export ----
+  // Draws the Present/Absent lists onto a canvas and downloads it as a PNG,
+  // instead of a CSV — the summary tab is the only one that still exports
+  // spreadsheet-style data.
+  function truncateToWidth(ctx, text, maxWidth){
+    if (ctx.measureText(text).width <= maxWidth) return text;
+    let lo = 0, hi = text.length;
+    while (lo < hi){
+      const mid = (lo + hi + 1) >> 1;
+      if (ctx.measureText(text.slice(0, mid) + '…').width <= maxWidth) lo = mid; else hi = mid - 1;
+    }
+    return text.slice(0, lo) + '…';
+  }
+
+  function downloadAttendanceImage(filename, subject, date, presentCount, absentCount, presentees, absentees){
+    const scale = 2; // render at 2x so the PNG stays crisp
+    const padding = 32;
+    const colGap = 40;
+    const colWidth = 300;
+    const lineHeight = 24;
+    const headerHeight = 128;
+    const rowCount = Math.max(presentees.length, absentees.length, 1);
+    const width = padding * 2 + colWidth * 2 + colGap;
+    const height = headerHeight + rowCount * lineHeight + padding;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    ctx.fillStyle = '#fdfaf6';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = '#2b2420';
+    ctx.font = 'bold 20px Georgia, "Times New Roman", serif';
+    ctx.fillText(`Attendance — ${subject}`, padding, 38);
+
+    ctx.font = '14px Arial, sans-serif';
+    ctx.fillStyle = '#6b625b';
+    ctx.fillText(date, padding, 60);
+
+    ctx.font = 'bold 14px Arial, sans-serif';
+    ctx.fillStyle = '#2f7a4d';
+    ctx.fillText(`Present: ${presentCount}`, padding, 88);
+    ctx.fillStyle = '#b23b3b';
+    ctx.fillText(`Absent: ${absentCount}`, padding + 160, 88);
+
+    const col1X = padding;
+    const col2X = padding + colWidth + colGap;
+    const listTop = headerHeight;
+
+    ctx.font = 'bold 13px Arial, sans-serif';
+    ctx.fillStyle = '#2f7a4d';
+    ctx.fillText(`PRESENT (${presentCount})`, col1X, listTop - 12);
+    ctx.fillStyle = '#b23b3b';
+    ctx.fillText(`ABSENT (${absentCount})`, col2X, listTop - 12);
+
+    ctx.font = '13px Arial, sans-serif';
+    ctx.fillStyle = '#2b2420';
+    presentees.forEach((s, i) => {
+      const label = truncateToWidth(ctx, `${s.name} (${s.studentNumber})`, colWidth);
+      ctx.fillText(label, col1X, listTop + i * lineHeight);
+    });
+    absentees.forEach((s, i) => {
+      const label = truncateToWidth(ctx, `${s.name} (${s.studentNumber})`, colWidth);
+      ctx.fillText(label, col2X, listTop + i * lineHeight);
+    });
+
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  }
+
   // ---- Attendance: Present / Absent for a specific date ----
   const attSubject = document.getElementById('attSubject');
   const attDate = document.getElementById('attDate');
@@ -531,7 +612,7 @@ a{ color:inherit; }
 
         html += `<div class="download-row"><button type="button" class="download-btn" id="attDownloadBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-          Download CSV
+          Download Image
         </button></div>`;
 
         html += `<div class="result-header" id="attResultHeader">
@@ -577,13 +658,14 @@ a{ color:inherit; }
         });
 
         document.getElementById('attDownloadBtn').addEventListener('click', () => {
-          const rows = [];
-          (data.presentees || []).forEach(s => rows.push([s.name, s.studentNumber, 'Present']));
-          (data.absentees || []).forEach(s => rows.push([s.name, s.studentNumber, 'Absent']));
-          downloadCSV(
-            `Attendance - ${subject} - ${date}.csv`,
-            ['Name', 'Student Number', 'Status'],
-            rows
+          downloadAttendanceImage(
+            `Attendance - ${subject} - ${date}.png`,
+            subject,
+            date,
+            data.presentCount,
+            data.absentCount,
+            data.presentees || [],
+            data.absentees || []
           );
         });
       })
