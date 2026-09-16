@@ -629,6 +629,121 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 }
 
 /* ==========================================================================
+   TAB NAVIGATION — replaces long-scroll sections with switchable panels.
+   Left sidebar on desktop, top strip on mobile. Only the active
+   [data-panel] is shown; the footer stays visible on every tab.
+   Redesigned as a quiet editorial rail: grouped under small uppercase
+   labels (Home / Tools / Help) rather than a boxed "Your Tools" disclosure
+   — Tools is a plain list of links out to each standalone tool page.
+   ========================================================================== */
+[data-panel]:not(.panel-active){ display:none !important; }
+
+.tab-nav{
+  z-index:35;
+  background:rgba(253,250,247,.92);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4); backdrop-filter:blur(16px) saturate(1.4);
+}
+.tab-label{
+  margin:0; padding:0 14px; font-family:'Plus Jakarta Sans', sans-serif;
+  font-weight:700; font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-soft); opacity:.88;
+}
+.tab-btn, .tab-link{
+  display:flex; align-items:center; gap:11px; flex:0 0 auto; width:100%;
+  border:none; background:transparent; cursor:pointer; white-space:nowrap;
+  text-decoration:none; box-sizing:border-box;
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; letter-spacing:.008em;
+  color:var(--ink-soft); border-radius:10px; transition:background .2s var(--ease), color .2s var(--ease);
+}
+.tab-btn:hover, .tab-link:hover{ background:var(--paper-secondary); color:var(--ink); }
+.tab-btn.active{ background:var(--emerald); color:#fff; box-shadow:var(--shadow-1); }
+.tab-btn .tab-icon, .tab-link .tab-icon{ flex:0 0 auto; display:flex; color:inherit; opacity:.8; }
+.tab-btn.active .tab-icon{ opacity:1; }
+.tab-btn .tab-icon svg, .tab-link .tab-icon svg{ width:100%; height:100%; stroke-width:1.6; }
+.tab-btn:focus-visible, .tab-link:focus-visible, .tab-toggle:focus-visible{
+  outline:2px solid var(--emerald); outline-offset:2px; border-radius:10px;
+}
+
+/* Tools disclosure — the section label itself is the toggle, styled as
+   quiet text (not a button/card), with a hairline chevron that rotates.
+   The list beneath animates open/closed via a grid-rows trick so it
+   glides rather than snapping, and keeps a thin guide rule for hierarchy. */
+.tab-toggle{
+  display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%;
+  margin:0; padding:7px 14px; border:none; background:transparent; cursor:pointer;
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); opacity:.88;
+  border-radius:10px; box-sizing:border-box;
+  transition:background .2s var(--ease), color .2s ease, opacity .2s ease;
+}
+.tab-toggle:hover{ background:var(--paper-secondary); color:var(--ink); opacity:1; }
+.tab-toggle .tab-chevron{
+  flex:0 0 auto; width:10px; height:10px; display:flex; opacity:.75;
+  transition:transform .28s var(--ease);
+}
+.tab-toggle[aria-expanded="false"] .tab-chevron{ transform:rotate(-90deg); }
+
+.tab-sublist{ display:grid; grid-template-rows:1fr; transition:grid-template-rows .32s var(--ease); }
+.tab-sublist.collapsed{ grid-template-rows:0fr; }
+.tab-sublist-inner{ display:flex; flex-direction:column; gap:3px; overflow:hidden; min-height:0; }
+
+.tab-footer{
+  display:flex; flex-direction:column; gap:3px;
+  border-top:1px solid var(--hair);
+}
+.tab-footer-title{
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:9.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); opacity:.88;
+}
+.tab-footer-meta{
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:9.5px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); opacity:.72;
+}
+
+@media (min-width:901px){
+  .tab-nav{
+    position:fixed; top:0; left:0; bottom:0; width:216px;
+    padding:20px 12px 22px; margin:0;
+    display:flex; flex-direction:column; gap:26px;
+    border-right:1px solid var(--hair);
+    overflow-y:auto;
+  }
+  .tab-group{ display:flex; flex-direction:column; gap:3px; }
+  .tab-label{ padding-top:7px; padding-bottom:7px; margin-bottom:2px; }
+  .tab-toggle{ margin-bottom:2px; }
+  .tab-btn, .tab-link{ padding:10px 14px; font-size:12.5px; text-align:left; }
+  .tab-btn .tab-icon, .tab-link .tab-icon{ width:16px; height:16px; }
+  .tab-sublist-inner{ margin-left:20px; padding-left:11px; border-left:1px solid var(--hair); gap:3px; }
+  .tab-sublist-inner .tab-link{ padding:9px 10px; font-size:12px; }
+  .tab-sublist-inner .tab-link .tab-icon{ width:14px; height:14px; }
+  .tab-footer{ margin-top:auto; padding:16px 14px 2px; }
+  body{ padding-left:216px; }
+  .top-bar{ left:216px; }
+}
+
+@media (max-width:900px){
+  .tab-nav{
+    position:sticky; top:60px; margin-top:60px;
+    padding:10px 12px;
+    display:flex; flex-wrap:wrap; align-items:flex-start; gap:6px;
+    border-bottom:1px solid var(--hair);
+  }
+  .tab-group{ display:contents; }
+  .tab-label, .tab-footer{ display:none; }
+  .tab-btn, .tab-link{ width:auto; padding:9px 13px; font-size:12.5px; }
+  .tab-btn .tab-icon, .tab-link .tab-icon{ width:15px; height:15px; }
+  .tab-toggle{
+    width:auto; margin:0; padding:9px 13px; border-radius:10px;
+    background:var(--paper-secondary); font-size:11.5px; letter-spacing:.07em;
+  }
+  .tab-sublist{ flex-basis:100%; width:100%; }
+  .tab-sublist-inner{ margin-left:0; padding:6px 0 2px 12px; border-left:1px solid var(--hair); }
+  .hero{ padding-top:24px !important; }
+}
+html.gate-locked body{ padding-left:0; }
+html.gate-locked .tab-nav{ display:none; }
+
+/* ==========================================================================
    ENTRANCE GATE — a threshold before the portal proper. Same graphite/
    burgundy/bronze family as the hero so it reads as one continuous scene,
    just narrower and quieter: a seal, a name, a door.
@@ -908,19 +1023,170 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
    ivory background — so watch the hero and flip the bar into a
    frosted, ink-toned chip as soon as it's mostly scrolled past. */
 (function(){
-  var bar = document.getElementById('topBar');
-  var hero = document.querySelector('.hero');
-  if (!bar || !hero) return;
-  if ('IntersectionObserver' in window){
-    var obs = new IntersectionObserver(function(entries){
-      var e = entries[0];
-      bar.classList.toggle('is-scrolled', e.intersectionRatio < 0.7);
-    }, { threshold:[0,.7,1] });
-    obs.observe(hero);
+  function init(){
+    var bar = document.getElementById('topBar');
+    var hero = document.querySelector('.hero');
+    if (!bar || !hero) return;
+    if ('IntersectionObserver' in window){
+      var obs = new IntersectionObserver(function(entries){
+        var e = entries[0];
+        bar.classList.toggle('is-scrolled', e.intersectionRatio < 0.7);
+      }, { threshold:[0,.7,1] });
+      obs.observe(hero);
+    } else {
+      var onScroll = function(){ bar.classList.toggle('is-scrolled', window.scrollY > hero.offsetHeight * 0.6); };
+      window.addEventListener('scroll', onScroll, { passive:true });
+      onScroll();
+    }
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    var onScroll = function(){ bar.classList.toggle('is-scrolled', window.scrollY > hero.offsetHeight * 0.6); };
-    window.addEventListener('scroll', onScroll, { passive:true });
-    onScroll();
+    init();
+  }
+})();
+</script>
+
+<!-- ============================================================
+     TAB NAVIGATION — left sidebar (desktop) / top strip (mobile)
+     ============================================================ -->
+<nav class="tab-nav" id="tabNav" aria-label="Portal sections">
+  <div class="tab-group">
+    <button type="button" class="tab-btn" data-tab="home" aria-current="page">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
+      <span>Home</span>
+    </button>
+    <button type="button" class="tab-btn" data-tab="announcements">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
+      <span>Announcements</span>
+    </button>
+  </div>
+
+  <div class="tab-group">
+    <button type="button" class="tab-toggle" id="toolsToggle" aria-expanded="true" aria-controls="toolsList">
+      <span>Tools</span>
+      <span class="tab-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+    </button>
+    <div class="tab-sublist" id="toolsList">
+    <div class="tab-sublist-inner">
+    <a class="tab-link" href="attendance.html">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.3 2.3 4.7-4.9"/></svg></span>
+      <span>Weekly Attendance</span>
+    </a>
+    <a class="tab-link" href="lookup.html">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <span>Student Lookup</span>
+    </a>
+    <a class="tab-link" href="mark_activity.html">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12.5 2.3 2.3 4.7-4.9"/></svg></span>
+      <span>Mark My Activity</span>
+    </a>
+    <a class="tab-link" href="overview.html">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.4"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.4"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.4"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.4"/></svg></span>
+      <span>Class Overview</span>
+    </a>
+    <a class="tab-link" href="schedule.html">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg></span>
+      <span>Class Schedule</span>
+    </a>
+    <a class="tab-link" href="contacts.html">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.8-3.2 3-4.8 5.5-4.8s4.7 1.6 5.5 4.8"/><path d="M16 8a3 3 0 0 1 0 5.9"/><path d="M17.8 14.3c2 .5 3.4 2 4 4.4"/></svg></span>
+      <span>Class Contacts</span>
+    </a>
+    </div>
+    </div>
+  </div>
+
+  <div class="tab-group">
+    <p class="tab-label">Help</p>
+    <button type="button" class="tab-btn" data-tab="workflow">
+      <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.3a2.7 2.7 0 0 1 5.2 1c0 1.8-2.7 2.4-2.7 2.4"/><path d="M12 16.6h.01"/></svg></span>
+      <span>How It Works</span>
+    </button>
+  </div>
+
+  <div class="tab-footer">
+    <span class="tab-footer-title">Student Portal</span>
+    <span class="tab-footer-meta">2026 &middot; 1st Semester</span>
+  </div>
+</nav>
+<script>
+(function(){
+  var VALID = ['home','announcements','workflow'];
+  var panels, tabBtns;
+
+  function activate(tab, opts){
+    if (VALID.indexOf(tab) === -1) tab = 'home';
+    opts = opts || {};
+    panels.forEach(function(p){ p.classList.toggle('panel-active', p.getAttribute('data-panel') === tab); });
+    tabBtns.forEach(function(b){
+      var on = b.getAttribute('data-tab') === tab;
+      b.classList.toggle('active', on);
+      if (on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
+    });
+    if (!opts.skipScroll) window.scrollTo(0,0);
+    if (opts.updateHash !== false){
+      var url = tab === 'home' ? location.pathname + location.search : '#' + tab;
+      history.replaceState(null, '', url);
+    }
+  }
+  window.activatePortalTab = activate;
+
+  function initToolsToggle(){
+    var toggle = document.getElementById('toolsToggle');
+    var list = document.getElementById('toolsList');
+    if (!toggle || !list) return;
+    function setOpen(open){
+      toggle.setAttribute('aria-expanded', String(open));
+      list.classList.toggle('collapsed', !open);
+    }
+    toggle.addEventListener('click', function(){
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    /* Exposed so the hero console link and closing CTA — which used to
+       jump to the old bento dashboard — can open this list instead. */
+    window.openToolsMenu = function(){
+      setOpen(true);
+      toggle.scrollIntoView({ block:'nearest' });
+    };
+  }
+
+  function init(){
+    /* Deferred to DOMContentLoaded: this script tag sits before the
+       section elements it needs to control, so querying for them here
+       (rather than at parse time) guarantees they already exist. */
+    panels = document.querySelectorAll('[data-panel]');
+    tabBtns = document.querySelectorAll('.tab-btn[data-tab]');
+
+    tabBtns.forEach(function(btn){
+      btn.addEventListener('click', function(){ activate(btn.getAttribute('data-tab')); });
+    });
+
+    initToolsToggle();
+
+    /* In-page links that used to scroll to a section (top-bar "Updates",
+       the closing CTA) now switch tabs instead. Links that used to point
+       at the old bento dashboard (#dashboard) now open the tools list. */
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      var id = a.getAttribute('href').slice(1);
+      if (VALID.indexOf(id) !== -1){
+        a.addEventListener('click', function(e){ e.preventDefault(); activate(id); });
+      } else if (id === 'dashboard'){
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          if (window.openToolsMenu) window.openToolsMenu();
+        });
+      }
+    });
+
+    var startTab = VALID.indexOf(location.hash.slice(1)) !== -1 ? location.hash.slice(1) : 'home';
+    activate(startTab, { skipScroll:true, updateHash:false });
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 })();
 </script>
@@ -928,7 +1194,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <!-- ============================================================
      HERO
      ============================================================ -->
-<section class="hero">
+<section class="hero" data-panel="home">
   <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-grid">
     <div class="hero-copy">
@@ -981,7 +1247,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
      styled to stand out (emerald accent, stronger border/shadow)
      rather than blend in as a quiet footnote.
      ============================================================ -->
-<section class="announce-section band-a" id="announcements">
+<section class="announce-section band-a" id="announcements" data-panel="announcements">
   <span class="announce-eyebrow" data-reveal>Board</span>
   <div class="b-card b-announce card-signature" data-reveal-item style="--rd:0">
     <span class="b-index" aria-hidden="true">00</span>
@@ -1009,147 +1275,9 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 </section>
 
 <!-- ============================================================
-     WORKSPACE — bento dashboard (the features, front and center)
-     ============================================================ -->
-<section class="workspace band-b" id="dashboard">
-  <div class="filing-texture" aria-hidden="true"></div>
-  <div class="ws-head" data-reveal>
-    <div>
-      <p class="ws-eyebrow">Your tools</p>
-      <h2>Five tools for every student in the section, and one for the leaders overseeing it.</h2>
-    </div>
-  </div>
-
-  <div class="bento">
-
-    <a class="b-card b-attendance card-signature" href="attendance.html" data-reveal-item style="--rd:0">
-      <span class="b-index" aria-hidden="true">01</span>
-      <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
-      <span class="b-kicker">Most used this week</span>
-      <div class="b-title">Weekly Attendance</div>
-      <p class="b-desc">Every Saturday, submit your name, student number, and subject &mdash; and this week's record fills in automatically.</p>
-      <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
-
-      <div class="b-attendance-preview" aria-hidden="true">
-        <div class="bap-col">
-          <span class="bap-label">Last Attendance</span>
-          <div class="bap-status" id="attLastStatusRow">
-            <span class="bap-status-dot"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-            <span class="bap-status-text">Loading&hellip;</span>
-          </div>
-          <div class="bap-date" id="attLastDate">&nbsp;</div>
-          <div class="bap-time" id="attLastTime">&nbsp;</div>
-        </div>
-        <div class="bap-col">
-          <span class="bap-label">Next Session</span>
-          <div class="bap-day" id="attNextDay">&nbsp;</div>
-          <div class="bap-date" id="attNextDate">&nbsp;</div>
-          <div class="bap-time" id="attNextTime">&nbsp;</div>
-        </div>
-      </div>
-
-      <div class="console-activity" id="attActivity" aria-hidden="true"><span class="ca-avatar" id="attActivityAvatar">&bull;</span><span id="attActivityText">Attendance synced to Sheets</span></div>
-    </a>
-
-    <a class="b-card b-lookup card-signature" href="lookup.html" data-reveal-item style="--rd:1">
-      <span class="b-index" aria-hidden="true">02</span>
-      <div>
-        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
-        <div class="b-title">Student Lookup</div>
-        <p class="b-desc">Search grades &amp; records for any student number, instantly.</p>
-      </div>
-      <div>
-        <div class="lp-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>202x-xxxxx-MN-0</span></div>
-        <div class="lp-result"><span class="lp-avatar">JD</span><div><p class="lp-name">Juan Dela Cruz</p><p class="lp-meta">ENGL 017 &middot; 94%</p></div></div>
-        <div class="lp-detail-row"><span>Attendance</span><span>17 / 18</span></div>
-        <div class="lp-progress"><div class="lp-progress-fill" style="width:94%"></div></div>
-      </div>
-      <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
-    </a>
-
-    <a class="b-card b-activity card-signature" href="mark_activity.html" data-reveal-item style="--rd:2">
-      <span class="b-index" aria-hidden="true">03</span>
-      <div>
-        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <div class="b-title">Mark My Activity</div>
-        <p class="b-desc">Confirm you've completed an activity for a subject. Progress fills in as tasks are checked off.</p>
-      </div>
-      <div>
-        <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Module 3 &mdash; Thermo<span class="task-time">Jul 28</span></div>
-        <div class="task-row"><span class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reflection Paper<span class="task-time">Jul 26</span></div>
-        <div class="task-track"><div class="task-fill"></div></div>
-        <p style="margin-top:10px;font-size:10.5px;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;">7 of 9 tasks logged &middot; 78% complete</p>
-      </div>
-      <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
-    </a>
-
-    <a class="b-card b-overview card-signature" href="overview.html" data-reveal-item style="--rd:3">
-      <span class="b-index" aria-hidden="true">04</span>
-      <div class="ov-head">
-        <div class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
-        <div><div class="b-title">Class Overview</div><p class="b-desc">For officers &mdash; the full class snapshot, at a glance.</p></div>
-      </div>
-      <div class="ov-stats">
-        <div><div class="ov-stat-num" data-count-to="92" data-suffix="%">0%</div><div class="ov-stat-label">Attendance</div></div>
-        <div><div class="ov-stat-num" data-count-to="45">0</div><div class="ov-stat-label">Students</div></div>
-        <div><div class="ov-stat-num" data-count-to="87" data-suffix="%">0%</div><div class="ov-stat-label">Activities done</div></div>
-        <div><div class="ov-stat-num" data-count-to="3">0</div><div class="ov-stat-label">Pending</div></div>
-      </div>
-      <div class="ov-bars">
-        <div class="ovb" style="--h:60%"></div><div class="ovb" style="--h:75%"></div><div class="ovb" style="--h:82%"></div>
-        <div class="ovb" style="--h:70%"></div><div class="ovb" style="--h:92%"></div>
-      </div>
-      <div class="ov-updated"><span class="cdot-live"></span>Updated 4 minutes ago &middot; 5-week attendance trend</div>
-      <div class="b-footer">Open <span class="arrow">&rarr;</span></div>
-    </a>
-
-    <a class="b-card b-schedule card-signature" href="schedule.html" data-reveal-item style="--rd:4">
-      <span class="b-index" aria-hidden="true">05</span>
-      <span class="b-kicker">Weekend class &middot; Saturday</span>
-      <div class="b-title">Class Schedule</div>
-      <p class="b-desc">Both weekend cycles &mdash; every subject, time slot, and instructor for Cycle 1 and Cycle 2.</p>
-
-      <div class="sch-preview" aria-hidden="true">
-        <div class="bap-col">
-          <span class="bap-label" id="schPreviewLabel">Next Session</span>
-          <div class="bap-day" id="schPreviewCycle">Loading&hellip;</div>
-          <div class="bap-date" id="schPreviewDate">&nbsp;</div>
-          <div class="bap-time" id="schPreviewRel">&nbsp;</div>
-        </div>
-        <div class="bap-col">
-          <span class="bap-label">Subjects that day</span>
-          <div class="sch-preview-classes" id="schPreviewClasses"></div>
-        </div>
-      </div>
-
-      <div class="b-footer">View full schedule <span class="arrow">&rarr;</span></div>
-    </a>
-
-    <a class="b-card b-contacts card-signature" href="contacts.html" data-reveal-item style="--rd:5">
-      <span class="b-index" aria-hidden="true">06</span>
-      <span class="b-kicker">Who to message</span>
-      <div class="b-title">Officers &amp; Contacts</div>
-      <p class="b-desc">Subject leaders for every class, with a direct link to each one's Messenger group chat.</p>
-
-      <div class="contacts-preview" aria-hidden="true">
-        <div class="cp-row"><span class="cp-name">Ann Margarette Colima</span><span class="cp-subj">GEED 003 &middot; OFAD 201</span></div>
-        <div class="cp-row"><span class="cp-name">Siena Bayani</span><span class="cp-subj">OFAD 202 &middot; OFAD 203</span></div>
-        <div class="cp-row"><span class="cp-name">Ma. Colin Padua</span><span class="cp-subj">ENGL 017</span></div>
-        <div class="cp-row"><span class="cp-name">Fred Papa</span><span class="cp-subj">PATHFIT 3</span></div>
-        <div class="cp-row"><span class="cp-name">Pauline May Sunggahead</span><span class="cp-subj">GEED 033</span></div>
-        <div class="cp-row"><span class="cp-name">Ivan Nicole Soria</span><span class="cp-subj">MARK001</span></div>
-      </div>
-
-      <div class="b-footer">View directory <span class="arrow">&rarr;</span></div>
-    </a>
-
-  </div>
-</section>
-
-<!-- ============================================================
      WORKFLOW — short "how it works", 4 steps not 6
      ============================================================ -->
-<section class="workflow band-a" id="workflow">
+<section class="workflow band-a" id="workflow" data-panel="workflow">
   <div class="workflow-head" data-reveal>
     <span class="workflow-eyebrow">How it works</span>
     <h2>From a tap on Saturday morning to a dashboard everyone can trust.</h2>
@@ -1190,7 +1318,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <!-- ============================================================
      CTA — closing statement
      ============================================================ -->
-<section class="cta band-a" data-reveal>
+<section class="cta band-a" data-reveal data-panel="home">
   <span class="cta-eyebrow">BSOAOUMN 2&ndash;7</span>
   <h2>Attendance, records, activity &mdash; finally, all in one place.</h2>
   <a class="cta-link" href="#dashboard">Open your tools <span class="arrow">&rarr;</span></a>
