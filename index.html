@@ -655,11 +655,29 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
   font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; letter-spacing:.008em;
   color:var(--ink-soft); border-radius:10px; transition:background .2s var(--ease), color .2s var(--ease);
 }
-.tab-btn:hover, .tab-link:hover{ background:var(--paper-secondary); color:var(--ink); }
-.tab-btn.active{ background:var(--emerald); color:#fff; box-shadow:var(--shadow-1); }
+.tab-btn:hover, .tab-link:hover{ background:var(--emerald); color:#fff; }
+.tab-btn.active{ color:var(--emerald); font-weight:700; }
+/* Higher specificity than .tab-btn.active alone, so hovering the current
+   (active) tab still flips to a solid fill instead of staying maroon-on-
+   maroon (invisible) — .active's plain color rule would otherwise win on
+   source order since both selectors carry the same specificity. */
+.tab-btn.active:hover{ background:var(--emerald); color:#fff; }
 .tab-btn .tab-icon, .tab-link .tab-icon{ flex:0 0 auto; display:flex; color:inherit; opacity:.8; }
 .tab-btn.active .tab-icon{ opacity:1; }
 .tab-btn .tab-icon svg, .tab-link .tab-icon svg{ width:100%; height:100%; stroke-width:1.6; }
+/* Unread-count badge, now living on the Announcements tab itself rather
+   than a separate "Updates" chip. Inverts to a light badge on hover/active
+   so it stays legible once the tab's own background goes solid maroon. */
+.tab-btn .ta-count{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:16px; height:16px; padding:0 4px; margin-left:1px;
+  border-radius:999px; background:var(--emerald); color:#fff;
+  font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:9.5px; line-height:1;
+  transition:background .2s var(--ease), color .2s var(--ease);
+}
+.tab-btn .ta-count[hidden]{ display:none; }
+.tab-btn:hover .ta-count{ background:#fff; color:var(--emerald); }
+.tab-btn.active:hover .ta-count{ background:#fff; color:var(--emerald); }
 .tab-btn:focus-visible, .tab-link:focus-visible, .tab-toggle:focus-visible{
   outline:2px solid var(--emerald); outline-offset:2px; border-radius:10px;
 }
@@ -676,7 +694,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
   border-radius:10px; box-sizing:border-box;
   transition:background .2s var(--ease), color .2s ease, opacity .2s ease;
 }
-.tab-toggle:hover{ background:var(--paper-secondary); color:var(--ink); opacity:1; }
+.tab-toggle:hover{ background:var(--emerald); color:#fff; opacity:1; }
 .tab-toggle .tab-chevron{
   flex:0 0 auto; width:10px; height:10px; display:flex; opacity:.75;
   transition:transform .28s var(--ease);
@@ -701,33 +719,62 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 }
 
 @media (min-width:901px){
+  body{ padding-left:0; }
+
+  .tab-brand{ display:flex; align-items:center; padding:0; flex:0 0 auto; }
+  .tab-brand .mono-seal{ color:var(--emerald); }
+
   .tab-nav{
-    position:fixed; top:0; left:0; bottom:0; width:216px;
-    padding:20px 12px 22px; margin:0;
-    display:flex; flex-direction:column; gap:26px;
-    border-right:1px solid var(--hair);
-    overflow-y:auto;
+    position:fixed; top:18px; left:50%; transform:translateX(-50%);
+    bottom:auto; width:auto; max-width:calc(100vw - 32px);
+    margin:0; padding:6px 24px;
+    display:flex; flex-direction:row; align-items:center; gap:40px;
+    border:1px solid rgba(255,255,255,.6); border-radius:999px;
+    background:rgba(253,250,247,.86);
+    -webkit-backdrop-filter:blur(16px) saturate(1.4); backdrop-filter:blur(16px) saturate(1.4);
+    box-shadow:var(--shadow-2);
+    overflow:visible;
   }
-  .tab-group{ display:flex; flex-direction:column; gap:3px; }
-  .tab-label{ padding-top:7px; padding-bottom:7px; margin-bottom:2px; }
-  .tab-toggle{ margin-bottom:2px; }
-  .tab-btn, .tab-link{ padding:10px 14px; font-size:12.5px; text-align:left; }
-  .tab-btn .tab-icon, .tab-link .tab-icon{ width:16px; height:16px; }
-  .tab-sublist-inner{ margin-left:20px; padding-left:11px; border-left:1px solid var(--hair); gap:3px; }
-  .tab-sublist-inner .tab-link{ padding:9px 10px; font-size:12px; }
-  .tab-sublist-inner .tab-link .tab-icon{ width:14px; height:14px; }
-  .tab-footer{ margin-top:auto; padding:16px 14px 2px; }
-  body{ padding-left:216px; }
-  .top-bar{ left:216px; }
+  .tab-group{ display:flex; flex-direction:row; align-items:center; gap:40px; position:relative; flex:0 0 auto; }
+  .tab-label{ display:none; }
+  .tab-btn, .tab-link{ width:auto; flex:0 0 auto; padding:10px 16px; font-size:12.5px; text-align:center; border-radius:999px; }
+  .tab-btn .tab-icon, .tab-link .tab-icon{ display:none; }
+  .tab-toggle{ width:auto; flex:0 0 auto; margin:0; padding:10px 16px; border-radius:999px; }
+
+  /* Tools becomes a dropdown card that floats below the pill instead
+     of an always-open in-line list. Its .tab-group parent shrink-wraps
+     to the toggle's own width, so left:0 keeps the dropdown flush with
+     the toggle's left edge. */
+  .tab-sublist{
+    position:absolute; top:calc(100% + 10px); left:0; z-index:5;
+    min-width:210px; overflow:hidden;
+    border-radius:16px;
+  }
+  /* Padding/border/shadow only apply once expanded — when collapsed, the
+     grid row shrinks to 0fr, and any padding or border living directly on
+     this box would keep adding to its rendered height regardless (box
+     height = content + padding + border), leaving a persistent sliver
+     visible under the nav even while "closed". Gating the chrome behind
+     :not(.collapsed) lets it collapse to a true 0px. */
+  .tab-sublist:not(.collapsed){
+    background:var(--surface-elevated); border:1px solid var(--hair);
+    box-shadow:var(--shadow-3); padding:6px;
+  }
+  .tab-sublist-inner{ margin-left:0; padding-left:0; border-left:none; }
+  .tab-sublist-inner .tab-link{ padding:9px 11px; font-size:12.5px; text-align:left; }
+  .tab-sublist-inner .tab-link .tab-icon{ display:flex; width:14px; height:14px; }
+
+  .tab-footer{ display:none; }
 }
 
 @media (max-width:900px){
   .tab-nav{
-    position:sticky; top:60px; margin-top:60px;
+    position:sticky; top:0; margin-top:0;
     padding:10px 12px;
     display:flex; flex-wrap:wrap; align-items:flex-start; gap:6px;
     border-bottom:1px solid var(--hair);
   }
+  .tab-brand{ display:none; }
   .tab-group{ display:contents; }
   .tab-label, .tab-footer{ display:none; }
   .tab-btn, .tab-link{ width:auto; padding:9px 13px; font-size:12.5px; }
@@ -1008,49 +1055,13 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 </div>
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
-<div class="top-bar" id="topBar">
-  <div class="top-right">
-    <a class="top-link" href="#announcements" id="topAnnounce" aria-label="Jump to announcements">
-      Updates
-      <span class="ta-count" id="topAnnounceBadge" hidden>0</span>
-    </a>
-  </div>
-</div>
-<script>
-/* The top bar is fixed, so it rides over both the dark hero and the
-   light page below it. Its "Updates" link is styled near-white for
-   the hero photo, which reads as invisible once you scroll onto the
-   ivory background — so watch the hero and flip the bar into a
-   frosted, ink-toned chip as soon as it's mostly scrolled past. */
-(function(){
-  function init(){
-    var bar = document.getElementById('topBar');
-    var hero = document.querySelector('.hero');
-    if (!bar || !hero) return;
-    if ('IntersectionObserver' in window){
-      var obs = new IntersectionObserver(function(entries){
-        var e = entries[0];
-        bar.classList.toggle('is-scrolled', e.intersectionRatio < 0.7);
-      }, { threshold:[0,.7,1] });
-      obs.observe(hero);
-    } else {
-      var onScroll = function(){ bar.classList.toggle('is-scrolled', window.scrollY > hero.offsetHeight * 0.6); };
-      window.addEventListener('scroll', onScroll, { passive:true });
-      onScroll();
-    }
-  }
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
-</script>
-
 <!-- ============================================================
-     TAB NAVIGATION — left sidebar (desktop) / top strip (mobile)
+     TAB NAVIGATION — floating centered pill (desktop) / top strip (mobile)
      ============================================================ -->
 <nav class="tab-nav" id="tabNav" aria-label="Portal sections">
+  <div class="tab-brand" aria-hidden="true">
+    <span class="mono-seal">2&middot;7</span>
+  </div>
   <div class="tab-group">
     <button type="button" class="tab-btn" data-tab="home" aria-current="page">
       <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
@@ -1059,15 +1070,16 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     <button type="button" class="tab-btn" data-tab="announcements">
       <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v3a1 1 0 0 0 1 1h1l2 5h2l-1-5h4l6 4V6l-6 4H4a1 1 0 0 0-1 1z"/></svg></span>
       <span>Announcements</span>
+      <span class="ta-count" id="topAnnounceBadge" hidden>0</span>
     </button>
   </div>
 
   <div class="tab-group">
-    <button type="button" class="tab-toggle" id="toolsToggle" aria-expanded="true" aria-controls="toolsList">
+    <button type="button" class="tab-toggle" id="toolsToggle" aria-expanded="false" aria-controls="toolsList">
       <span>Tools</span>
       <span class="tab-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
     </button>
-    <div class="tab-sublist" id="toolsList">
+    <div class="tab-sublist collapsed" id="toolsList">
     <div class="tab-sublist-inner">
     <a class="tab-link" href="attendance.html">
       <span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.3 2.3 4.7-4.9"/></svg></span>
@@ -1140,8 +1152,14 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       toggle.setAttribute('aria-expanded', String(open));
       list.classList.toggle('collapsed', !open);
     }
-    toggle.addEventListener('click', function(){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
       setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('click', function(e){
+      if (toggle.getAttribute('aria-expanded') === 'true' && !list.contains(e.target)){
+        setOpen(false);
+      }
     });
     /* Exposed so the hero console link and closing CTA — which used to
        jump to the old bento dashboard — can open this list instead. */
