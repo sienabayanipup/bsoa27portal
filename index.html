@@ -172,6 +172,36 @@ a{ color:inherit; }
 }
 .hero-grain{ position:absolute; inset:0; opacity:.028; mix-blend-mode:overlay; pointer-events:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+/* -- Live 3D backdrop: PUP Main Building, Obelisk and Lagoon at dusk.
+   Sits behind the grain layer and the hero grid; never takes pointer
+   events so every link, button and the console stay clickable. The
+   scrim keeps the ivory headline legible over the moving scene. -- */
+.hero-canvas{
+  position:absolute; inset:0; z-index:0; width:100%; height:100%;
+  display:block; pointer-events:none;
+  opacity:0; transition:opacity 1.2s var(--ease);
+}
+.hero-canvas.is-ready{ opacity:1; }
+.hero-scrim{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(36,26,29,.90) 0%, rgba(36,26,29,.72) 34%, rgba(36,26,29,.30) 62%, rgba(36,26,29,.14) 100%),
+    linear-gradient(180deg, rgba(36,26,29,.72) 0%, rgba(36,26,29,.12) 34%, rgba(36,26,29,.38) 82%, rgba(36,26,29,.86) 100%);
+}
+@media (max-width:900px){
+  .hero-scrim{
+    background:
+      linear-gradient(180deg, rgba(36,26,29,.86) 0%, rgba(36,26,29,.62) 38%, rgba(36,26,29,.58) 66%, rgba(36,26,29,.92) 100%);
+  }
+}
+@media (prefers-reduced-motion: reduce){ .hero-canvas{ transition:none; } }
+
+/* The floating console has been removed from the hero. The copy now holds a
+   single left-hand column and the live 3D campus owns the open right side,
+   which is exactly where the scrim is lightest. */
+.hero-grid{ grid-template-columns:minmax(0,1fr); }
+.hero-copy{ max-width:620px; }
+@media (max-width:900px){ .hero-copy{ max-width:none; } }
 .hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; box-sizing:border-box; }
 .hero-copy{ transition:transform .9s var(--ease); will-change:transform; }
 @media (max-width:900px){ .hero-copy{ transition:none !important; transform:none !important; } }
@@ -1141,6 +1171,8 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     if (VALID.indexOf(tab) === -1) tab = 'home';
     opts = opts || {};
     panels.forEach(function(p){ p.classList.toggle('panel-active', p.getAttribute('data-panel') === tab); });
+    var footerEl = document.querySelector('footer.band-b');
+    if (footerEl) footerEl.style.display = (tab === 'home') ? 'none' : '';
     tabBtns.forEach(function(b){
       var on = b.getAttribute('data-tab') === tab;
       b.classList.toggle('active', on);
@@ -1240,6 +1272,8 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
      HERO
      ============================================================ -->
 <section class="hero" data-panel="home">
+  <canvas id="pupHeroCanvas" class="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-scrim" aria-hidden="true"></div>
   <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-grid">
     <div class="hero-copy">
@@ -1259,31 +1293,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       </div>
     </div>
 
-    <a class="console-link" href="#dashboard" aria-label="View the dashboard tools">
-      <div class="console-stage">
-        <div class="console-glow" aria-hidden="true"></div>
-        <div class="console">
-          <div class="console-bar"><i></i><i></i><i></i><span class="mono-seal" style="width:16px;height:16px;font-size:7.5px;color:var(--emerald);margin-left:4px" aria-hidden="true">2&middot;7</span><span>Class Portal</span><span class="console-bar-live"><span class="cdot-live"></span>Live</span></div>
-          <div class="console-body">
-            <p class="console-greeting">Good morning 👋</p>
-            <p class="console-date" id="consoleDate">&nbsp;</p>
-            <div class="console-tiles">
-              <div class="ctile t1"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="lbl">Attendance</span></div>
-              <div class="ctile t2"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span class="lbl">Lookup</span></div>
-              <div class="ctile t3"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><span class="lbl">Activity</span></div>
-              <div class="ctile t4"><span class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span><span class="lbl">Overview</span></div>
-            </div>
-            <div class="console-sync" id="consoleSync"><span class="cdot-live"></span><span id="consoleSyncText">Synced just now</span></div>
-            <div class="console-chart">
-              <i style="height:55%; animation-delay:.1s"></i><i style="height:85%; animation-delay:.18s"></i>
-              <i style="height:40%; animation-delay:.26s"></i><i style="height:70%; animation-delay:.34s"></i>
-              <i style="height:92%; animation-delay:.42s"></i>
-            </div>
-            <div class="console-activity" id="consoleActivity"><span class="ca-avatar" id="consoleActivityAvatar">&bull;</span><span id="consoleActivityText">Live activity syncs from Sheets</span></div>
-          </div>
-        </div>
-      </div>
-    </a>
   </div>
 </section>
 
@@ -1363,7 +1372,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <!-- ============================================================
      CTA — closing statement
      ============================================================ -->
-<section class="cta band-a" data-reveal data-panel="home">
+<section class="cta band-a" data-reveal data-panel="home" style="display:none !important;">
   <span class="cta-eyebrow">BSOAOUMN 2&ndash;7</span>
   <h2>Attendance, records, activity &mdash; finally, all in one place.</h2>
   <a class="cta-link" href="#dashboard">Open your tools <span class="arrow">&rarr;</span></a>
@@ -2513,6 +2522,585 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
      message appears inside the panel once it's opened. Keeping the
      entrance quiet matches the rest of the portal's restrained tone
      and means nothing pops up over the hero console uninvited. */
+})();
+</script>
+
+<!-- ==========================================================================
+     HERO BACKDROP — PUP Main Building, Obelisk and Lagoon, built live in
+     Three.js r149 with procedural Canvas 2D textures. Runs behind the hero
+     copy at dusk so the ivory headline keeps its contrast. The scene never
+     stops moving: a slow orbit, a waving flag, rippling lagoon water and
+     warm windows that breathe. It pauses itself when the hero scrolls out
+     of view, and renders a single still frame when the visitor has asked
+     for reduced motion.
+     ========================================================================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/three.min.js"></script>
+<script>
+if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"><\/script>');}
+</script>
+<script>
+(function(){
+  "use strict";
+
+  var canvas = document.getElementById('pupHeroCanvas');
+  var heroEl = document.querySelector('.hero');
+  if(!canvas || !heroEl || !window.THREE) return;
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- Dusk palette, tuned to the hero's burgundy ---------------- */
+  var C = {
+    concrete:'#cdbfae', concreteDim:'#b6a894', concreteDeep:'#93866f',
+    maroon:'#6B1F2E', maroonDeep:'#4E1620', gold:'#D9A9A8', goldLite:'#E8C4C0',
+    glass:'#2b1f24', lit:'#ffd9a0',
+    grass:'#3b4a3a', path:'#a89a8b', water:'#2c3b44'
+  };
+
+  function cvs(w,h){ var c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
+  function grain(x,w,h,n,a){
+    for(var i=0;i<n;i++){
+      x.fillStyle='rgba(0,0,0,'+(Math.random()*a)+')';
+      x.beginPath(); x.arc(Math.random()*w,Math.random()*h,Math.random()*2.2+.3,0,6.283); x.fill();
+    }
+  }
+  function tex(c,rx,ry){
+    var t=new THREE.CanvasTexture(c);
+    t.wrapS=t.wrapT=THREE.RepeatWrapping;
+    t.repeat.set(rx||1,ry||1);
+    t.anisotropy=4;
+    t.encoding=THREE.sRGBEncoding;
+    return t;
+  }
+
+  /* Facade: returns a colour map plus a matching emissive map where only the
+     lit windows glow, so the building reads as occupied at dusk. */
+  function facadeTexture(cols, floors, arcade){
+    var CW=72, FH=88, GH=arcade?132:FH;
+    var w=cols*CW, h=(floors-1)*FH+GH;
+    var c=cvs(w,h), x=c.getContext('2d');
+    var e=cvs(w,h), ex=e.getContext('2d');
+
+    x.fillStyle=C.concrete; x.fillRect(0,0,w,h);
+    ex.fillStyle='#000000'; ex.fillRect(0,0,w,h);
+
+    for(var i=0;i<cols+1;i++){
+      var g=x.createLinearGradient(i*CW-3,0,i*CW+3,0);
+      g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(.5,'rgba(60,44,40,.14)'); g.addColorStop(1,'rgba(0,0,0,0)');
+      x.fillStyle=g; x.fillRect(i*CW-3,0,6,h);
+    }
+
+    function cell(px,py,pw,ph,round,on){
+      x.fillStyle=C.concreteDeep; x.fillRect(px-3,py-3,pw+6,ph+6);
+      var g=x.createLinearGradient(px,py,px+pw*.6,py+ph);
+      if(on){ g.addColorStop(0,'#ffe6bb'); g.addColorStop(.55,C.lit); g.addColorStop(1,'#d79a55'); }
+      else  { g.addColorStop(0,'#4a3b42'); g.addColorStop(.45,C.glass); g.addColorStop(1,'#191216'); }
+      x.fillStyle=g;
+      function path(ctx){
+        ctx.beginPath();
+        if(round){
+          ctx.moveTo(px,py+ph); ctx.lineTo(px,py+pw/2);
+          ctx.arc(px+pw/2,py+pw/2,pw/2,Math.PI,0);
+          ctx.lineTo(px+pw,py+ph); ctx.closePath();
+        } else { ctx.rect(px,py,pw,ph); }
+      }
+      path(x); x.fill();
+      if(on){
+        ex.fillStyle = 'rgba(255,205,140,'+(0.55+Math.random()*0.45)+')';
+        path(ex); ex.fill();
+      }
+      x.strokeStyle='rgba(217,169,168,.55)'; x.lineWidth=2.5;
+      x.beginPath(); x.moveTo(px+pw/2,py); x.lineTo(px+pw/2,py+ph); x.stroke();
+      x.beginPath(); x.moveTo(px,py+ph*.55); x.lineTo(px+pw,py+ph*.55); x.stroke();
+      x.strokeStyle='rgba(30,22,26,.6)'; x.lineWidth=3;
+      x.strokeRect(px-3,py-3,pw+6,ph+6);
+    }
+
+    var yTop=0;
+    for(var f=floors-1; f>=0; f--){
+      var ground=(f===0), fh=ground?GH:FH;
+      for(var col=0; col<cols; col++){
+        cell(col*CW+14, yTop+(ground?26:20), CW-28, fh-(ground?52:44), ground, Math.random()<(ground?0.72:0.46));
+      }
+      if(!ground){
+        x.fillStyle=C.maroon; x.fillRect(0,yTop+fh-13,w,9);
+        x.fillStyle='rgba(217,169,168,.75)'; x.fillRect(0,yTop+fh-4,w,3);
+      }
+      yTop+=fh;
+    }
+    x.fillStyle=C.concreteDim; x.fillRect(0,h-16,w,16);
+    x.fillStyle='rgba(0,0,0,.20)'; x.fillRect(0,h-4,w,4);
+    grain(x,w,h,2000,.06);
+    return { map:tex(c,1,1), emissive:tex(e,1,1) };
+  }
+
+  function flatTexture(tint,rx,ry){
+    var c=cvs(256,256), x=c.getContext('2d');
+    x.fillStyle=tint; x.fillRect(0,0,256,256);
+    for(var i=0;i<36;i++){
+      x.fillStyle='rgba(255,255,255,'+(Math.random()*.05)+')';
+      x.fillRect(Math.random()*256,Math.random()*256,Math.random()*60,Math.random()*16);
+    }
+    grain(x,256,256,1200,.08);
+    return tex(c,rx||1,ry||1);
+  }
+
+  function groundTexture(){
+    var c=cvs(512,512), x=c.getContext('2d');
+    x.fillStyle=C.grass; x.fillRect(0,0,512,512);
+    for(var i=0;i<2600;i++){
+      var s=Math.random();
+      x.fillStyle='rgba('+(38+s*44|0)+','+(60+s*46|0)+','+(40+s*30|0)+',.6)';
+      x.fillRect(Math.random()*512,Math.random()*512,Math.random()*6+1,Math.random()*3+1);
+    }
+    return tex(c,14,14);
+  }
+
+  function pavementTexture(){
+    var c=cvs(256,256), x=c.getContext('2d');
+    x.fillStyle=C.path; x.fillRect(0,0,256,256);
+    x.strokeStyle='rgba(70,58,50,.4)'; x.lineWidth=2;
+    for(var i=0;i<=4;i++){ x.beginPath(); x.moveTo(i*64,0); x.lineTo(i*64,256); x.stroke();
+                           x.beginPath(); x.moveTo(0,i*64); x.lineTo(256,i*64); x.stroke(); }
+    grain(x,256,256,900,.09);
+    return tex(c,7,7);
+  }
+
+  function waterTexture(){
+    var c=cvs(256,256), x=c.getContext('2d');
+    var g=x.createLinearGradient(0,0,0,256);
+    g.addColorStop(0,'#3c5560'); g.addColorStop(.5,C.water); g.addColorStop(1,'#1b262c');
+    x.fillStyle=g; x.fillRect(0,0,256,256);
+    x.strokeStyle='rgba(232,196,192,.20)'; x.lineWidth=1.6;
+    for(var i=0;i<34;i++){
+      x.beginPath(); var y=Math.random()*256; x.moveTo(0,y);
+      for(var px=0;px<=256;px+=24) x.lineTo(px,y+Math.sin(px*.05+i)*3);
+      x.stroke();
+    }
+    return tex(c,3,3);
+  }
+
+  function signTexture(a,b){
+    var c=cvs(1024,192), x=c.getContext('2d');
+    x.fillStyle=C.maroonDeep; x.fillRect(0,0,1024,192);
+    x.fillStyle=C.goldLite; x.textAlign='center'; x.textBaseline='middle';
+    x.font='700 62px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif';
+    x.fillText(a,512,b?74:96);
+    if(b){ x.fillStyle='rgba(232,196,192,.8)'; x.font='600 34px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif'; x.fillText(b,512,134); }
+    x.strokeStyle='rgba(232,196,192,.5)'; x.lineWidth=5; x.strokeRect(10,10,1004,172);
+    return tex(c,1,1);
+  }
+
+  function emblemTexture(){
+    var c=cvs(256,256), x=c.getContext('2d');
+    x.fillStyle=C.maroonDeep; x.beginPath(); x.arc(128,128,119,0,6.283); x.fill();
+    x.strokeStyle=C.goldLite; x.lineWidth=8; x.beginPath(); x.arc(128,128,107,0,6.283); x.stroke();
+    x.lineWidth=4; x.beginPath(); x.arc(128,128,93,0,6.283); x.stroke();
+    x.strokeStyle='rgba(232,196,192,.5)'; x.lineWidth=3;
+    for(var i=0;i<24;i++){ var a=i/24*6.283;
+      x.beginPath(); x.moveTo(128+Math.cos(a)*60,128+Math.sin(a)*60); x.lineTo(128+Math.cos(a)*85,128+Math.sin(a)*85); x.stroke(); }
+    x.fillStyle=C.goldLite; x.textAlign='center'; x.textBaseline='middle';
+    x.font='800 74px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif'; x.fillText('PUP',128,122);
+    x.font='600 22px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif'; x.fillText('1904',128,172);
+    return tex(c,1,1);
+  }
+
+  function flagTexture(){
+    var c=cvs(256,128), x=c.getContext('2d');
+    x.fillStyle='#0038a8'; x.fillRect(0,0,256,64);
+    x.fillStyle='#ce1126'; x.fillRect(0,64,256,64);
+    x.fillStyle='#ffffff'; x.beginPath(); x.moveTo(0,0); x.lineTo(111,64); x.lineTo(0,128); x.closePath(); x.fill();
+    x.fillStyle='#fcd116'; x.beginPath(); x.arc(39,64,15,0,6.283); x.fill();
+    for(var i=0;i<8;i++){ var a=i/8*6.283;
+      x.save(); x.translate(39,64); x.rotate(a);
+      x.beginPath(); x.moveTo(17,-5); x.lineTo(36,0); x.lineTo(17,5); x.closePath(); x.fill(); x.restore(); }
+    function star(cx,cy,r){ x.beginPath();
+      for(var k=0;k<10;k++){ var rr=(k%2===0)?r:r*.42, a2=-Math.PI/2+k*Math.PI/5;
+        x[k?'lineTo':'moveTo'](cx+Math.cos(a2)*rr, cy+Math.sin(a2)*rr); }
+      x.closePath(); x.fill(); }
+    star(12,12,7); star(12,116,7); star(93,64,7);
+    return tex(c,1,1);
+  }
+
+  function skyTexture(){
+    var c=cvs(32,512), x=c.getContext('2d');
+    var g=x.createLinearGradient(0,0,0,512);
+    g.addColorStop(0,'#1a1215');
+    g.addColorStop(.34,'#241A1D');
+    g.addColorStop(.58,'#4E1620');
+    g.addColorStop(.78,'#8B4A4C');
+    g.addColorStop(.92,'#C98F72');
+    g.addColorStop(1,'#6B4A44');
+    x.fillStyle=g; x.fillRect(0,0,32,512);
+    return tex(c,1,1);
+  }
+
+  /* ---------------- Renderer ---------------- */
+  var renderer;
+  try{
+    renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true, powerPreference:'high-performance'});
+  }catch(err){ return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 1.75));
+  renderer.setSize(heroEl.clientWidth, heroEl.clientHeight, false);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.06;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x4a2a2c, 200, 470);
+  var camera = new THREE.PerspectiveCamera(42, heroEl.clientWidth/heroEl.clientHeight, 0.5, 900);
+
+  scene.add(new THREE.Mesh(
+    new THREE.SphereGeometry(430,36,22),
+    new THREE.MeshBasicMaterial({map:skyTexture(), side:THREE.BackSide, fog:false})
+  ));
+
+  scene.add(new THREE.HemisphereLight(0x6b4a55, 0x241a1d, 0.62));
+  var sun = new THREE.DirectionalLight(0xffc48a, 1.25);
+  sun.position.set(-110, 84, 120);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(1024,1024);
+  var sc = sun.shadow.camera;
+  sc.left=-140; sc.right=140; sc.top=140; sc.bottom=-140; sc.near=1; sc.far=420;
+  sun.shadow.bias=-0.0007;
+  scene.add(sun);
+  var rim = new THREE.DirectionalLight(0xd9a9a8, 0.45);
+  rim.position.set(90, 50, -110);
+  scene.add(rim);
+
+  /* ---------------- Timed construction reveal ---------------- */
+  var BUILD_TIME = 4.4, parts = [];
+  function reg(o,order,dur,mode){ o.userData.b={o:order,d:dur||0.22,m:mode||'rise'}; parts.push(o); return o; }
+  function outCubic(t){ return 1-Math.pow(1-t,3); }
+  function outBack(t){ var c=1.7; return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2); }
+  function applyBuild(p){
+    for(var i=0;i<parts.length;i++){
+      var o=parts[i], b=o.userData.b, t=(p-b.o)/b.d;
+      t = t<0?0:(t>1?1:t);
+      if(b.m==='rise'){ o.scale.y=Math.max(outCubic(t),0.0001); }
+      else if(b.m==='spread'){ var s=Math.max(outCubic(t),0.0001); o.scale.x=s; o.scale.z=s; }
+      else { var q=t<=0?0.0001:Math.max(outBack(t),0.0001); o.scale.set(q,q,q); }
+      o.visible = t>0;
+    }
+  }
+
+  /* ---------------- Materials + primitives ---------------- */
+  var mConcrete    = new THREE.MeshStandardMaterial({map:flatTexture(C.concrete), roughness:.92, metalness:.02});
+  var mConcreteDim = new THREE.MeshStandardMaterial({map:flatTexture(C.concreteDim), roughness:.94, metalness:.02});
+  var mMaroon      = new THREE.MeshStandardMaterial({color:C.maroon, roughness:.6, metalness:.05});
+  var mMaroonDeep  = new THREE.MeshStandardMaterial({color:C.maroonDeep, roughness:.55, metalness:.08});
+  var mGold        = new THREE.MeshStandardMaterial({color:C.gold, roughness:.3, metalness:.8, emissive:0x3a1c1c, emissiveIntensity:.5});
+  var mGlass       = new THREE.MeshStandardMaterial({color:'#2b1f24', roughness:.2, metalness:.5, emissive:0xffb46a, emissiveIntensity:.42});
+  var mTrunk       = new THREE.MeshStandardMaterial({color:'#3a2c22', roughness:.95});
+  var mLeaf        = new THREE.MeshStandardMaterial({color:'#2f4530', roughness:.9, flatShading:true});
+  var mLeaf2       = new THREE.MeshStandardMaterial({color:'#3a5636', roughness:.9, flatShading:true});
+  var mMetal       = new THREE.MeshStandardMaterial({color:'#6f6a6a', roughness:.42, metalness:.7});
+  var mPav         = new THREE.MeshStandardMaterial({map:pavementTexture(), roughness:.95});
+
+  var facadeMats = [];
+  function facadeMat(cols,floors,arcade){
+    var t = facadeTexture(cols,floors,arcade);
+    var m = new THREE.MeshStandardMaterial({
+      map:t.map, roughness:.8, metalness:.05,
+      emissiveMap:t.emissive, emissive:0xffffff, emissiveIntensity:.85
+    });
+    facadeMats.push(m);
+    return m;
+  }
+
+  function box(w,h,d,mat){ var g=new THREE.BoxGeometry(w,h,d); g.translate(0,h/2,0);
+    var m=new THREE.Mesh(g,mat); m.castShadow=true; m.receiveShadow=true; return m; }
+  function boxFaced(w,h,d,front,side,top){ var g=new THREE.BoxGeometry(w,h,d); g.translate(0,h/2,0);
+    var m=new THREE.Mesh(g,[side,side,top,side,front,front]); m.castShadow=true; m.receiveShadow=true; return m; }
+  function cyl(rt,rb,h,seg,mat){ var g=new THREE.CylinderGeometry(rt,rb,h,seg||18); g.translate(0,h/2,0);
+    var m=new THREE.Mesh(g,mat); m.castShadow=true; m.receiveShadow=true; return m; }
+
+  var campus = new THREE.Group();
+  scene.add(campus);
+
+  var ground = new THREE.Mesh(new THREE.PlaneGeometry(700,700),
+    new THREE.MeshStandardMaterial({map:groundTexture(), roughness:1}));
+  ground.rotation.x=-Math.PI/2; ground.receiveShadow=true;
+  scene.add(ground);
+
+  var plaza = new THREE.Mesh(new THREE.CircleGeometry(30,52), mPav);
+  plaza.rotation.x=-Math.PI/2; plaza.position.set(0,.05,44); plaza.receiveShadow=true;
+  campus.add(reg(plaza,0.02,0.20,'spread'));
+
+  var walk = new THREE.Mesh(new THREE.PlaneGeometry(24,56), mPav);
+  walk.rotation.x=-Math.PI/2; walk.position.set(0,.04,26); walk.receiveShadow=true;
+  campus.add(reg(walk,0.0,0.20,'spread'));
+
+  var apron = new THREE.Mesh(new THREE.PlaneGeometry(112,20), mPav);
+  apron.rotation.x=-Math.PI/2; apron.position.set(0,.04,4); apron.receiveShadow=true;
+  campus.add(reg(apron,0.0,0.20,'spread'));
+
+  /* ---- Main Building ---- */
+  var FLOOR=7.2, WF=5, wingH=FLOOR*WF, centerH=FLOOR*6, DEPTH=16;
+  var building = new THREE.Group();
+  building.position.set(0,0,-14);
+  campus.add(building);
+
+  function wing(width, cols, x){
+    var g=new THREE.Group();
+    g.add(boxFaced(width, wingH, DEPTH, facadeMat(cols,WF,true), mConcrete, mConcreteDim));
+    var par=box(width+1.2,2.2,DEPTH+1.2,mConcreteDim); par.position.y=wingH; g.add(par);
+    var cap=box(width+1.6,.7,DEPTH+1.6,mMaroon); cap.position.y=wingH+2.2; g.add(cap);
+    for(var i=1;i<cols;i++){
+      var pil=box(1.1,wingH,.9,mConcreteDim);
+      pil.position.set(-width/2+width*(i/cols),0,DEPTH/2+.2); g.add(pil);
+    }
+    [-1,1].forEach(function(s){
+      var py=box(2.4,wingH+3.4,DEPTH+1.0,mConcreteDim);
+      py.position.set(s*(width/2+.6),0,0); g.add(py);
+    });
+    g.position.x=x;
+    return g;
+  }
+  building.add(reg(wing(46,9,-35), 0.08, 0.30));
+  building.add(reg(wing(46,9, 35), 0.14, 0.30));
+
+  var center = new THREE.Group();
+  center.add(boxFaced(28, centerH, DEPTH+4, facadeMat(5,6,false), mConcrete, mConcreteDim));
+  var cPar=box(30,2.6,DEPTH+5.4,mConcreteDim); cPar.position.y=centerH; center.add(cPar);
+  var cCap=box(31,.9,DEPTH+6.4,mMaroon); cCap.position.y=centerH+2.6; center.add(cCap);
+  var fin=box(4.2,9,3.2,mMaroonDeep); fin.position.set(0,centerH+3.5,-2); center.add(fin);
+  var finTop=box(4.8,.8,3.8,mGold); finTop.position.set(0,centerH+12.5,-2); center.add(finTop);
+  building.add(reg(center, 0.24, 0.30));
+
+  var portico = new THREE.Group();
+  portico.position.z = DEPTH/2 + 2;
+  var COL_H=17;
+  for(var ci=0; ci<6; ci++){
+    var cx=-15+ci*6;
+    var cb=box(2.6,.9,2.6,mConcreteDim); cb.position.set(cx,0,0); portico.add(cb);
+    var col=cyl(1.0,1.15,COL_H,18,mConcrete); col.position.set(cx,.9,0); portico.add(col);
+    var cc=box(2.4,.9,2.4,mConcreteDim); cc.position.set(cx,.9+COL_H,0); portico.add(cc);
+  }
+  var entab=box(36,3.6,6.2,mConcreteDim); entab.position.set(0,COL_H+1.8,0); portico.add(entab);
+  var band=box(36.6,1.0,6.6,mMaroon); band.position.set(0,COL_H+5.4,0); portico.add(band);
+  var sign=new THREE.Mesh(new THREE.PlaneGeometry(33,5.5),
+    new THREE.MeshStandardMaterial({map:signTexture('POLYTECHNIC UNIVERSITY','OF THE PHILIPPINES'),
+      roughness:.55, emissive:0x40161c, emissiveIntensity:.8}));
+  sign.position.set(0,COL_H+3.5,3.2); portico.add(sign);
+  building.add(reg(portico, 0.40, 0.26));
+
+  var emblem=new THREE.Mesh(new THREE.CircleGeometry(5.4,40),
+    new THREE.MeshStandardMaterial({map:emblemTexture(), roughness:.45, metalness:.2,
+      emissive:0xffffff, emissiveIntensity:.18}));
+  emblem.position.set(0, COL_H+13.5, DEPTH/2+2.15);
+  building.add(reg(emblem, 0.62, 0.16, 'pop'));
+
+  var steps=new THREE.Group(); steps.position.z=DEPTH/2+5.4;
+  for(var si=0; si<5; si++){
+    var st=box(40-si*1.2,1.0,10-si*1.7,mConcreteDim);
+    st.position.set(0,si*1.0,si*0.85); steps.add(st);
+  }
+  building.add(reg(steps, 0.36, 0.20));
+
+  var lobby=box(24,12.5,1.2,mGlass);
+  lobby.position.set(0,0,DEPTH/2+1.2);
+  building.add(reg(lobby, 0.34, 0.18));
+
+  /* ---- Obelisk ---- */
+  var obelisk=new THREE.Group(); obelisk.position.set(0,0,44);
+  obelisk.add(cyl(9,10.5,1.6,6,mConcreteDim));
+  var oStep=cyl(6.4,7.6,1.4,6,mConcrete); oStep.position.y=1.6; obelisk.add(oStep);
+  var oPl=box(6,4.2,6,mMaroonDeep); oPl.position.y=3.0; obelisk.add(oPl);
+  var shaft=cyl(1.1,2.9,30,4,mConcrete); shaft.position.y=7.2; shaft.rotation.y=Math.PI/4; obelisk.add(shaft);
+  var pyr=new THREE.Mesh(new THREE.ConeGeometry(1.6,4.2,4), mGold);
+  pyr.position.y=39.2; pyr.rotation.y=Math.PI/4; pyr.castShadow=true; obelisk.add(pyr);
+  campus.add(reg(obelisk, 0.66, 0.24));
+
+  /* ---- Lagoon ---- */
+  var lagoon=new THREE.Group(); lagoon.position.set(0,0,96);
+  var lrim=new THREE.Mesh(new THREE.RingGeometry(26,30,48), mPav);
+  lrim.rotation.x=-Math.PI/2; lrim.position.y=.12; lrim.receiveShadow=true; lagoon.add(lrim);
+  var kerb=new THREE.Mesh(new THREE.TorusGeometry(26.5,.9,8,48), mConcreteDim);
+  kerb.rotation.x=Math.PI/2; kerb.position.y=.7; kerb.castShadow=true; lagoon.add(kerb);
+  var water=new THREE.Mesh(new THREE.CircleGeometry(26,64),
+    new THREE.MeshStandardMaterial({map:waterTexture(), roughness:.12, metalness:.55, transparent:true, opacity:.95}));
+  water.rotation.x=-Math.PI/2; water.position.y=.35; lagoon.add(water);
+  campus.add(reg(lagoon, 0.72, 0.22, 'spread'));
+
+  /* ---- Flagpole + waving flag ---- */
+  var flagGroup=new THREE.Group(); flagGroup.position.set(-40,0,40);
+  flagGroup.add(cyl(2.6,3.4,1.4,8,mConcreteDim));
+  var pole=cyl(.32,.5,34,12,mMetal); pole.position.y=1.4; flagGroup.add(pole);
+  var knob=new THREE.Mesh(new THREE.SphereGeometry(.7,12,10), mGold);
+  knob.position.y=35.6; knob.castShadow=true; flagGroup.add(knob);
+  campus.add(reg(flagGroup, 0.70, 0.20));
+
+  var flagGeo=new THREE.PlaneGeometry(11,5.5,24,12);
+  flagGeo.translate(5.5,0,0);
+  var flag=new THREE.Mesh(flagGeo, new THREE.MeshStandardMaterial({map:flagTexture(), side:THREE.DoubleSide, roughness:.85}));
+  flag.position.set(-39.7,29,40); flag.castShadow=true;
+  campus.add(flag);
+  var flagBase=Float32Array.from(flagGeo.attributes.position.array);
+
+  /* ---- Trees, lamps, hedges ---- */
+  function tree(x,z,s){
+    var g=new THREE.Group();
+    g.add(cyl(.5*s,.85*s,5.5*s,7,mTrunk));
+    var f1=new THREE.Mesh(new THREE.IcosahedronGeometry(3.6*s,0), mLeaf); f1.position.y=7.2*s; f1.castShadow=true; g.add(f1);
+    var f2=new THREE.Mesh(new THREE.IcosahedronGeometry(2.7*s,0), mLeaf2); f2.position.set(1.6*s,9.6*s,-.8*s); f2.castShadow=true; g.add(f2);
+    var f3=new THREE.Mesh(new THREE.IcosahedronGeometry(2.2*s,0), mLeaf); f3.position.set(-1.9*s,9.0*s,1.1*s); f3.castShadow=true; g.add(f3);
+    g.position.set(x,0,z); g.rotation.y=Math.random()*6.283;
+    return g;
+  }
+  [[-62,22],[-52,46],[-44,74],[-30,100],[30,100],[44,74],[52,46],[62,22],
+   [-74,52],[74,52],[-66,92],[66,92],[-86,16],[86,16]].forEach(function(p,i){
+    campus.add(reg(tree(p[0],p[1],.9+((i*37)%50)/100), 0.78+(i%8)*0.014, 0.14, 'pop'));
+  });
+
+  var lampHeads=[];
+  function lamp(x,z){
+    var g=new THREE.Group();
+    g.add(cyl(.22,.34,8.5,8,mMetal));
+    var arm=box(.3,.3,2.2,mMetal); arm.position.set(0,8.5,-.4); g.add(arm);
+    var head=new THREE.Mesh(new THREE.SphereGeometry(.8,12,9),
+      new THREE.MeshStandardMaterial({color:'#fff6df', emissive:0xffd9a0, emissiveIntensity:1.5, roughness:.4}));
+    head.position.set(0,8.9,0); g.add(head); lampHeads.push(head);
+    g.position.set(x,0,z);
+    return g;
+  }
+  for(var L=0;L<6;L++){
+    var lz=16+L*16;
+    campus.add(reg(lamp(-15,lz), 0.86+L*0.012, 0.12, 'pop'));
+    campus.add(reg(lamp( 15,lz), 0.88+L*0.012, 0.12, 'pop'));
+  }
+
+  var hedgeMat=new THREE.MeshStandardMaterial({color:'#2f4530', roughness:.95, flatShading:true});
+  [[-56,4],[56,4],[-30,60],[30,60]].forEach(function(h,i){
+    var hd=box(20,2.4,3,hedgeMat); hd.position.set(h[0],0,h[1]);
+    campus.add(reg(hd, 0.82+i*0.01, 0.14));
+  });
+
+  /* ---------------- Camera rig ---------------- */
+  var DEF={theta:-0.30, phi:1.17, radius:190, ty:18, tz:26};
+  var cam={theta:DEF.theta, phi:DEF.phi, radius:DEF.radius};
+  var goal={theta:DEF.theta, phi:DEF.phi, radius:DEF.radius};
+  var par={x:0,y:0}, parGoal={x:0,y:0};
+
+  function layout(){
+    var w=heroEl.clientWidth, h=heroEl.clientHeight;
+    if(!w || !h) return;
+    var narrow = w < 900;
+    DEF.radius = narrow ? 300 : (w < 1280 ? 215 : 190);
+    DEF.ty = narrow ? 26 : 18;
+    goal.radius = DEF.radius;
+    camera.aspect = w/h;
+    // On wide layouts the copy owns the left third, so the building is
+    // nudged right and down to sit in the open space beside it.
+    camera.setViewOffset(w, h, narrow ? 0 : -w*0.16, -h*0.10, w, h);
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  }
+  window.addEventListener('resize', layout);
+  layout();
+
+  heroEl.addEventListener('mousemove', function(e){
+    var r=heroEl.getBoundingClientRect();
+    parGoal.x=((e.clientX-r.left)/r.width-.5)*2;
+    parGoal.y=((e.clientY-r.top)/r.height-.5)*2;
+  });
+  heroEl.addEventListener('mouseleave', function(){ parGoal.x=0; parGoal.y=0; });
+
+  /* ---------------- Visibility gating ---------------- */
+  var inView = true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      inView = entries[0].isIntersecting;
+    }, {threshold:0}).observe(heroEl);
+  }
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden) last = performance.now();
+  });
+
+  /* ---------------- Loop ---------------- */
+  var buildStart = performance.now();
+  var clock = new THREE.Clock();
+  var last = performance.now();
+
+  function frame(){
+    requestAnimationFrame(frame);
+    if(!inView || document.hidden) return;
+
+    var t = clock.getElapsedTime();
+    var p = (performance.now()-buildStart)/1000/BUILD_TIME;
+    if(p>1) p=1;
+    applyBuild(p);
+
+    goal.theta += 0.00085;
+    cam.theta  += (goal.theta-cam.theta)*0.08;
+    cam.phi    += (goal.phi-cam.phi)*0.08;
+    cam.radius += (goal.radius-cam.radius)*0.07;
+    par.x += (parGoal.x-par.x)*0.05;
+    par.y += (parGoal.y-par.y)*0.05;
+
+    var ph = Math.max(0.5, Math.min(1.42, cam.phi + par.y*0.05));
+    var th = cam.theta + par.x*0.085;
+    var r  = cam.radius;
+    camera.position.set(
+      r*Math.sin(ph)*Math.sin(th),
+      DEF.ty + r*Math.cos(ph),
+      DEF.tz + r*Math.sin(ph)*Math.cos(th)
+    );
+    camera.lookAt(0, DEF.ty+6, DEF.tz);
+
+    var pos=flag.geometry.attributes.position;
+    for(var i=0;i<pos.count;i++){
+      var bx=flagBase[i*3], by=flagBase[i*3+1], k=bx/11;
+      pos.setZ(i, Math.sin(bx*0.75-t*5.2)*0.9*k + Math.sin(by*0.9-t*3.1)*0.28*k);
+      pos.setY(i, by + Math.sin(bx*0.5-t*4.0)*0.22*k);
+    }
+    pos.needsUpdate=true;
+    flag.geometry.computeVertexNormals();
+
+    water.material.map.offset.x = t*0.012;
+    water.material.map.offset.y = Math.sin(t*0.25)*0.02;
+
+    // windows and lamps breathe very slightly so the scene never freezes
+    var pulse = 0.82 + Math.sin(t*0.6)*0.06;
+    for(var f2=0; f2<facadeMats.length; f2++) facadeMats[f2].emissiveIntensity = pulse;
+    for(var l=0; l<lampHeads.length; l++)
+      lampHeads[l].material.emissiveIntensity = 1.4 + Math.sin(t*1.7 + l)*0.16;
+
+    renderer.render(scene, camera);
+  }
+
+  function start(){
+    canvas.classList.add('is-ready');
+    if(reduced){
+      applyBuild(1);
+      camera.position.set(
+        DEF.radius*Math.sin(DEF.phi)*Math.sin(DEF.theta),
+        DEF.ty + DEF.radius*Math.cos(DEF.phi),
+        DEF.tz + DEF.radius*Math.sin(DEF.phi)*Math.cos(DEF.theta)
+      );
+      camera.lookAt(0, DEF.ty+6, DEF.tz);
+      renderer.render(scene, camera);
+      window.addEventListener('resize', function(){ layout(); renderer.render(scene,camera); });
+      return;
+    }
+    buildStart = performance.now();
+    clock.start();
+    frame();
+  }
+
+  /* The entrance gate holds every hero animation at frame one. Wait for it
+     to lift so the building assembles alongside the headline. */
+  var root = document.documentElement;
+  if(root.classList.contains('gate-locked')){
+    var mo = new MutationObserver(function(){
+      if(!root.classList.contains('gate-locked')){ mo.disconnect(); start(); }
+    });
+    mo.observe(root, {attributes:true, attributeFilter:['class']});
+    setTimeout(function(){ if(!canvas.classList.contains('is-ready')){ mo.disconnect(); start(); } }, 12000);
+  } else {
+    start();
+  }
 })();
 </script>
 
