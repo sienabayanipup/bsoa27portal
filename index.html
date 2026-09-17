@@ -167,8 +167,8 @@ a{ color:inherit; }
   position:relative; z-index:1; min-height:100vh; display:flex; align-items:center;
   padding:120px clamp(20px,5vw,64px) 80px; width:100%;
   background:
-    radial-gradient(ellipse 70% 60% at 85% 20%, rgba(217,169,168,.16), transparent 60%),
-    linear-gradient(135deg, var(--graphite) 0%, var(--graphite-soft) 42%, var(--ink-soft) 78%, var(--muted) 100%);
+    radial-gradient(ellipse 70% 55% at 80% 8%, rgba(255,248,230,.55), transparent 62%),
+    linear-gradient(180deg, #7FB3D9 0%, #AFD3E8 32%, #E3EEE0 68%, #D8C9A8 100%);
 }
 .hero-grain{ position:absolute; inset:0; opacity:.028; mix-blend-mode:overlay; pointer-events:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
@@ -185,13 +185,13 @@ a{ color:inherit; }
 .hero-scrim{
   position:absolute; inset:0; z-index:0; pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(36,26,29,.90) 0%, rgba(36,26,29,.72) 34%, rgba(36,26,29,.30) 62%, rgba(36,26,29,.14) 100%),
-    linear-gradient(180deg, rgba(36,26,29,.72) 0%, rgba(36,26,29,.12) 34%, rgba(36,26,29,.38) 82%, rgba(36,26,29,.86) 100%);
+    linear-gradient(90deg, rgba(36,26,29,.94) 0%, rgba(36,26,29,.80) 34%, rgba(36,26,29,.42) 62%, rgba(36,26,29,.20) 100%),
+    linear-gradient(180deg, rgba(36,26,29,.55) 0%, rgba(36,26,29,.10) 30%, rgba(36,26,29,.30) 78%, rgba(36,26,29,.82) 100%);
 }
 @media (max-width:900px){
   .hero-scrim{
     background:
-      linear-gradient(180deg, rgba(36,26,29,.86) 0%, rgba(36,26,29,.62) 38%, rgba(36,26,29,.58) 66%, rgba(36,26,29,.92) 100%);
+      linear-gradient(180deg, rgba(36,26,29,.88) 0%, rgba(36,26,29,.66) 36%, rgba(36,26,29,.62) 66%, rgba(36,26,29,.93) 100%);
   }
 }
 @media (prefers-reduced-motion: reduce){ .hero-canvas{ transition:none; } }
@@ -2592,8 +2592,8 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     function cell(px,py,pw,ph,round,on){
       x.fillStyle=C.concreteDeep; x.fillRect(px-3,py-3,pw+6,ph+6);
       var g=x.createLinearGradient(px,py,px+pw*.6,py+ph);
-      if(on){ g.addColorStop(0,'#ffe6bb'); g.addColorStop(.55,C.lit); g.addColorStop(1,'#d79a55'); }
-      else  { g.addColorStop(0,'#4a3b42'); g.addColorStop(.45,C.glass); g.addColorStop(1,'#191216'); }
+      if(on){ g.addColorStop(0,'#eaf4fb'); g.addColorStop(.55,'#bcd8e6'); g.addColorStop(1,'#7fa6b8'); }
+      else  { g.addColorStop(0,'#7fa6b8'); g.addColorStop(.45,'#3c6478'); g.addColorStop(1,'#1c313c'); }
       x.fillStyle=g;
       function path(ctx){
         ctx.beginPath();
@@ -2619,7 +2619,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     for(var f=floors-1; f>=0; f--){
       var ground=(f===0), fh=ground?GH:FH;
       for(var col=0; col<cols; col++){
-        cell(col*CW+14, yTop+(ground?26:20), CW-28, fh-(ground?52:44), ground, Math.random()<(ground?0.72:0.46));
+        cell(col*CW+14, yTop+(ground?26:20), CW-28, fh-(ground?52:44), ground, Math.random()<0.08);
       }
       if(!ground){
         x.fillStyle=C.maroon; x.fillRect(0,yTop+fh-13,w,9);
@@ -2668,9 +2668,9 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
   function waterTexture(){
     var c=cvs(256,256), x=c.getContext('2d');
     var g=x.createLinearGradient(0,0,0,256);
-    g.addColorStop(0,'#3c5560'); g.addColorStop(.5,C.water); g.addColorStop(1,'#1b262c');
+    g.addColorStop(0,'#8fd0e6'); g.addColorStop(.5,'#4f9bb0'); g.addColorStop(1,'#2c6478');
     x.fillStyle=g; x.fillRect(0,0,256,256);
-    x.strokeStyle='rgba(232,196,192,.20)'; x.lineWidth=1.6;
+    x.strokeStyle='rgba(255,255,255,.35)'; x.lineWidth=1.6;
     for(var i=0;i<34;i++){
       x.beginPath(); var y=Math.random()*256; x.moveTo(0,y);
       for(var px=0;px<=256;px+=24) x.lineTo(px,y+Math.sin(px*.05+i)*3);
@@ -2724,13 +2724,17 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
   function skyTexture(){
     var c=cvs(32,512), x=c.getContext('2d');
     var g=x.createLinearGradient(0,0,0,512);
-    g.addColorStop(0,'#1a1215');
-    g.addColorStop(.34,'#241A1D');
-    g.addColorStop(.58,'#4E1620');
-    g.addColorStop(.78,'#8B4A4C');
-    g.addColorStop(.92,'#C98F72');
-    g.addColorStop(1,'#6B4A44');
+    g.addColorStop(0,'#5FA0D6');
+    g.addColorStop(.42,'#8FC1E0');
+    g.addColorStop(.70,'#CFE6E0');
+    g.addColorStop(.88,'#F3EFD8');
+    g.addColorStop(1,'#E6DAB8');
     x.fillStyle=g; x.fillRect(0,0,32,512);
+    // a few soft clouds, high in the sky
+    x.fillStyle='rgba(255,255,255,.55)';
+    [0.06,0.11,0.16].forEach(function(v){
+      x.beginPath(); x.ellipse(16, v*512, 15, 5, 0, 0, 6.283); x.fill();
+    });
     return tex(c,1,1);
   }
 
@@ -2743,12 +2747,12 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
   renderer.setSize(heroEl.clientWidth, heroEl.clientHeight, false);
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.06;
+  renderer.toneMappingExposure = 1.12;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   var scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x4a2a2c, 200, 470);
+  scene.fog = new THREE.Fog(0xcfe0e6, 220, 490);
   var camera = new THREE.PerspectiveCamera(42, heroEl.clientWidth/heroEl.clientHeight, 0.5, 900);
 
   scene.add(new THREE.Mesh(
@@ -2756,17 +2760,17 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     new THREE.MeshBasicMaterial({map:skyTexture(), side:THREE.BackSide, fog:false})
   ));
 
-  scene.add(new THREE.HemisphereLight(0x6b4a55, 0x241a1d, 0.62));
-  var sun = new THREE.DirectionalLight(0xffc48a, 1.25);
-  sun.position.set(-110, 84, 120);
+  scene.add(new THREE.HemisphereLight(0xdcefff, 0x8a9678, 0.95));
+  var sun = new THREE.DirectionalLight(0xfff4de, 1.35);
+  sun.position.set(-110, 150, 90);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024,1024);
   var sc = sun.shadow.camera;
   sc.left=-140; sc.right=140; sc.top=140; sc.bottom=-140; sc.near=1; sc.far=420;
   sun.shadow.bias=-0.0007;
   scene.add(sun);
-  var rim = new THREE.DirectionalLight(0xd9a9a8, 0.45);
-  rim.position.set(90, 50, -110);
+  var rim = new THREE.DirectionalLight(0xcfe6f0, 0.35);
+  rim.position.set(90, 60, -110);
   scene.add(rim);
 
   /* ---------------- Timed construction reveal ---------------- */
@@ -2791,7 +2795,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
   var mMaroon      = new THREE.MeshStandardMaterial({color:C.maroon, roughness:.6, metalness:.05});
   var mMaroonDeep  = new THREE.MeshStandardMaterial({color:C.maroonDeep, roughness:.55, metalness:.08});
   var mGold        = new THREE.MeshStandardMaterial({color:C.gold, roughness:.3, metalness:.8, emissive:0x3a1c1c, emissiveIntensity:.5});
-  var mGlass       = new THREE.MeshStandardMaterial({color:'#2b1f24', roughness:.2, metalness:.5, emissive:0xffb46a, emissiveIntensity:.42});
+  var mGlass       = new THREE.MeshStandardMaterial({color:'#7fa6b8', roughness:.15, metalness:.6, emissive:0x2c4a58, emissiveIntensity:.10});
   var mTrunk       = new THREE.MeshStandardMaterial({color:'#3a2c22', roughness:.95});
   var mLeaf        = new THREE.MeshStandardMaterial({color:'#2f4530', roughness:.9, flatShading:true});
   var mLeaf2       = new THREE.MeshStandardMaterial({color:'#3a5636', roughness:.9, flatShading:true});
@@ -2803,7 +2807,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     var t = facadeTexture(cols,floors,arcade);
     var m = new THREE.MeshStandardMaterial({
       map:t.map, roughness:.8, metalness:.05,
-      emissiveMap:t.emissive, emissive:0xffffff, emissiveIntensity:.85
+      emissiveMap:t.emissive, emissive:0xffffff, emissiveIntensity:.16
     });
     facadeMats.push(m);
     return m;
@@ -2960,7 +2964,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     g.add(cyl(.22,.34,8.5,8,mMetal));
     var arm=box(.3,.3,2.2,mMetal); arm.position.set(0,8.5,-.4); g.add(arm);
     var head=new THREE.Mesh(new THREE.SphereGeometry(.8,12,9),
-      new THREE.MeshStandardMaterial({color:'#fff6df', emissive:0xffd9a0, emissiveIntensity:1.5, roughness:.4}));
+      new THREE.MeshStandardMaterial({color:'#e8e2d6', emissive:0x000000, emissiveIntensity:0, roughness:.5}));
     head.position.set(0,8.9,0); g.add(head); lampHeads.push(head);
     g.position.set(x,0,z);
     return g;
@@ -3061,11 +3065,8 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     water.material.map.offset.x = t*0.012;
     water.material.map.offset.y = Math.sin(t*0.25)*0.02;
 
-    // windows and lamps breathe very slightly so the scene never freezes
-    var pulse = 0.82 + Math.sin(t*0.6)*0.06;
-    for(var f2=0; f2<facadeMats.length; f2++) facadeMats[f2].emissiveIntensity = pulse;
-    for(var l=0; l<lampHeads.length; l++)
-      lampHeads[l].material.emissiveIntensity = 1.4 + Math.sin(t*1.7 + l)*0.16;
+    // daytime: windows hold a steady faint sky-reflection glow; lamps stay off
+    for(var f2=0; f2<facadeMats.length; f2++) facadeMats[f2].emissiveIntensity = 0.16;
 
     renderer.render(scene, camera);
   }
