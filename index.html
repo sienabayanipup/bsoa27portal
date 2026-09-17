@@ -85,26 +85,18 @@ h1,h2,h3,p{ margin:0; }
 button{ font:inherit; }
 a{ color:inherit; }
 
-/* ---------- Ambient light rig (shared, page-level, GPU-cheap) ---------- */
+/* ---------- Ambient light rig (shared, page-level, GPU-cheap) ----------
+   Editorial restraint: a single, very quiet wash in the upper corner —
+   just enough to keep the paper from feeling flat — rather than a field
+   of drifting, breathing blobs. No grain, no cursor-follow glow. */
 .ambient{ position:fixed; inset:0; z-index:-2; pointer-events:none; overflow:hidden; }
-.ambient .blob{ position:absolute; border-radius:50%; filter:blur(90px); opacity:.55; will-change:transform,opacity; }
-.blob-a{ width:52vw; height:52vw; top:-16vw; left:-12vw; background:radial-gradient(circle, rgba(107,31,46,.11), transparent 68%); animation:driftA 40s ease-in-out infinite, breathe 9s ease-in-out infinite; }
-.blob-b{ width:44vw; height:44vw; bottom:-14vw; right:-10vw; background:radial-gradient(circle, rgba(79,109,134,.08), transparent 70%); animation:driftB 48s ease-in-out infinite, breathe 12s ease-in-out infinite 1s; }
-.blob-c{ width:30vw; height:30vw; top:40vh; right:6vw; background:radial-gradient(circle, rgba(217,169,168,.1), transparent 72%); animation:driftC 56s ease-in-out infinite, breathe 14s ease-in-out infinite .6s; }
-@keyframes driftA{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(4vw,3vw) scale(1.08); } }
-@keyframes driftB{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-3vw,-4vw) scale(1.05); } }
-@keyframes driftC{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-2vw,3vw) scale(.94); } }
-@keyframes breathe{ 0%,100%{ opacity:.45; } 50%{ opacity:.78; } }
-.grain{ position:absolute; inset:-10%; opacity:.035; mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+.ambient .blob{ position:absolute; border-radius:50%; filter:blur(100px); opacity:.4; will-change:opacity; }
+.blob-a{ width:46vw; height:46vw; top:-18vw; left:-14vw; background:radial-gradient(circle, rgba(107,31,46,.09), transparent 70%); animation:breathe 16s ease-in-out infinite; }
+@keyframes breathe{ 0%,100%{ opacity:.3; } 50%{ opacity:.46; } }
 @media (prefers-reduced-motion: reduce){ .ambient .blob{ animation:none !important; } }
-/* Perf: cheaper blur + no grain on small/low-power screens — the 90px
-   blur over a 50vw+ blob is one of the more expensive things a phone
-   GPU is asked to repaint every frame. */
-@media (max-width:700px){ .ambient .blob{ filter:blur(46px); } .grain{ display:none; } }
-/* Perf: fully pause decorative animation while the tab isn't visible,
-   instead of letting blobs/pulses/tickers keep animating (and the JS
-   tickers keep firing) in a background tab. */
+/* Perf: cheaper blur on small/low-power screens. */
+@media (max-width:700px){ .ambient .blob{ filter:blur(50px); } }
+/* Perf: fully pause decorative animation while the tab isn't visible. */
 .tab-hidden .ambient .blob{ animation-play-state:paused !important; }
 
 /* ---------- Identity — the "2·7" seal, a minimal academic monogram used
@@ -126,11 +118,6 @@ a{ color:inherit; }
     repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px 96px),
     repeating-linear-gradient(0deg, var(--ink) 0 1px, transparent 1px 40px);
 }
-
-.cursor-glow{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity .5s ease;
-  background:radial-gradient(circle 440px at var(--cx,50%) var(--cy,30%), rgba(107,31,46,.05), transparent 72%); }
-.cursor-glow.on{ opacity:1; }
-@media (hover:none), (prefers-reduced-motion: reduce){ .cursor-glow{ display:none; } }
 
 /* ---------- Chrome ---------- */
 .top-bar{
@@ -183,7 +170,7 @@ a{ color:inherit; }
     radial-gradient(ellipse 70% 60% at 85% 20%, rgba(217,169,168,.16), transparent 60%),
     linear-gradient(135deg, var(--graphite) 0%, var(--graphite-soft) 42%, var(--ink-soft) 78%, var(--muted) 100%);
 }
-.hero-grain{ position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay; pointer-events:none;
+.hero-grain{ position:absolute; inset:0; opacity:.028; mix-blend-mode:overlay; pointer-events:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 .hero-grid{ position:relative; z-index:1; display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(32px,5vw,72px); align-items:center; width:100%; max-width:1240px; margin:0 auto; padding:0 24px; box-sizing:border-box; }
 .hero-copy{ transition:transform .9s var(--ease); will-change:transform; }
@@ -221,9 +208,9 @@ a{ color:inherit; }
 
 /* -- Floating console (the hero's focal point — a real link into the dashboard) -- */
 .console-link{ display:block; text-decoration:none; color:inherit; cursor:pointer; transition:transform .5s var(--spring); }
-.console-link:hover{ transform:translateY(-8px) scale(1.014); }
-.console-link:active{ transform:translateY(-4px) scale(1.006); }
-.console-link:hover .console{ box-shadow:var(--shadow-3), 0 34px 80px -22px rgba(78,22,32,.32), inset 0 1px 0 rgba(255,255,255,.7); }
+.console-link:hover{ transform:translateY(-4px); }
+.console-link:active{ transform:translateY(-2px); }
+.console-link:hover .console{ box-shadow:var(--shadow-3); }
 .console-link:focus-visible{ outline:2px solid var(--emerald); outline-offset:8px; border-radius:22px; }
 .console-stage{ position:relative; perspective:1600px; opacity:0; animation:consoleIn 1s var(--ease) forwards; animation-delay:.42s; transition:transform .9s var(--ease); will-change:transform; }
 @media (max-width:900px){ .console-stage{ transition:none !important; transform:none !important; } }
@@ -239,19 +226,15 @@ html.gate-locked .hero p.lead,
 html.gate-locked .hero-stats,
 html.gate-locked .console-stage{ animation-play-state:paused !important; }
 .console-glow{ position:absolute; inset:-16% -10%; z-index:-1;
-  background:radial-gradient(ellipse 55% 55% at 55% 45%, rgba(107,31,46,.12), transparent 70%); }
+  background:radial-gradient(ellipse 55% 55% at 55% 45%, rgba(107,31,46,.08), transparent 70%); }
 .console{
-  position:relative; margin-left:auto; max-width:460px; border-radius:20px; overflow:hidden;
-  background:linear-gradient(165deg, rgba(253,250,247,.92), rgba(253,250,247,.72));
-  backdrop-filter:blur(26px) saturate(1.6); -webkit-backdrop-filter:blur(26px) saturate(1.6);
-  box-shadow:var(--shadow-3), inset 0 1px 0 rgba(255,255,255,.7);
-  transform:rotateX(6deg) rotateY(-8deg); transform-style:preserve-3d;
-  animation:consoleFloat 7s ease-in-out infinite;
-  transition:box-shadow .5s ease;
-  will-change:transform;
+  position:relative; margin-left:auto; max-width:460px; border-radius:14px; overflow:hidden;
+  background:var(--surface-elevated);
+  border:1px solid rgba(42,32,36,.08);
+  box-shadow:var(--shadow-2);
+  transition:box-shadow .4s ease, transform .4s ease;
 }
-@keyframes consoleFloat{ 0%,100%{ transform:rotateX(6deg) rotateY(-8deg) translateY(0); } 50%{ transform:rotateX(5deg) rotateY(-7deg) translateY(-10px); } }
-@media (prefers-reduced-motion: reduce){ .console{ animation:none; transform:none; } .console-stage{ animation:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce){ .console-stage{ animation:none; opacity:1; } }
 .console-bar{ display:flex; align-items:center; gap:7px; padding:14px 18px; border-bottom:1px solid rgba(42,32,36,.06); }
 .console-bar i{ width:8px; height:8px; border-radius:50%; background:rgba(42,32,36,.14); }
 .console-bar span{ margin-left:8px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10px; color:var(--muted); letter-spacing:.03em; }
@@ -266,15 +249,8 @@ html.gate-locked .console-stage{ animation-play-state:paused !important; }
 .ctile .cdot{ width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; }
 .ctile .cdot svg{ width:11px; height:11px; stroke-width:2px; }
 .ctile span.lbl{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:11px; color:var(--ink); }
-.ctile.t1{ background:var(--emerald-tint); } .ctile.t1 .cdot{ background:var(--emerald); color:#fff; }
-.ctile.t2{ background:var(--slate-tint); } .ctile.t2 .cdot{ background:var(--slate); color:#fff; }
-.ctile.t3{ background:var(--teal-tint); } .ctile.t3 .cdot{ background:var(--teal); color:#fff; }
-.ctile.t4{ background:var(--bronze-tint); } .ctile.t4 .cdot{ background:var(--bronze); color:#fff; }
-.ctile::after{ content:""; position:absolute; inset:0; transform:translateX(-120%);
-  background:linear-gradient(75deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); }
-.ctile.t1::after{ animation:tileShimmerLoop 1.4s ease-in-out .9s 1 forwards; }
-.ctile.t3::after{ animation:tileShimmerLoop 1.4s ease-in-out 1.5s 1 forwards; }
-@keyframes tileShimmerLoop{ 0%{ transform:translateX(-120%); } 16%{ transform:translateX(120%); } 100%{ transform:translateX(120%); } }
+.ctile{ background:var(--paper-secondary); }
+.ctile .cdot{ background:var(--emerald); color:#fff; }
 .console-sync{ display:flex; align-items:center; gap:7px; margin-bottom:14px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--muted); }
 .console-sync .cdot-live{ width:6px; height:6px; border-radius:50%; background:var(--teal); flex:0 0 auto; animation:consolePulse 2.4s infinite; }
 .console-chart{ display:flex; align-items:flex-end; gap:6px; height:44px; padding:0 2px; }
@@ -385,9 +361,9 @@ a.b-card:hover .b-footer .arrow{ transform:translateX(4px); }
 
 /* Attendance — grid-area attendance, wide featured */
 .b-attendance{ grid-area:attendance; --accent:var(--emerald); --accent-tint:var(--emerald-tint);
-  padding:32px 34px 26px; box-shadow:var(--shadow-3), 0 40px 90px -30px rgba(78,22,32,.26), inset 0 1px 0 rgba(255,255,255,.7);
+  padding:32px 34px 26px; box-shadow:var(--shadow-2); border:1px solid var(--hair);
   background:linear-gradient(158deg, var(--surface) 55%, var(--emerald-tint) 340%); }
-a.b-attendance:hover{ box-shadow:var(--shadow-3), 0 44px 100px -28px rgba(78,22,32,.3), inset 0 1px 0 rgba(255,255,255,.7); }
+a.b-attendance:hover{ box-shadow:var(--shadow-3); }
 .b-attendance .b-index{ opacity:.05; right:10px; font-size:150px; }
 .b-attendance .b-icon{ width:48px; height:48px; margin-bottom:14px; }
 .b-attendance .b-icon svg{ width:22px; height:22px; }
@@ -512,7 +488,7 @@ a.b-contacts:hover{ box-shadow:var(--shadow-3); }
 .wf-track-line{ position:absolute; inset:0; background:linear-gradient(90deg, var(--emerald) 0%, var(--slate) 34%, var(--teal) 67%, var(--bronze-text) 100%); opacity:.28; }
 .wf-track-dot{ position:absolute; top:0; left:0; width:7px; height:7px; margin-top:-3px; margin-left:-3.5px; border-radius:50%;
   background:var(--emerald); box-shadow:0 0 0 5px rgba(107,31,46,.14); opacity:0; }
-.wf-track.flow-active .wf-track-dot{ opacity:1; animation:wfFlowMove 7s var(--ease) infinite; }
+.wf-track.flow-active .wf-track-dot{ opacity:1; animation:wfFlowMove 7s var(--ease) 1 forwards; }
 @keyframes wfFlowMove{
   0%{ left:0%; background:var(--emerald); box-shadow:0 0 0 5px rgba(107,31,46,.14); }
   27%{ left:33.33%; background:var(--slate); box-shadow:0 0 0 5px rgba(79,109,134,.14); }
@@ -530,10 +506,10 @@ a.b-contacts:hover{ box-shadow:var(--shadow-3); }
 
 /* Card lift — mirrors the dot's dwell time at each node above, so the
    matching card rises as the dot "arrives" at its number. */
-.wf-grid.flow-active .wf1{ animation:wfLift1 7s var(--ease) infinite; }
-.wf-grid.flow-active .wf2{ animation:wfLift2 7s var(--ease) infinite; }
-.wf-grid.flow-active .wf3{ animation:wfLift3 7s var(--ease) infinite; }
-.wf-grid.flow-active .wf4{ animation:wfLift4 7s var(--ease) infinite; }
+.wf-grid.flow-active .wf1{ animation:wfLift1 7s var(--ease) 1; }
+.wf-grid.flow-active .wf2{ animation:wfLift2 7s var(--ease) 1; }
+.wf-grid.flow-active .wf3{ animation:wfLift3 7s var(--ease) 1; }
+.wf-grid.flow-active .wf4{ animation:wfLift4 7s var(--ease) 1; }
 @keyframes wfLift1{
   0%,6%{ transform:translateY(-7px) scale(1.015); box-shadow:var(--shadow-3); }
   16%,100%{ transform:translateY(0) scale(1); box-shadow:var(--shadow-2); }
@@ -640,8 +616,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
 
 .tab-nav{
   z-index:35;
-  background:rgba(253,250,247,.92);
-  -webkit-backdrop-filter:blur(16px) saturate(1.4); backdrop-filter:blur(16px) saturate(1.4);
+  transition:background .4s ease, border-color .4s ease, backdrop-filter .4s ease;
 }
 .tab-label{
   margin:0; padding:0 14px; font-family:'Plus Jakarta Sans', sans-serif;
@@ -722,24 +697,58 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
   body{ padding-left:0; }
 
   .tab-brand{ display:flex; align-items:center; padding:0; flex:0 0 auto; }
-  .tab-brand .mono-seal{ color:var(--emerald); }
 
   .tab-nav{
-    position:fixed; top:18px; left:50%; transform:translateX(-50%);
-    bottom:auto; width:auto; max-width:calc(100vw - 32px);
-    margin:0; padding:6px 24px;
-    display:flex; flex-direction:row; align-items:center; gap:40px;
-    border:1px solid rgba(255,255,255,.6); border-radius:999px;
-    background:rgba(253,250,247,.86);
-    -webkit-backdrop-filter:blur(16px) saturate(1.4); backdrop-filter:blur(16px) saturate(1.4);
-    box-shadow:var(--shadow-2);
-    overflow:visible;
+    position:fixed; top:0; left:0; right:0;
+    bottom:auto; width:100%; max-width:none;
+    margin:0; padding:0 clamp(24px,4vw,48px);
+    display:flex; flex-direction:row; align-items:center; gap:36px;
+    border:none; border-bottom:1px solid transparent; border-radius:0;
+    background:transparent;
+    backdrop-filter:none; -webkit-backdrop-filter:none;
+    box-shadow:none;
+    overflow:visible; height:64px;
+    --nav-fg:#FDFAF7; --nav-fg-soft:rgba(253,250,247,.8); --nav-underline:var(--bronze-bright);
   }
-  .tab-group{ display:flex; flex-direction:row; align-items:center; gap:40px; position:relative; flex:0 0 auto; }
+  /* Once the hero has scrolled out of view (see the IntersectionObserver
+     below), the bar becomes the real thing: solid paper, a hairline,
+     dark ink — because it now sits over the light page, not the hero
+     photo, and needs the contrast. */
+  .tab-nav.nav-solid{
+    border-bottom-color:var(--hair);
+    background:rgba(253,250,247,.94);
+    backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    --nav-fg:var(--ink-soft); --nav-fg-soft:var(--ink-soft); --nav-underline:var(--emerald);
+  }
+  .tab-group{ display:flex; flex-direction:row; align-items:center; gap:30px; position:relative; flex:0 0 auto; height:100%; }
+  .tab-group:nth-of-type(2){ margin-left:auto; }
   .tab-label{ display:none; }
-  .tab-btn, .tab-link{ width:auto; flex:0 0 auto; padding:10px 16px; font-size:12.5px; text-align:center; border-radius:999px; }
+  .tab-btn, .tab-link{
+    width:auto; flex:0 0 auto; height:100%; padding:0; text-align:center; border-radius:0;
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase; font-weight:600;
+    position:relative; background:transparent !important; color:var(--nav-fg-soft) !important;
+    transition:color .3s ease;
+  }
+  .tab-btn::after, .tab-link::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:1.5px;
+    background:var(--nav-underline); transform:scaleX(0); transform-origin:center;
+    transition:transform .25s var(--ease), background .3s ease;
+  }
+  .tab-btn:hover::after, .tab-link:hover::after{ transform:scaleX(1); }
+  .tab-btn:hover, .tab-link:hover{ color:var(--nav-fg) !important; }
+  .tab-btn.active{ color:var(--nav-fg) !important; }
+  .tab-btn.active::after{ transform:scaleX(1); }
+  .tab-btn.active:hover{ color:var(--nav-fg) !important; }
+  .tab-btn .ta-count{ background:var(--emerald) !important; color:#fff !important; }
+  .tab-btn:hover .ta-count, .tab-btn.active:hover .ta-count{ background:var(--emerald) !important; color:#fff !important; }
   .tab-btn .tab-icon, .tab-link .tab-icon{ display:none; }
-  .tab-toggle{ width:auto; flex:0 0 auto; margin:0; padding:10px 16px; border-radius:999px; }
+  .tab-toggle{
+    width:auto; flex:0 0 auto; height:100%; margin:0; padding:0; border-radius:0;
+    font-size:11px; letter-spacing:.12em; background:transparent !important; color:var(--nav-fg-soft) !important;
+    transition:color .3s ease;
+  }
+  .tab-toggle:hover{ background:transparent !important; color:var(--nav-fg) !important; opacity:1; }
+  .tab-brand .mono-seal{ color:var(--nav-fg) !important; transition:color .3s ease; }
 
   /* Tools becomes a dropdown card that floats below the pill instead
      of an always-open in-line list. Its .tab-group parent shrink-wraps
@@ -761,7 +770,13 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
     box-shadow:var(--shadow-3); padding:6px;
   }
   .tab-sublist-inner{ margin-left:0; padding-left:0; border-left:none; }
-  .tab-sublist-inner .tab-link{ padding:9px 11px; font-size:12.5px; text-align:left; }
+  .tab-sublist-inner .tab-link{
+    height:auto; padding:9px 11px; font-size:12.5px; text-transform:none; letter-spacing:.01em;
+    text-align:left; font-weight:600; border-radius:8px;
+    color:var(--ink-soft) !important;
+  }
+  .tab-sublist-inner .tab-link::after{ display:none; }
+  .tab-sublist-inner .tab-link:hover{ background:var(--paper-secondary) !important; color:var(--emerald) !important; }
   .tab-sublist-inner .tab-link .tab-icon{ display:flex; width:14px; height:14px; }
 
   .tab-footer{ display:none; }
@@ -773,6 +788,8 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
     padding:10px 12px;
     display:flex; flex-wrap:wrap; align-items:flex-start; gap:6px;
     border-bottom:1px solid var(--hair);
+    background:rgba(253,250,247,.94);
+    backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
   }
   .tab-brand{ display:none; }
   .tab-group{ display:contents; }
@@ -805,7 +822,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     linear-gradient(150deg, var(--graphite) 0%, var(--graphite-soft) 46%, var(--ink-soft) 84%, var(--muted) 100%);
   transition:opacity .7s var(--ease), visibility 0s linear .7s, filter .7s var(--ease);
 }
-.gate-grain{ position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay; pointer-events:none;
+.gate-grain{ position:absolute; inset:0; opacity:.03; mix-blend-mode:overlay; pointer-events:none;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
 .gate-frame{
   position:absolute; inset:18px; border:1px solid rgba(253,250,247,.14); border-radius:26px; pointer-events:none;
@@ -819,9 +836,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   opacity:0; transform:translateY(-10px) scale(.92); animation:rise .8s var(--ease) forwards; animation-delay:.1s;
 }
 .gate-seal-glow{ position:absolute; inset:-26%; border-radius:50%; z-index:0;
-  background:radial-gradient(circle, rgba(217,169,168,.28), transparent 70%); filter:blur(4px);
-  animation:gateGlowPulse 3.6s ease-in-out infinite; }
-@keyframes gateGlowPulse{ 0%,100%{ opacity:.55; transform:scale(1); } 50%{ opacity:.9; transform:scale(1.08); } }
+  background:radial-gradient(circle, rgba(217,169,168,.22), transparent 70%); filter:blur(4px); }
 .gate-seal-wrap img{ position:relative; z-index:1; width:100%; height:100%; object-fit:contain;
   filter:drop-shadow(0 14px 30px rgba(0,0,0,.4)); }
 .gate-eyebrow{
@@ -843,20 +858,20 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 .gate-cta{
   margin-top:36px; display:inline-flex; align-items:center; gap:10px; border:none; cursor:pointer;
   font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:12.5px; letter-spacing:.05em; text-transform:uppercase;
-  color:#FDFAF7; background:linear-gradient(165deg, var(--emerald-hover), var(--emerald-deep));
-  padding:16px 30px; border-radius:100px; box-shadow:0 18px 40px -14px rgba(78,22,32,.55), inset 0 1px 0 rgba(255,255,255,.16);
-  transition:transform .4s var(--spring), box-shadow .4s var(--ease), background .3s ease;
+  color:#FDFAF7; background:var(--emerald-hover);
+  padding:16px 30px; border-radius:100px; box-shadow:0 14px 30px -14px rgba(78,22,32,.5);
+  transition:transform .3s var(--ease), box-shadow .3s var(--ease), background .3s ease;
   opacity:0; transform:translateY(10px); animation:rise .7s var(--ease) forwards; animation-delay:.7s;
 }
-.gate-cta svg{ width:15px; height:15px; stroke-width:2px; transition:transform .35s var(--spring); }
-.gate-cta:hover{ transform:translateY(-3px); box-shadow:0 22px 48px -14px rgba(78,22,32,.65), inset 0 1px 0 rgba(255,255,255,.2); }
+.gate-cta svg{ width:15px; height:15px; stroke-width:2px; transition:transform .3s var(--ease); }
+.gate-cta:hover{ transform:translateY(-2px); background:var(--emerald-deep); box-shadow:0 16px 34px -14px rgba(78,22,32,.55); }
 .gate-cta:hover svg{ transform:translateX(3px); }
 .gate-cta:active{ transform:translateY(-1px) scale(.98); }
 .gate-cta:focus-visible{ outline:2px solid var(--bronze-bright); outline-offset:4px; }
 
 /* Quick, refined compress on click — the button gives just enough for
    the tap to feel physical, then eases back before the gate is gone. */
-.gate-cta.gate-cta-pressed{ transform:scale(.955); transition:transform .12s cubic-bezier(.4,0,.2,1); box-shadow:0 10px 24px -12px rgba(78,22,32,.5), inset 0 1px 0 rgba(255,255,255,.14); }
+.gate-cta.gate-cta-pressed{ transform:scale(.955); transition:transform .12s cubic-bezier(.4,0,.2,1); box-shadow:0 8px 20px -12px rgba(78,22,32,.45); }
 @media (prefers-reduced-motion: reduce){
   .gate-cta.gate-cta-pressed{ transition:none; }
 }
@@ -981,7 +996,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 .b-announce-delete:hover{ opacity:1; color:#fff; background:#B4423C; border-color:#B4423C; transform:scale(1.08); }
 .b-announce-delete[disabled]{ opacity:.25; cursor:default; transform:none; }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 </head>
 <body>
 <script>
@@ -1049,11 +1063,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 
 <div class="ambient" aria-hidden="true">
   <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
-  <div class="blob blob-c"></div>
-  <div class="grain"></div>
 </div>
-<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
 <!-- ============================================================
      TAB NAVIGATION — floating centered pill (desktop) / top strip (mobile)
@@ -1169,6 +1179,22 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     };
   }
 
+  /* Nav goes solid once the hero (dark photo/gradient) has scrolled out
+     from under it — transparent over the hero, real paper-and-hairline
+     bar over the light page below. Switching tabs away from "home" hides
+     the hero via [data-panel] display:none, which IntersectionObserver
+     reports as not-intersecting, so the bar defaults to solid there too. */
+  function initNavScrollState(){
+    var nav = document.getElementById('tabNav');
+    var hero = document.querySelector('.hero');
+    if (!nav || !hero || !('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function(entries){
+      var entry = entries[entries.length - 1];
+      nav.classList.toggle('nav-solid', !entry.isIntersecting);
+    }, { rootMargin: '-64px 0px 0px 0px', threshold: 0 });
+    obs.observe(hero);
+  }
+
   function init(){
     /* Deferred to DOMContentLoaded: this script tag sits before the
        section elements it needs to control, so querying for them here
@@ -1181,6 +1207,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     });
 
     initToolsToggle();
+    initNavScrollState();
 
     /* In-page links that used to scroll to a section (top-bar "Updates",
        the closing CTA) now switch tabs instead. Links that used to point
@@ -1226,9 +1253,9 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       <div class="hero-stats" id="heroStats">
         <div class="hstat"><span class="hstat-num" data-count-to="45">0</span><span class="hstat-cap">Students</span></div>
         <div class="hstat-divider" aria-hidden="true"></div>
-        <div class="hstat"><span class="hstat-num" data-count-to="100" data-suffix="%">0%</span><span class="hstat-cap">Live sync</span></div>
+        <div class="hstat"><span class="hstat-num">Live</span><span class="hstat-cap">Sheet status</span></div>
         <div class="hstat-divider" aria-hidden="true"></div>
-        <div class="hstat"><span class="hstat-num" data-count-to="0">0</span><span class="hstat-cap">Manual encoding</span></div>
+        <div class="hstat"><span class="hstat-num">2026&ndash;27</span><span class="hstat-cap">Academic year</span></div>
       </div>
     </div>
 
@@ -1236,7 +1263,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
       <div class="console-stage">
         <div class="console-glow" aria-hidden="true"></div>
         <div class="console">
-          <div class="console-bar"><i></i><i></i><i></i><span class="mono-seal" style="width:16px;height:16px;font-size:7.5px;color:var(--emerald);margin-left:4px" aria-hidden="true">2&middot;7</span><span>portal.local</span><span class="console-bar-live"><span class="cdot-live"></span>Live</span></div>
+          <div class="console-bar"><i></i><i></i><i></i><span class="mono-seal" style="width:16px;height:16px;font-size:7.5px;color:var(--emerald);margin-left:4px" aria-hidden="true">2&middot;7</span><span>Class Portal</span><span class="console-bar-live"><span class="cdot-live"></span>Live</span></div>
           <div class="console-body">
             <p class="console-greeting">Good morning 👋</p>
             <p class="console-date" id="consoleDate">&nbsp;</p>
@@ -2052,18 +2079,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     });
   }
 
-  /* ---- Signature cursor glow ---- */
-  var glow = document.getElementById('cursorGlow');
-  if (glow && !reduced && !isTouch){
-    var gx=50, gy=30, gRaf=false;
-    function flushGlow(){ gRaf=false; glow.style.setProperty('--cx', gx+'px'); glow.style.setProperty('--cy', gy+'px'); }
-    window.addEventListener('mousemove', function(e){
-      gx=e.clientX; gy=e.clientY; glow.classList.add('on');
-      if (!gRaf){ gRaf=true; requestAnimationFrame(flushGlow); }
-    }, { passive:true });
-    window.addEventListener('mouseleave', function(){ glow.classList.remove('on'); });
-  }
-
   /* ---- Smooth-scroll in-page anchor links (dashboard preview + closing CTA) ---- */
   document.querySelectorAll('a[href^="#"]').forEach(function(link){
     link.addEventListener('click', function(e){
@@ -2243,60 +2258,25 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <style>
   #faqBotWrap{
     position:fixed; right:22px; bottom:22px; z-index:80;
-    width:96px; height:120px;
+    width:60px; height:60px;
   }
   #faqBotToggle{
     position:absolute; inset:0; z-index:2;
-    border-radius:16px; border:none; cursor:pointer; background:transparent; padding:0;
+    border-radius:50%; border:1px solid rgba(250,246,241,.14); cursor:pointer;
+    background:var(--emerald); padding:0;
     display:flex; align-items:center; justify-content:center;
-    transition:transform .2s var(--ease);
-    animation:fbFloat 3.2s ease-in-out infinite;
-    filter:drop-shadow(0 10px 18px rgba(42,32,36,.24));
+    transition:background .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+    box-shadow:var(--shadow-2);
   }
-  #faqBotToggle:hover{ animation-play-state:paused; transform:translateY(-3px) scale(1.04); }
-  #faqBotToggle.open{ animation:none; }
-  #faqBotToggle svg{ width:100%; height:100%; overflow:visible; }
-  #faqBotToggle .fb-robot-icon{ width:100%; height:100%; overflow:visible; }
-  #faqBotToggle .fb-robot-icon svg{ width:100%!important; height:100%!important; overflow:visible; }
-  #faqBotToggle .fb-close-icon{ display:none; width:22px; height:22px; }
-  #faqBotToggle.open .fb-robot-icon{ display:none; }
-  #faqBotToggle.open{
-    width:60px; height:60px; inset:auto; right:0; bottom:0;
-    background:var(--emerald); border-radius:50%;
-  }
+  #faqBotToggle:hover{ background:var(--emerald-hover); transform:translateY(-2px); box-shadow:var(--shadow-3); }
+  #faqBotToggle .fb-mark{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; color:#FDFAF7; }
+  #faqBotToggle .fb-mark-seal{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:14px; letter-spacing:-0.01em; line-height:1; }
+  #faqBotToggle .fb-mark-label{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:7px; letter-spacing:.14em; text-transform:uppercase; opacity:.78; line-height:1; }
+  #faqBotToggle .fb-close-icon{ display:none; width:20px; height:20px; }
+  #faqBotToggle.open .fb-mark{ display:none; }
   #faqBotToggle.open .fb-close-icon{
     display:flex; align-items:center; justify-content:center; color:#fff;
   }
-  @keyframes fbFloat{
-    0%,100%{ transform:translateY(0); }
-    50%{ transform:translateY(-8px); }
-  }
-
-  /* Right arm rests in a raised "waving" pose; .waving replays a wiggle,
-     e.g. on page load, then settles back to the same resting angle. */
-  .fb-arm-rotate{ transform:rotate(10deg); transform-origin:0 0; }
-  @keyframes fbWave{
-    0%{ transform:rotate(10deg); }
-    15%{ transform:rotate(36deg); }
-    30%{ transform:rotate(4deg); }
-    45%{ transform:rotate(33deg); }
-    60%{ transform:rotate(8deg); }
-    75%{ transform:rotate(28deg); }
-    100%{ transform:rotate(10deg); }
-  }
-  .fb-arm-rotate.waving{ animation:fbWave 1.8s ease-in-out 1; }
-
-  /* Click reaction: a quick surprised squash-and-stretch + wide eyes */
-  @keyframes fbReact{
-    0%{ transform:scale(1,1) rotate(0deg); }
-    25%{ transform:scale(1.1,.88) rotate(-3deg); }
-    50%{ transform:scale(.92,1.1) rotate(3deg); }
-    75%{ transform:scale(1.05,.96) rotate(-1deg); }
-    100%{ transform:scale(1,1) rotate(0deg); }
-  }
-  .fb-robot-icon.reacting{ animation:fbReact .5s ease-out 1; transform-box:fill-box; transform-origin:50% 100%; }
-  @keyframes fbEyesPop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.4); } 100%{ transform:scale(1); } }
-  .fb-robot-icon.reacting .fb-eyes{ animation:fbEyesPop .5s ease-out 1; transform-box:fill-box; transform-origin:center; }
 
   .fb-greeting{
     position:absolute; right:2px; bottom:100%; margin-bottom:12px; z-index:3;
@@ -2311,10 +2291,6 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     border:7px solid transparent; border-top-color:var(--surface-elevated);
   }
   .fb-greeting.show{ opacity:1; }
-
-  @media (prefers-reduced-motion: reduce){
-    #faqBotToggle, .fb-arm-rotate.waving, .fb-robot-icon.reacting, .fb-robot-icon.reacting .fb-eyes{ animation:none !important; }
-  }
 
   #faqBotPanel{
     position:fixed; right:22px; bottom:112px; z-index:80;
@@ -2388,7 +2364,10 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
 <div id="faqBotWrap">
   <div class="fb-greeting" id="faqBotGreeting">Hi, ka-OFAD. May kailangan? 👀</div>
   <button id="faqBotToggle" aria-label="Chat with OFIA" aria-expanded="false">
-    <div class="fb-robot-icon" id="fbLottieIcon" aria-hidden="true"></div>
+    <span class="fb-mark" aria-hidden="true">
+      <span class="fb-mark-seal">2&middot;7</span>
+      <span class="fb-mark-label">Help</span>
+    </span>
     <svg class="fb-close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
   </button>
 </div>
@@ -2464,82 +2443,8 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
   var form = document.getElementById('faqBotForm');
   var input = document.getElementById('faqBotInput');
   var suggestionsEl = document.getElementById('faqBotSuggestions');
-  var robotIcon = toggle.querySelector('.fb-robot-icon');
   var greetingEl = document.getElementById('faqBotGreeting');
-  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var opened = false;
-
-  /* Lottie chat-bubble icon in place of the old hand-drawn robot SVG.
-     The fallback path (plain chat-bubble icon on a maroon circle) and
-     the real animation are made strictly mutually exclusive below —
-     without that, a fallback shown while the animation is still
-     resolving can end up sitting in the DOM at the same time the
-     animation successfully finishes loading and paints its own SVG
-     into the same container, producing a chat-bubble icon and the
-     robot art visibly stacked/overlapping on top of each other. */
-  var lottieAnim = null;
-  var fbIconEl = document.getElementById('fbLottieIcon');
-  var fbUsingFallback = false;
-  var FB_FALLBACK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
-    + 'stroke-linecap="round" stroke-linejoin="round" style="width:60%;height:60%;color:#fff;">'
-    + '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
-
-  function fbClearFallbackIcon(){
-    if (!fbIconEl) return;
-    fbUsingFallback = false;
-    fbIconEl.innerHTML = '';
-    fbIconEl.style.display = '';
-    fbIconEl.style.alignItems = '';
-    fbIconEl.style.justifyContent = '';
-    fbIconEl.style.background = '';
-    fbIconEl.style.borderRadius = '';
-  }
-
-  function fbShowFallbackIcon(){
-    if (!fbIconEl) return;
-    fbUsingFallback = true;
-    // Tear down any animation instance that might still be resolving,
-    // so it can never paint its own SVG into this container after the
-    // fallback has already taken over.
-    if (lottieAnim){
-      try { lottieAnim.destroy(); } catch (e) {}
-      lottieAnim = null;
-    }
-    fbIconEl.innerHTML = FB_FALLBACK_ICON;
-    fbIconEl.style.display = 'flex';
-    fbIconEl.style.alignItems = 'center';
-    fbIconEl.style.justifyContent = 'center';
-    fbIconEl.style.background = 'var(--emerald)';
-    fbIconEl.style.borderRadius = '50%';
-  }
-
-  if (window.lottie){
-    try {
-      lottieAnim = lottie.loadAnimation({
-        container: fbIconEl,
-        renderer: 'svg',
-        loop: true,
-        autoplay: !reducedMotion,
-        path: 'Ai_Robot_Vector_Art.json',
-        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
-      });
-      /* If the animation JSON is missing or blocked (e.g. this file was
-         deployed without its sibling asset), fall back to a plain chat
-         icon instead of leaving the toggle blank. */
-      lottieAnim.addEventListener('data_failed', fbShowFallbackIcon);
-      /* And the mirror case: if the real artwork finishes loading and
-         paints successfully — even after a fallback was already shown
-         (e.g. a slow first attempt that turns out to succeed) — clear
-         the fallback so the two can never be visible at once. */
-      lottieAnim.addEventListener('DOMLoaded', function(){
-        if (fbUsingFallback) fbClearFallbackIcon();
-      });
-    } catch (e){
-      fbShowFallbackIcon();
-    }
-  } else {
-    fbShowFallbackIcon();
-  }
 
   function addMsg(text, who){
     var el = document.createElement('div');
@@ -2597,14 +2502,7 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
     }
     if (opened) input.focus();
 
-    /* React: quick surprised squash + wide eyes, and dismiss any
-       lingering greeting bubble since the visitor has engaged. */
-    if (robotIcon){
-      robotIcon.classList.remove('reacting');
-      void robotIcon.offsetWidth; /* restart animation */
-      robotIcon.classList.add('reacting');
-      setTimeout(function(){ robotIcon.classList.remove('reacting'); }, 520);
-    }
+    /* Dismiss any lingering greeting bubble since the visitor has engaged. */
     if (greetingEl) greetingEl.classList.remove('show');
     toggle.classList.remove('fb-has-greeted');
   });
