@@ -185,13 +185,13 @@ a{ color:inherit; }
 .hero-scrim{
   position:absolute; inset:0; z-index:0; pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(36,26,29,.94) 0%, rgba(36,26,29,.80) 34%, rgba(36,26,29,.42) 62%, rgba(36,26,29,.20) 100%),
-    linear-gradient(180deg, rgba(36,26,29,.55) 0%, rgba(36,26,29,.10) 30%, rgba(36,26,29,.30) 78%, rgba(36,26,29,.82) 100%);
+    linear-gradient(90deg, rgba(250,246,241,.92) 0%, rgba(250,246,241,.74) 34%, rgba(250,246,241,.34) 62%, rgba(250,246,241,.06) 100%),
+    linear-gradient(180deg, rgba(250,246,241,.24) 0%, rgba(250,246,241,0) 26%, rgba(250,246,241,0) 74%, rgba(250,246,241,.4) 100%);
 }
 @media (max-width:900px){
   .hero-scrim{
     background:
-      linear-gradient(180deg, rgba(36,26,29,.88) 0%, rgba(36,26,29,.66) 36%, rgba(36,26,29,.62) 66%, rgba(36,26,29,.93) 100%);
+      linear-gradient(180deg, rgba(250,246,241,.9) 0%, rgba(250,246,241,.5) 32%, rgba(250,246,241,.56) 64%, rgba(250,246,241,.94) 100%);
   }
 }
 @media (prefers-reduced-motion: reduce){ .hero-canvas{ transition:none; } }
@@ -207,11 +207,11 @@ a{ color:inherit; }
 @media (max-width:900px){ .hero-copy{ transition:none !important; transform:none !important; } }
 .hero-eyebrow{
   display:inline-flex; align-items:center; gap:13px; font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10.5px;
-  letter-spacing:.34em; text-transform:uppercase; color:var(--bronze-tint); margin:0 0 34px;
+  letter-spacing:.34em; text-transform:uppercase; color:var(--bronze-text); margin:0 0 34px;
   opacity:0; transform:translateX(-38px); animation:riseX .7s var(--ease) forwards; animation-delay:.1s;
 }
-.hero-eyebrow::before{ content:""; width:22px; height:1px; background:var(--bronze-bright); flex:0 0 auto; }
-.hero h1{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(46px,6vw,84px); line-height:.98; letter-spacing:-0.025em; color:#FDFAF7; }
+.hero-eyebrow::before{ content:""; width:22px; height:1px; background:var(--emerald); flex:0 0 auto; }
+.hero h1{ font-family:'Fraunces', serif; font-weight:400; font-optical-sizing:auto; font-size:clamp(46px,6vw,84px); line-height:.98; letter-spacing:-0.025em; color:var(--ink); }
 .hero h1 .line{ display:block; opacity:0; transform:translateX(-56px); animation:riseX .85s var(--ease) forwards; }
 .hero h1 .line:nth-child(1){
   font-weight:600; font-size:clamp(52px,7.6vw,108px); line-height:.92; letter-spacing:-0.035em;
@@ -219,21 +219,21 @@ a{ color:inherit; }
 }
 .hero h1 .line:nth-child(2){
   display:block; font-style:italic; font-weight:300; font-size:clamp(52px,7.6vw,108px); line-height:.92;
-  letter-spacing:-0.035em; color:var(--bronze-tint); margin-top:.14em; animation-delay:.38s;
+  letter-spacing:-0.035em; color:var(--emerald); margin-top:.14em; animation-delay:.38s;
 }
 @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
 @keyframes riseX{ to{ opacity:1; transform:translateX(0); } }
-.hero-rule{ width:38px; height:1px; margin:42px 0 30px; background:var(--bronze-bright); opacity:0; transform:translateX(-38px); animation:riseX .6s var(--ease) forwards; animation-delay:.55s; }
-.hero p.lead{ font-family:'Inter', sans-serif; font-size:16.5px; font-weight:400; line-height:1.8; letter-spacing:.001em; color:rgba(253,250,247,.72); max-width:30em;
+.hero-rule{ width:38px; height:1px; margin:42px 0 30px; background:var(--emerald); opacity:0; transform:translateX(-38px); animation:riseX .6s var(--ease) forwards; animation-delay:.55s; }
+.hero p.lead{ font-family:'Inter', sans-serif; font-size:16.5px; font-weight:400; line-height:1.8; letter-spacing:.001em; color:var(--ink-soft); max-width:30em;
   opacity:0; transform:translateX(-32px); animation:riseX .7s var(--ease) forwards; animation-delay:.62s; }
 
 /* -- Hero stat strip (the old full-page stat band, folded into the hero) -- */
 .hero-stats{ display:flex; align-items:center; gap:clamp(20px,3vw,36px); margin-top:44px;
   opacity:0; transform:translateX(-32px); animation:riseX .7s var(--ease) forwards; animation-delay:.78s; }
 .hstat{ display:flex; flex-direction:column; gap:6px; }
-.hstat-num{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(26px,2.6vw,34px); letter-spacing:-0.02em; color:#FDFAF7; font-variant-numeric:tabular-nums; }
-.hstat-cap{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:rgba(253,250,247,.5); }
-.hstat-divider{ width:1px; height:30px; background:rgba(253,250,247,.14); }
+.hstat-num{ font-family:'Fraunces', serif; font-weight:500; font-optical-sizing:auto; font-size:clamp(26px,2.6vw,34px); letter-spacing:-0.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.hstat-cap{ font-family:'Plus Jakarta Sans', sans-serif; font-weight:700; font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+.hstat-divider{ width:1px; height:30px; background:rgba(42,32,36,.14); }
 @media (max-width:480px){ .hero-stats{ gap:20px; flex-wrap:wrap; } .hstat-divider{ display:none; } }
 
 /* -- Floating console (the hero's focal point — a real link into the dashboard) -- */
@@ -738,7 +738,7 @@ footer{ position:relative; z-index:1; padding:96px 32px 40px; overflow:hidden;
     backdrop-filter:none; -webkit-backdrop-filter:none;
     box-shadow:none;
     overflow:visible; height:64px;
-    --nav-fg:#FDFAF7; --nav-fg-soft:rgba(253,250,247,.8); --nav-underline:var(--bronze-bright);
+    --nav-fg:var(--ink); --nav-fg-soft:var(--ink-soft); --nav-underline:var(--emerald);
   }
   /* Once the hero has scrolled out of view (see the IntersectionObserver
      below), the bar becomes the real thing: solid paper, a hairline,
@@ -3011,7 +3011,7 @@ window.initPupHeroScene = function(){
     camera.aspect = w/h;
     // On wide layouts the copy owns the left third, so the building is
     // nudged right and down to sit in the open space beside it.
-    camera.setViewOffset(w, h, narrow ? 0 : -w*0.16, -h*0.10, w, h);
+    camera.setViewOffset(w, h, narrow ? 0 : -w*0.16, -h*0.04, w, h);
     camera.updateProjectionMatrix();
     renderer.setSize(w, h, false);
   }
