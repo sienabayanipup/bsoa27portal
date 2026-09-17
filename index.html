@@ -2534,12 +2534,27 @@ html.gate-locked, html.gate-locked body{ overflow:hidden; height:100%; }
      of view, and renders a single still frame when the visitor has asked
      for reduced motion.
      ========================================================================== -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/three.min.js"></script>
 <script>
-if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"><\/script>');}
+/* Loads Three.js without document.write (which browsers flag as
+   parser-blocking on slow connections). Tries cdnjs first, falls back to
+   jsdelivr only if that fails, then starts the hero scene — whichever
+   source actually won. If both are blocked, the canvas just never becomes
+   ready and the CSS gradient behind it (see .hero's own background) is
+   what visitors see instead. */
+(function(){
+  function loadScript(src, onload, onerror){
+    var s = document.createElement('script');
+    s.src = src; s.onload = onload; s.onerror = onerror;
+    document.head.appendChild(s);
+  }
+  function boot(){ if(window.initPupHeroScene) window.initPupHeroScene(); }
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/three.min.js', boot, function(){
+    loadScript('https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js', boot, function(){});
+  });
+})();
 </script>
 <script>
-(function(){
+window.initPupHeroScene = function(){
   "use strict";
 
   var canvas = document.getElementById('pupHeroCanvas');
@@ -2550,10 +2565,9 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
 
   /* ---------------- Dusk palette, tuned to the hero's burgundy ---------------- */
   var C = {
-    concrete:'#cdbfae', concreteDim:'#b6a894', concreteDeep:'#93866f',
-    maroon:'#6B1F2E', maroonDeep:'#4E1620', gold:'#D9A9A8', goldLite:'#E8C4C0',
-    glass:'#2b1f24', lit:'#ffd9a0',
-    grass:'#3b4a3a', path:'#a89a8b', water:'#2c3b44'
+    concrete:'#efe8da', concreteDim:'#ddd3c1', concreteDeep:'#c7bca8',
+    maroon:'#7a1420', maroonDeep:'#5d0e18', gold:'#c9a227', goldLite:'#e6c85f',
+    grass:'#4e7a43', path:'#cfc6b4'
   };
 
   function cvs(w,h){ var c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
@@ -2608,7 +2622,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
         ex.fillStyle = 'rgba(255,205,140,'+(0.55+Math.random()*0.45)+')';
         path(ex); ex.fill();
       }
-      x.strokeStyle='rgba(217,169,168,.55)'; x.lineWidth=2.5;
+      x.strokeStyle='rgba(201,162,39,.75)'; x.lineWidth=2.5;
       x.beginPath(); x.moveTo(px+pw/2,py); x.lineTo(px+pw/2,py+ph); x.stroke();
       x.beginPath(); x.moveTo(px,py+ph*.55); x.lineTo(px+pw,py+ph*.55); x.stroke();
       x.strokeStyle='rgba(30,22,26,.6)'; x.lineWidth=3;
@@ -2623,7 +2637,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
       }
       if(!ground){
         x.fillStyle=C.maroon; x.fillRect(0,yTop+fh-13,w,9);
-        x.fillStyle='rgba(217,169,168,.75)'; x.fillRect(0,yTop+fh-4,w,3);
+        x.fillStyle='rgba(201,162,39,.85)'; x.fillRect(0,yTop+fh-4,w,3);
       }
       yTop+=fh;
     }
@@ -2685,8 +2699,8 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     x.fillStyle=C.goldLite; x.textAlign='center'; x.textBaseline='middle';
     x.font='700 62px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif';
     x.fillText(a,512,b?74:96);
-    if(b){ x.fillStyle='rgba(232,196,192,.8)'; x.font='600 34px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif'; x.fillText(b,512,134); }
-    x.strokeStyle='rgba(232,196,192,.5)'; x.lineWidth=5; x.strokeRect(10,10,1004,172);
+    if(b){ x.fillStyle='rgba(230,200,95,.78)'; x.font='600 34px "Plus Jakarta Sans",Inter,Helvetica,Arial,sans-serif'; x.fillText(b,512,134); }
+    x.strokeStyle='rgba(230,200,95,.55)'; x.lineWidth=5; x.strokeRect(10,10,1004,172);
     return tex(c,1,1);
   }
 
@@ -2695,7 +2709,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
     x.fillStyle=C.maroonDeep; x.beginPath(); x.arc(128,128,119,0,6.283); x.fill();
     x.strokeStyle=C.goldLite; x.lineWidth=8; x.beginPath(); x.arc(128,128,107,0,6.283); x.stroke();
     x.lineWidth=4; x.beginPath(); x.arc(128,128,93,0,6.283); x.stroke();
-    x.strokeStyle='rgba(232,196,192,.5)'; x.lineWidth=3;
+    x.strokeStyle='rgba(230,200,95,.55)'; x.lineWidth=3;
     for(var i=0;i<24;i++){ var a=i/24*6.283;
       x.beginPath(); x.moveTo(128+Math.cos(a)*60,128+Math.sin(a)*60); x.lineTo(128+Math.cos(a)*85,128+Math.sin(a)*85); x.stroke(); }
     x.fillStyle=C.goldLite; x.textAlign='center'; x.textBaseline='middle';
@@ -3102,7 +3116,7 @@ if(!window.THREE){document.write('<script src="https://cdn.jsdelivr.net/npm/thre
   } else {
     start();
   }
-})();
+};
 </script>
 
 </body>
