@@ -473,37 +473,95 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     if (studentNumberInput.classList.contains('invalid')) validateStudentNumber();
   });
 
+  // ---- Date loading ------------------------------------------------------
+  // The dates for EVERY subject are fetched once in the background as soon as
+  // the page opens (while the student is still typing their student number),
+  // so choosing a subject afterwards is instant instead of waiting on the
+  // server. If that background fetch hasn't finished or failed, picking a
+  // subject falls back to fetching just that subject's dates.
+  const DATES_FRESH_MS = 2 * 60 * 1000; // re-fetch if the data is older than this
+  let datesBySubject = {};
+  let datesFetchedAt = 0;
+  let prefetchPromise = null;
+  let loadToken = 0; // ignores late responses if the student switches subject quickly
+
+  function prefetchAllDates(){
+    if (SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")) return;
+    prefetchPromise = fetch(SCRIPT_URL + "?action=getAllActivityDates")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.subjects){
+          datesBySubject = data.subjects;
+          datesFetchedAt = Date.now();
+        }
+      })
+      .catch(() => {})
+      .then(() => { prefetchPromise = null; });
+  }
+
+  function freshCachedDates(subject){
+    const hit = datesBySubject[subject];
+    return (hit && (Date.now() - datesFetchedAt) < DATES_FRESH_MS) ? hit : null;
+  }
+
+  function applyDates(data){
+    const dates = data.dates || [];
+    linkRequiredDates = data.linkRequiredDates || [];
+    if (dates.length === 0){
+      dateSelect.innerHTML = '<option value="" disabled selected>No activity dates found for this subject</option>';
+      dateSelect.disabled = true;
+      return;
+    }
+    allDates = dates;
+    closedDates = data.closedDates || [];
+    lateField.style.display = closedDates.length ? 'block' : 'none';
+    renderDateOptions();
+  }
+
   subjectSelect.addEventListener('change', function(){
     const subject = subjectSelect.value;
-    dateSelect.innerHTML = '<option value="" disabled selected>Loading dates...</option>';
-    dateSelect.disabled = true;
+    const myToken = ++loadToken;
     linkRequiredDates = [];
     resetLinkControls();
     resetLateControls();
 
     if (SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+      dateSelect.disabled = true;
       dateSelect.innerHTML = '<option value="" disabled selected>Setup needed: add Script URL</option>';
       return;
     }
 
-    fetch(SCRIPT_URL + "?action=getActivityDates&subject=" + encodeURIComponent(subject))
-      .then(res => res.json())
-      .then(data => {
-        const dates = data.dates || [];
-        linkRequiredDates = data.linkRequiredDates || [];
-        if (dates.length === 0){
-          dateSelect.innerHTML = '<option value="" disabled selected>No activity dates found for this subject</option>';
-          return;
-        }
-        allDates = dates;
-        closedDates = data.closedDates || [];
-        lateField.style.display = closedDates.length ? 'block' : 'none';
-        renderDateOptions();
-      })
-      .catch(() => {
-        dateSelect.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
-      });
+    const cached = freshCachedDates(subject);
+    if (cached){
+      applyDates(cached);
+      return;
+    }
+
+    dateSelect.innerHTML = '<option value="" disabled selected>Loading dates...</option>';
+    dateSelect.disabled = true;
+
+    // If the background fetch is still running, wait for it rather than
+    // sending a second request for the same data.
+    Promise.resolve(prefetchPromise).then(() => {
+      if (myToken !== loadToken) return;
+      const nowCached = freshCachedDates(subject);
+      if (nowCached){
+        applyDates(nowCached);
+        return;
+      }
+      return fetch(SCRIPT_URL + "?action=getActivityDates&subject=" + encodeURIComponent(subject))
+        .then(res => res.json())
+        .then(data => {
+          if (myToken !== loadToken) return;
+          applyDates(data);
+        });
+    }).catch(() => {
+      if (myToken !== loadToken) return;
+      dateSelect.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
+    });
   });
+
+  prefetchAllDates();
 
   // Switching between normal and late mode swaps which dates are listed
   // and clears any previous pick (its link requirement may differ).
