@@ -251,6 +251,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 .attendance-count-badge.absent-badge{ background:var(--error); }
 .attendance-count-badge.present-badge{ background:var(--teal); }
 .attendance-count-badge.credited-badge{ background:var(--warning); }
+.attendance-count-badge.cancelled-badge{ background:var(--slate); }
 .activity-chip-row{ display:flex; flex-wrap:wrap; gap:7px; }
 .activity-chip{
   font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:500; padding:6px 12px;
@@ -258,6 +259,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 }
 .activity-chip.done{ background:var(--teal-tint); color:var(--teal-deep); box-shadow:inset 0 0 0 1px rgba(76,118,87,.18); }
 .activity-chip.not-done{ background:var(--error-tint); color:var(--error); box-shadow:inset 0 0 0 1px rgba(181,68,61,.16); }
+.activity-chip.cancelled{ background:var(--slate-tint); color:var(--slate-deep); box-shadow:inset 0 0 0 1px rgba(79,109,134,.22); }
 .activity-chip.credited{ background:var(--warning-tint); color:var(--warning-deep); box-shadow:inset 0 0 0 1px rgba(201,154,75,.28); }
 
 @media (max-width:520px){
@@ -452,7 +454,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   function renderAttendanceGroups(body, entries){
     // entries look like ["ENGL 017", { count: 3, present: ["07/20/2026", ...], absent: ["07/27/2026"] }]
     entries.forEach(([subject, value]) => {
-      const info = (value && typeof value === 'object') ? value : { count: 0, present: [], absent: [] };
+      const info = (value && typeof value === 'object') ? value : { count: 0, present: [], absent: [], cancelled: [] };
 
       const groupWrap = document.createElement('div');
       groupWrap.className = 'activity-group';
@@ -467,6 +469,9 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
       const pastPresent = (info.present || []).filter(d => !isFutureDate(d));
       const pastAbsent = (info.absent || []).filter(d => !isFutureDate(d));
+      // Cancelled classes are shown whatever their date — an upcoming class
+      // marked cancelled is useful to see too, unlike an unfilled future A.
+      const cancelledDates = info.cancelled || [];
       const pastCredited = info.credited || []; // Credited is an intentional excusal, not attendance data — always show it regardless of date
 
       const isCredited = pastCredited.length > 0;
@@ -490,6 +495,13 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         titleRow.appendChild(absentBadge);
       }
 
+      if (cancelledDates.length){
+        const cancelledBadge = document.createElement('span');
+        cancelledBadge.className = 'attendance-count-badge cancelled-badge';
+        cancelledBadge.textContent = cancelledDates.length + ' cancelled';
+        titleRow.appendChild(cancelledBadge);
+      }
+
       groupWrap.appendChild(titleRow);
 
       const chipRow = document.createElement('div');
@@ -506,6 +518,13 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         chip.className = 'activity-chip not-done';
         chip.title = 'Absent';
         chip.textContent = dateLabel;
+        chipRow.appendChild(chip);
+      });
+      cancelledDates.forEach(dateLabel => {
+        const chip = document.createElement('span');
+        chip.className = 'activity-chip cancelled';
+        chip.title = 'Class cancelled';
+        chip.textContent = dateLabel + ' \u00b7 Cancelled';
         chipRow.appendChild(chip);
       });
       // Credited subjects only show the badge — no per-date chip, since
