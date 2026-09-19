@@ -344,6 +344,13 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
         </select>
       </div>
 
+      <div class="field checkbox-field" id="lateField" style="display:none;">
+        <label class="checkbox-label" for="lateMode">
+          <input type="checkbox" id="lateMode">
+          <span>Missed the deadline? Submit late</span>
+        </label>
+      </div>
+
       <div class="field checkbox-field" id="wantsLinkField">
         <label class="checkbox-label" for="wantsLink">
           <input type="checkbox" id="wantsLink">
@@ -394,6 +401,40 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const videoLinkError = document.getElementById('videoLinkError');
   const wantsLinkField = document.getElementById('wantsLinkField');
   const wantsLinkCheckbox = document.getElementById('wantsLink');
+  const lateField = document.getElementById('lateField');
+  const lateModeCheckbox = document.getElementById('lateMode');
+
+  // Filled after each getActivityDates call: every date for the chosen
+  // subject, and the subset whose deadline has already passed.
+  let allDates = [];
+  let closedDates = [];
+
+  function submitLabel(){
+    return lateModeCheckbox.checked ? "Submit late" : "Mark as done";
+  }
+
+  // Normal mode: open dates are selectable, closed ones are shown greyed
+  // out and can't be clicked. Late mode: only the closed dates are listed.
+  function renderDateOptions(){
+    const openDates = allDates.filter(d => !closedDates.includes(d));
+    if (lateModeCheckbox.checked){
+      dateSelect.innerHTML = '<option value="" disabled selected>Select a late date</option>' +
+        closedDates.map(d => `<option value="${d}">${d}</option>`).join('');
+    } else {
+      dateSelect.innerHTML = `<option value="" disabled selected>${openDates.length ? 'Select a date' : 'No open dates \u2014 tick \u201cSubmit late\u201d below'}</option>` +
+        openDates.map(d => `<option value="${d}">${d}</option>`).join('') +
+        closedDates.map(d => `<option value="${d}" disabled>${d} \u2014 closed</option>`).join('');
+    }
+    dateSelect.disabled = false;
+  }
+
+  function resetLateControls(){
+    allDates = [];
+    closedDates = [];
+    lateModeCheckbox.checked = false;
+    lateField.style.display = 'none';
+    submitBtn.textContent = submitLabel();
+  }
 
   // Populated after each getActivityDates call with the dates (for the
   // currently selected subject) that require a Google Drive link.
@@ -438,6 +479,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     dateSelect.disabled = true;
     linkRequiredDates = [];
     resetLinkControls();
+    resetLateControls();
 
     if (SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
       dateSelect.innerHTML = '<option value="" disabled selected>Setup needed: add Script URL</option>';
@@ -453,13 +495,22 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           dateSelect.innerHTML = '<option value="" disabled selected>No activity dates found for this subject</option>';
           return;
         }
-        dateSelect.innerHTML = '<option value="" disabled selected>Select a date</option>' +
-          dates.map(d => `<option value="${d}">${d}</option>`).join('');
-        dateSelect.disabled = false;
+        allDates = dates;
+        closedDates = data.closedDates || [];
+        lateField.style.display = closedDates.length ? 'block' : 'none';
+        renderDateOptions();
       })
       .catch(() => {
         dateSelect.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
       });
+  });
+
+  // Switching between normal and late mode swaps which dates are listed
+  // and clears any previous pick (its link requirement may differ).
+  lateModeCheckbox.addEventListener('change', function(){
+    renderDateOptions();
+    resetLinkControls();
+    submitBtn.textContent = submitLabel();
   });
 
   // For subject+date combos that require a Drive link (currently OFAD 203
@@ -546,13 +597,14 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       + "&subject=" + encodeURIComponent(subject)
       + "&dateLabel=" + encodeURIComponent(dateLabel)
       + "&done=true"
+      + (lateModeCheckbox.checked ? "&late=true" : "")
       + (needsLink ? "&videoLink=" + encodeURIComponent(videoLink) : "");
 
     fetch(markUrl)
       .then(res => res.json())
       .then(result => {
         if (result.result === "success"){
-          statusMsg.textContent = "Marked as done. Thank you!";
+          statusMsg.textContent = result.late ? "Submitted as late. Thank you!" : "Marked as done. Thank you!";
           statusMsg.className = "status success";
           markSubject.textContent = subject + " \u00b7 " + dateLabel;
           markOverlay.classList.remove('show');
@@ -567,6 +619,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           dateSelect.disabled = true;
           linkRequiredDates = [];
           resetLinkControls();
+          resetLateControls();
         } else if (result.result === "duplicate"){
           statusMsg.textContent = "You have already marked this activity as done.";
           statusMsg.className = "status error";
@@ -581,7 +634,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       })
       .finally(() => {
         submitBtn.disabled = false;
-        submitBtn.textContent = "Mark as done";
+        submitBtn.textContent = submitLabel();
       });
   });
 </script>
