@@ -256,6 +256,20 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   padding:0 30px 26px; margin:0; position:relative; z-index:1;
 }
 
+.edit-link-toggle{
+  display:block; width:calc(100% - 60px); margin:0 30px 22px;
+  background:none; border:none; padding:0; text-align:left;
+  font-family:inherit; font-size:13px; color:var(--teal-deep);
+  text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+  position:relative; z-index:1;
+}
+.edit-link-toggle:hover{ color:var(--emerald); }
+.edit-link-panel{ padding:0 30px 26px; position:relative; z-index:1; }
+@media (max-width:520px){
+  .edit-link-toggle{ width:calc(100% - 44px); margin:0 22px 18px; }
+  .edit-link-panel{ padding:0 22px 22px; }
+}
+
 /* ---- View transitions (Chrome/Edge) ---- */
 ::view-transition-old(root){ animation: fadeOut .32s cubic-bezier(.4,0,1,1) forwards; }
 ::view-transition-new(root){ animation: fadeIn .42s cubic-bezier(.16,1,.3,1) forwards; }
@@ -369,6 +383,50 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     </form>
 
     <p class="disclaimer">This form is for the exclusive use of BSOAOUMN 2-7 to confirm your own completed activities.</p>
+
+    <div class="sheet-divider"></div>
+
+    <button type="button" id="editLinkToggle" class="edit-link-toggle">Already marked done but need to fix your Drive link? Tap here.</button>
+
+    <form id="editLinkForm" class="edit-link-panel" style="display:none;">
+      <p class="page-desc" style="margin-top:0;">Use this only if you already marked the activity as done. It updates just your Drive link — it won't touch your Done status.</p>
+
+      <div class="field">
+        <label for="editStudentNumber">Student number</label>
+        <input type="text" id="editStudentNumber" placeholder="e.g. 202x-xxxxx-MN-0" required autocomplete="off">
+        <p class="field-error" id="editStudentNumberError" aria-live="polite">Please follow the format shown: 2025-14723-MN-0</p>
+      </div>
+
+      <div class="field">
+        <label for="editSubject">Subject</label>
+        <select id="editSubject" required>
+          <option value="" disabled selected>Select a subject</option>
+          <option value="ENGL 017">ENGL 017</option>
+          <option value="GEED 033">GEED 033</option>
+          <option value="OFAD 201">OFAD 201</option>
+          <option value="PATHFIT 3">PATHFIT 3</option>
+          <option value="GEED 003">GEED 003</option>
+          <option value="OFAD 203">OFAD 203</option>
+          <option value="OFAD 202">OFAD 202</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="editActivityDate">Activity date</label>
+        <select id="editActivityDate" required disabled>
+          <option value="" disabled selected>Select a subject first</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="editVideoLink">Google Drive link</label>
+        <input type="url" id="editVideoLink" placeholder="https://drive.google.com/..." required>
+        <p class="field-error" id="editVideoLinkError" aria-live="polite">Please paste a valid Google Drive link.</p>
+      </div>
+
+      <button type="submit" id="editSubmitBtn">Update link</button>
+      <p class="status" id="editStatusMsg" aria-live="polite"></p>
+    </form>
 
     <div class="mark-overlay" id="markOverlay">
       <div class="mark-confirm">
@@ -693,6 +751,133 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       .finally(() => {
         submitBtn.disabled = false;
         submitBtn.textContent = submitLabel();
+      });
+  });
+
+  // ---- Edit link panel ----------------------------------------------------
+  // For a student who already marked an activity done but forgot/mistyped
+  // their Drive link. Hits updateVideoLink (not markActivity), which
+  // requires the activity to already be marked done and never touches the
+  // Done checkbox itself.
+  const editLinkToggle = document.getElementById('editLinkToggle');
+  const editLinkForm = document.getElementById('editLinkForm');
+  const editStudentNumberInput = document.getElementById('editStudentNumber');
+  const editStudentNumberError = document.getElementById('editStudentNumberError');
+  const editSubjectSelect = document.getElementById('editSubject');
+  const editDateSelect = document.getElementById('editActivityDate');
+  const editVideoLinkInput = document.getElementById('editVideoLink');
+  const editVideoLinkError = document.getElementById('editVideoLinkError');
+  const editSubmitBtn = document.getElementById('editSubmitBtn');
+  const editStatusMsg = document.getElementById('editStatusMsg');
+
+  editLinkToggle.addEventListener('click', function(){
+    const opening = editLinkForm.style.display === 'none';
+    editLinkForm.style.display = opening ? 'block' : 'none';
+    editLinkToggle.textContent = opening
+      ? 'Hide the link-editing form'
+      : 'Already marked done but need to fix your Drive link? Tap here.';
+  });
+
+  function validateEditStudentNumber(){
+    const value = editStudentNumberInput.value.trim();
+    const valid = studentNumberPattern.test(value);
+    editStudentNumberInput.classList.toggle('invalid', value !== '' && !valid);
+    editStudentNumberInput.classList.toggle('valid', valid);
+    editStudentNumberError.classList.toggle('show', value !== '' && !valid);
+    return valid;
+  }
+  editStudentNumberInput.addEventListener('blur', validateEditStudentNumber);
+  editStudentNumberInput.addEventListener('input', function(){
+    if (editStudentNumberInput.classList.contains('invalid')) validateEditStudentNumber();
+  });
+
+  // Every date for the subject (not just open ones) — a student can still
+  // be fixing the link on an activity whose deadline has since passed.
+  editSubjectSelect.addEventListener('change', function(){
+    const subject = editSubjectSelect.value;
+    editDateSelect.innerHTML = '<option value="" disabled selected>Loading dates...</option>';
+    editDateSelect.disabled = true;
+
+    Promise.resolve(prefetchPromise).then(() => {
+      const cached = freshCachedDates(subject);
+      if (cached) return cached;
+      return fetch(SCRIPT_URL + "?action=getActivityDates&subject=" + encodeURIComponent(subject))
+        .then(res => res.json());
+    }).then(data => {
+      const dates = (data && data.dates) || [];
+      if (dates.length === 0){
+        editDateSelect.innerHTML = '<option value="" disabled selected>No activity dates found for this subject</option>';
+        editDateSelect.disabled = true;
+        return;
+      }
+      editDateSelect.innerHTML = '<option value="" disabled selected>Select a date</option>' +
+        dates.map(d => `<option value="${d}">${d}</option>`).join('');
+      editDateSelect.disabled = false;
+    }).catch(() => {
+      editDateSelect.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
+    });
+  });
+
+  editLinkForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const studentNumber = editStudentNumberInput.value.trim();
+    const subject = editSubjectSelect.value;
+    const dateLabel = editDateSelect.value;
+    const videoLink = editVideoLinkInput.value.trim();
+
+    editStatusMsg.textContent = "";
+    editStatusMsg.className = "status";
+    editVideoLinkError.classList.remove('show');
+
+    if (!studentNumber || !subject || !dateLabel){
+      editStatusMsg.textContent = "Please fill in all fields.";
+      editStatusMsg.className = "status error";
+      return;
+    }
+    if (!validateEditStudentNumber()){
+      editStatusMsg.textContent = "Please correct your student number format before submitting.";
+      editStatusMsg.className = "status error";
+      editStudentNumberInput.focus();
+      return;
+    }
+    if (!videoLink){
+      editVideoLinkError.classList.add('show');
+      editStatusMsg.textContent = "Please paste your Google Drive link.";
+      editStatusMsg.className = "status error";
+      editVideoLinkInput.focus();
+      return;
+    }
+
+    editSubmitBtn.disabled = true;
+    editSubmitBtn.textContent = "Saving...";
+
+    const updateUrl = SCRIPT_URL
+      + "?action=updateVideoLink"
+      + "&studentNumber=" + encodeURIComponent(studentNumber)
+      + "&subject=" + encodeURIComponent(subject)
+      + "&dateLabel=" + encodeURIComponent(dateLabel)
+      + "&videoLink=" + encodeURIComponent(videoLink);
+
+    fetch(updateUrl)
+      .then(res => res.json())
+      .then(result => {
+        if (result.result === "success"){
+          editStatusMsg.textContent = "Link updated. Thank you!";
+          editStatusMsg.className = "status success";
+          editVideoLinkInput.value = '';
+        } else {
+          editStatusMsg.textContent = result.message || "Something went wrong.";
+          editStatusMsg.className = "status error";
+        }
+      })
+      .catch(() => {
+        editStatusMsg.textContent = "Could not connect. Check your internet and try again.";
+        editStatusMsg.className = "status error";
+      })
+      .finally(() => {
+        editSubmitBtn.disabled = false;
+        editSubmitBtn.textContent = "Update link";
       });
   });
 </script>
