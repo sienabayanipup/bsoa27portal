@@ -338,6 +338,14 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       </div>
 
       <div class="field">
+        <label for="markType">What are you marking?</label>
+        <select id="markType">
+          <option value="activity" selected>Activity</option>
+          <option value="exam">Exam (Midterm / Finals)</option>
+        </select>
+      </div>
+
+      <div class="field">
         <label for="subject">Subject</label>
         <select id="subject" required>
           <option value="" disabled selected>Select a subject</option>
@@ -352,7 +360,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       </div>
 
       <div class="field">
-        <label for="activityDate">Activity date</label>
+        <label for="activityDate" id="dateLabelText">Activity date</label>
         <select id="activityDate" required disabled>
           <option value="" disabled selected>Select a subject first</option>
         </select>
@@ -435,7 +443,7 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           <circle class="ring-draw" cx="37" cy="37" r="31.5"></circle>
           <path class="check-draw" d="M24 38 L33 47 L51 27"></path>
         </svg>
-        <span class="word">Marked as done</span>
+        <span class="word" id="markWord">Marked as done</span>
         <span class="sub" id="markSubject"></span>
       </div>
     </div>
@@ -461,13 +469,21 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const wantsLinkCheckbox = document.getElementById('wantsLink');
   const lateField = document.getElementById('lateField');
   const lateModeCheckbox = document.getElementById('lateMode');
+  const markTypeSelect = document.getElementById('markType');
+  const dateLabelText = document.getElementById('dateLabelText');
+  const markWord = document.getElementById('markWord');
 
   // Filled after each getActivityDates call: every date for the chosen
   // subject, and the subset whose deadline has already passed.
   let allDates = [];
   let closedDates = [];
 
+  function isExamMode(){
+    return markTypeSelect.value === 'exam';
+  }
+
   function submitLabel(){
+    if (isExamMode()) return "Mark exam as taken";
     return lateModeCheckbox.checked ? "Submit late" : "Mark as done";
   }
 
@@ -576,16 +592,56 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
     renderDateOptions();
   }
 
-  subjectSelect.addEventListener('change', function(){
+  // Switches the form between "Activity" and "Exam" mode. Exams have no
+  // deadline, late mode, or Drive link, so those controls are hidden.
+  function applyMode(){
+    const exam = isExamMode();
+    dateLabelText.textContent = exam ? 'Exam' : 'Activity date';
+    wantsLinkField.style.display = exam ? 'none' : '';
+    submitBtn.textContent = submitLabel();
+  }
+
+  // Fills the second dropdown for the chosen subject: activity dates in
+  // Activity mode, or the exams that are open (MIDTERM / FINALS) in Exam mode.
+  function loadOptions(){
     const subject = subjectSelect.value;
     const myToken = ++loadToken;
     linkRequiredDates = [];
     resetLinkControls();
     resetLateControls();
 
+    if (!subject){
+      dateSelect.innerHTML = '<option value="" disabled selected>Select a subject first</option>';
+      dateSelect.disabled = true;
+      return;
+    }
+
     if (SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
       dateSelect.disabled = true;
       dateSelect.innerHTML = '<option value="" disabled selected>Setup needed: add Script URL</option>';
+      return;
+    }
+
+    if (isExamMode()){
+      dateSelect.innerHTML = '<option value="" disabled selected>Loading exams...</option>';
+      dateSelect.disabled = true;
+      fetch(SCRIPT_URL + "?action=getExamLabels&subject=" + encodeURIComponent(subject))
+        .then(res => res.json())
+        .then(data => {
+          if (myToken !== loadToken) return;
+          const exams = data.exams || [];
+          if (exams.length === 0){
+            dateSelect.innerHTML = '<option value="" disabled selected>No exams open for this subject yet</option>';
+            return;
+          }
+          dateSelect.innerHTML = '<option value="" disabled selected>Select an exam</option>' +
+            exams.map(x => `<option value="${x}">${x}</option>`).join('');
+          dateSelect.disabled = false;
+        })
+        .catch(() => {
+          if (myToken !== loadToken) return;
+          dateSelect.innerHTML = '<option value="" disabled selected>Could not load exams</option>';
+        });
       return;
     }
 
@@ -617,6 +673,12 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       if (myToken !== loadToken) return;
       dateSelect.innerHTML = '<option value="" disabled selected>Could not load dates</option>';
     });
+  }
+
+  subjectSelect.addEventListener('change', loadOptions);
+  markTypeSelect.addEventListener('change', function(){
+    applyMode();
+    loadOptions();
   });
 
   prefetchAllDates();
@@ -689,7 +751,8 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
     // A link is needed either because this date requires it automatically,
     // or because the student opted in via the checkbox.
-    const needsLink = linkRequiredDates.includes(dateLabel) || wantsLinkCheckbox.checked;
+    const examMode = isExamMode();
+    const needsLink = !examMode && (linkRequiredDates.includes(dateLabel) || wantsLinkCheckbox.checked);
     const videoLink = videoLinkInput.value.trim();
     if (needsLink && !videoLink){
       videoLinkError.classList.add('show');
@@ -707,26 +770,37 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
     // markActivity now checks-and-writes in one server call, so this is
     // a single round trip instead of a check-then-mark pair.
-    const markUrl = SCRIPT_URL
-      + "?action=markActivity"
-      + "&studentNumber=" + encodeURIComponent(studentNumber)
-      + "&subject=" + encodeURIComponent(subject)
-      + "&dateLabel=" + encodeURIComponent(dateLabel)
-      + "&done=true"
-      + (lateModeCheckbox.checked ? "&late=true" : "")
-      + (needsLink ? "&videoLink=" + encodeURIComponent(videoLink) : "");
+    const markUrl = examMode
+      ? SCRIPT_URL
+        + "?action=markExam"
+        + "&studentNumber=" + encodeURIComponent(studentNumber)
+        + "&subject=" + encodeURIComponent(subject)
+        + "&examLabel=" + encodeURIComponent(dateLabel)
+      : SCRIPT_URL
+        + "?action=markActivity"
+        + "&studentNumber=" + encodeURIComponent(studentNumber)
+        + "&subject=" + encodeURIComponent(subject)
+        + "&dateLabel=" + encodeURIComponent(dateLabel)
+        + "&done=true"
+        + (lateModeCheckbox.checked ? "&late=true" : "")
+        + (needsLink ? "&videoLink=" + encodeURIComponent(videoLink) : "");
 
     fetch(markUrl)
       .then(res => res.json())
       .then(result => {
         if (result.result === "success"){
-          statusMsg.textContent = result.late ? "Submitted as late. Thank you!" : "Marked as done. Thank you!";
+          statusMsg.textContent = examMode
+            ? "Exam marked as taken. Thank you!"
+            : (result.late ? "Submitted as late. Thank you!" : "Marked as done. Thank you!");
+          markWord.textContent = examMode ? "Marked as taken" : "Marked as done";
           statusMsg.className = "status success";
           markSubject.textContent = subject + " \u00b7 " + dateLabel;
           markOverlay.classList.remove('show');
           void markOverlay.offsetWidth;
           markOverlay.classList.add('show');
           form.reset();
+          markTypeSelect.value = examMode ? 'exam' : 'activity'; // keep the same mode for the next entry
+          applyMode();
           studentNumberInput.value = studentNumber;
           studentNumberInput.classList.remove('invalid');
           studentNumberInput.classList.add('valid');
@@ -737,7 +811,9 @@ button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
           resetLinkControls();
           resetLateControls();
         } else if (result.result === "duplicate"){
-          statusMsg.textContent = "You have already marked this activity as done.";
+          statusMsg.textContent = examMode
+            ? "You have already marked this exam as taken."
+            : "You have already marked this activity as done.";
           statusMsg.className = "status error";
         } else {
           statusMsg.textContent = result.message || "Something went wrong.";
