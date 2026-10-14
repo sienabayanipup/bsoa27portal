@@ -372,6 +372,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
   const SHEET_LABELS = {
     "Base_Tracker": "Base Tracker (Attendance)",
     "Base_Tracker_ACTIVITY": "Activity Tracker",
+    "Base_Tracker_EXAMS": "Exams (Midterm / Finals)",
     "2ND SEM GRADES": "2nd Sem Grades",
     "1ST SEM ENROLLMENT": "1st Sem Enrollment"
   };
@@ -416,9 +417,13 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
       chipRow.className = 'activity-chip-row';
       groups[subject].forEach(({ dateLabel, value }) => {
         const chip = document.createElement('span');
-        const doneClass = String(value).trim().toLowerCase() === 'done' ? 'done' : 'not-done';
+        const v = String(value).trim().toLowerCase();
+        const isExam = v === 'taken' || v === 'not yet';
+        const doneClass = (v === 'done' || v === 'taken') ? 'done' : 'not-done';
         chip.className = 'activity-chip ' + doneClass;
-        chip.textContent = (dateLabel || value) + (dateLabel ? '' : '');
+        // Exam chips spell out the status (e.g. "MIDTERM · Taken") since the
+        // exam name alone doesn't say whether it was taken.
+        chip.textContent = isExam && dateLabel ? (dateLabel + ' \u00b7 ' + value) : (dateLabel || value);
         chip.title = dateLabel ? (dateLabel + ': ' + value) : value;
         chipRow.appendChild(chip);
       });
@@ -594,7 +599,7 @@ button#searchBtn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
       if (!record || filteredEntries.length === 0) {
         body.innerHTML = '<p class="no-record">No record found in this sheet.</p>';
-      } else if (sheetKey === 'Base_Tracker_ACTIVITY') {
+      } else if (sheetKey === 'Base_Tracker_ACTIVITY' || sheetKey === 'Base_Tracker_EXAMS') {
         renderGroupedActivities(body, filteredEntries);
       } else if (sheetKey === 'Base_Tracker') {
         renderAttendanceGroups(body, filteredEntries);
