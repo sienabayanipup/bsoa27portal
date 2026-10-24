@@ -343,7 +343,7 @@ a{ color:inherit; }
           <h1>Class Overview — Insights</h1>
         </div>
       </div>
-      <p class="page-desc">Who's present, absent, or missing an activity — checked by subject and date.</p>
+      <p class="page-desc">Who's present, absent, missing an activity, or yet to take an exam — checked by subject and date.</p>
     </div>
     <div class="sheet-divider"></div>
 
@@ -392,8 +392,30 @@ a{ color:inherit; }
       </div>
 
       <div class="section-block">
-        <div class="section-title">Class Summary &mdash; full Attendance + Activity table</div>
-        <p class="status-msg" style="padding:0 0 12px;">Pick a subject and download every enrolled student's full attendance and activity history in one file.</p>
+        <div class="section-title">Exams &mdash; Taken / Not Yet for an exam</div>
+        <div class="check-form">
+          <select id="examSubject">
+            <option value="" disabled selected>Select a subject</option>
+            <option value="ENGL 017">ENGL 017</option>
+            <option value="GEED 033">GEED 033</option>
+            <option value="OFAD 201">OFAD 201</option>
+            <option value="PATHFIT 3">PATHFIT 3</option>
+            <option value="GEED 003">GEED 003</option>
+            <option value="OFAD 203">OFAD 203</option>
+            <option value="OFAD 202">OFAD 202</option>
+          </select>
+          <select id="examLabel" disabled>
+            <option value="" disabled selected>Select a subject first</option>
+          </select>
+          <button id="examCheckBtn" type="button">Check</button>
+        </div>
+        <p id="examStatus" class="status-msg" style="display:none;" aria-live="polite"></p>
+        <div id="examResult"></div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Class Summary &mdash; full Attendance + Activity + Exams table</div>
+        <p class="status-msg" style="padding:0 0 12px;">Pick a subject and download every enrolled student's full attendance, activity, and exam history in one file.</p>
         <div class="check-form">
           <select id="summarySubject">
             <option value="" disabled selected>Select a subject</option>
@@ -828,7 +850,156 @@ a{ color:inherit; }
         actCheckBtn.textContent = "Check";
       });
   });
-  // ---- Class Summary: full Attendance + Activity table for one subject ----
+
+  // ---- Exams: Taken / Not Yet for a specific exam (Midterm / Finals) ----
+  const examSubject = document.getElementById('examSubject');
+  const examLabel = document.getElementById('examLabel');
+  const examCheckBtn = document.getElementById('examCheckBtn');
+  const examStatus = document.getElementById('examStatus');
+  const examResult = document.getElementById('examResult');
+
+  examSubject.addEventListener('change', () => {
+    const subject = examSubject.value;
+    examLabel.innerHTML = '<option value="" disabled selected>Loading exams...</option>';
+    examLabel.disabled = true;
+
+    fetch(SCRIPT_URL + "?action=getExamLabels&subject=" + encodeURIComponent(subject))
+      .then(res => res.json())
+      .then(data => {
+        const exams = data.exams || [];
+        if (exams.length === 0){
+          examLabel.innerHTML = '<option value="" disabled selected>No exams open yet</option>';
+          return;
+        }
+        examLabel.innerHTML = '<option value="" disabled selected>Select an exam</option>' +
+          exams.map(x => `<option value="${x}">${x}</option>`).join('');
+        examLabel.disabled = false;
+      })
+      .catch(() => {
+        examLabel.innerHTML = '<option value="" disabled selected>Could not load exams</option>';
+      });
+  });
+
+  examCheckBtn.addEventListener('click', () => {
+    const subject = examSubject.value;
+    const label = examLabel.value;
+
+    if (!subject || !label){
+      examStatus.textContent = "Please choose both a subject and an exam.";
+      examStatus.className = "status-msg error";
+      examStatus.style.display = 'block';
+      examResult.innerHTML = '';
+      return;
+    }
+
+    examCheckBtn.disabled = true;
+    examCheckBtn.textContent = "Checking...";
+    examStatus.textContent = "";
+    examStatus.className = "status-msg";
+    examStatus.style.display = 'none';
+    examResult.innerHTML = `<div class="check-summary-row">
+        <div class="skel skel-box"></div><div class="skel skel-box"></div>
+      </div>
+      <div class="skel skel-line" style="width:35%;margin-top:22px;"></div>
+      <div class="roster-columns" style="margin-top:12px;">
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:90%;"></div>').join('')}</div>
+        <div>${Array(4).fill('<div class="skel skel-line" style="width:85%;"></div>').join('')}</div>
+      </div>`;
+
+    const url = SCRIPT_URL
+      + "?action=getExamStatus"
+      + "&subject=" + encodeURIComponent(subject)
+      + "&examLabel=" + encodeURIComponent(label);
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error){
+          examStatus.textContent = data.error;
+          examStatus.className = "status-msg error";
+          examStatus.style.display = 'block';
+          examResult.innerHTML = '';
+          return;
+        }
+        examStatus.style.display = 'none';
+
+        // The backend reuses the activity-status shape: "done" = taken the exam.
+        let html = `<div class="check-summary-row">
+          <div class="check-summary-box good"><div class="num">${data.doneCount}</div><div class="lbl">Taken</div></div>
+          <div class="check-summary-box bad"><div class="num">${data.notDoneCount}</div><div class="lbl">Not Yet</div></div>
+        </div>`;
+
+        html += `<div class="download-row"><button type="button" class="download-btn" id="examDownloadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download CSV
+        </button></div>`;
+
+        html += `<div class="result-header" id="examResultHeader">
+          <span class="toggle-label">View names</span>
+          <span class="chevron">&#9660;</span>
+        </div>`;
+        html += `<div class="result-body" id="examResultBody">`;
+        html += `<div class="roster-columns">`;
+
+        html += `<div><div class="roster-col-title good-title">Taken (${data.doneCount})</div>`;
+        if (data.doneStudents && data.doneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.doneStudents.forEach(s => {
+            html += `<div class="present-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">No one has taken this exam yet.</p>`;
+        }
+        html += `</div>`;
+
+        html += `<div><div class="roster-col-title bad-title">Not Yet (${data.notDoneCount})</div>`;
+        if (data.notDoneStudents && data.notDoneStudents.length > 0){
+          html += `<div class="missing-list">`;
+          data.notDoneStudents.forEach(s => {
+            html += `<div class="missing-item">${s.name} <span>(${s.studentNumber})</span></div>`;
+          });
+          html += `</div>`;
+        } else {
+          html += `<p class="status-msg" style="padding:0;">Everyone has taken this exam. Nice!</p>`;
+        }
+        html += `</div>`;
+
+        html += `</div></div>`;
+
+        examResult.innerHTML = html;
+
+        const examHeader = document.getElementById('examResultHeader');
+        const examBody = document.getElementById('examResultBody');
+        examHeader.addEventListener('click', () => {
+          examBody.classList.toggle('collapsed');
+          examHeader.classList.toggle('collapsed');
+        });
+
+        document.getElementById('examDownloadBtn').addEventListener('click', () => {
+          const rows = [];
+          (data.doneStudents || []).forEach(s => rows.push([s.name, s.studentNumber, 'Taken']));
+          (data.notDoneStudents || []).forEach(s => rows.push([s.name, s.studentNumber, 'Not Yet']));
+          downloadCSV(
+            `Exam - ${subject} - ${label}.csv`,
+            ['Name', 'Student Number', 'Status'],
+            rows
+          );
+        });
+      })
+      .catch(() => {
+        examStatus.textContent = "Could not connect. Check your internet and try again.";
+        examStatus.className = "status-msg error";
+        examStatus.style.display = 'block';
+        examResult.innerHTML = '';
+      })
+      .finally(() => {
+        examCheckBtn.disabled = false;
+        examCheckBtn.textContent = "Check";
+      });
+  });
+
+  // ---- Class Summary: full Attendance + Activity + Exams table for one subject ----
   const summarySubject = document.getElementById('summarySubject');
   const summaryDownloadBtn = document.getElementById('summaryDownloadBtn');
   const summaryStatus = document.getElementById('summaryStatus');
@@ -860,6 +1031,7 @@ a{ color:inherit; }
 
         const attendanceDates = data.attendanceDates || [];
         const activityDates = data.activityDates || [];
+        const examLabels = data.examLabels || [];
         const students = data.students || [];
 
         if (students.length === 0){
@@ -878,6 +1050,8 @@ a{ color:inherit; }
         headers.push('Attendance Total');
         activityDates.forEach(d => headers.push('Act ' + d));
         headers.push('Activity Total');
+        examLabels.forEach(x => headers.push('Exam ' + x));
+        headers.push('Exams Taken');
 
         const rows = students.map(s => {
           const row = [s.name, s.studentNumber];
@@ -888,6 +1062,11 @@ a{ color:inherit; }
             row.push(v === null ? 'Credited' : (v ? 'Done' : ''));
           });
           row.push(s.activityTotal === null ? 'Credited' : s.activityTotal);
+          examLabels.forEach(x => {
+            const v = (s.exams || {})[x];
+            row.push(v === null ? 'Credited' : (v ? 'Taken' : ''));
+          });
+          row.push(s.examTotal === null || s.examTotal === undefined ? (s.credited ? 'Credited' : '') : s.examTotal);
           return row;
         });
 
